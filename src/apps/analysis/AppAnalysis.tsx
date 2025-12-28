@@ -10,6 +10,7 @@ import { createAnalysisVanillaStore } from '~/modules/analysis/store-analysis_va
 import { OptimaToolbarIn } from '~/common/layout/optima/portals/OptimaPortalsIn';
 import { createDConversation, DConversation } from '~/common/stores/chat/chat.conversation';
 import { createDMessageTextContent, DMessage } from '~/common/stores/chat/chat.message';
+import { getChatLLMId } from '~/common/stores/llms/store-llms';
 import { useIsMobile } from '~/common/components/useMatchMedia';
 
 
@@ -21,7 +22,9 @@ function initTestConversation(): DConversation {
 }
 
 function initTestAnalysisStore(messages: DMessage[], analysisStore: AnalysisStoreApi): AnalysisStoreApi {
-  analysisStore.getState().open(messages, null, false, (content) => alert(content));
+  // Get the default chat LLM ID to use as Merge Model
+  const defaultLlmId = getChatLLMId();
+  analysisStore.getState().open(messages, defaultLlmId, false, (content) => alert(content));
   return analysisStore;
 }
 
