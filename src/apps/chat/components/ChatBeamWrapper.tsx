@@ -4,15 +4,15 @@ import type { SxProps } from '@mui/joy/styles/types';
 import { Box, IconButton, Modal } from '@mui/joy';
 import CloseFullscreenIcon from '@mui/icons-material/CloseFullscreen';
 
-import { BeamStoreApi, useBeamStore } from '~/modules/beam/store-beam.hooks';
-import { BeamView } from '~/modules/beam/BeamView';
+import { AnalysisStoreApi, useAnalysisStore } from '~/modules/analysis/store-analysis.hooks';
+import { AnalysisView } from '~/modules/analysis/AnalysisView';
 
 import { GoodTooltip } from '~/common/components/GoodTooltip';
 import { ScrollToBottom } from '~/common/scroll-to-bottom/ScrollToBottom';
 import { themeZIndexBeamView } from '~/common/app.theme';
 
 
-const beamWrapperStyles = {
+const analysisWrapperStyles = {
 
   wrapper: {
     position: 'absolute',
@@ -38,40 +38,40 @@ const beamWrapperStyles = {
 } as const;
 
 
-export function ChatBeamWrapper(props: {
-  beamStore: BeamStoreApi,
+export function ChatAnalysisWrapper(props: {
+  analysisStore: AnalysisStoreApi,
   isMobile: boolean,
   inlineSx?: SxProps,
 }) {
 
   // state
-  const isMaximized = useBeamStore(props.beamStore, state => state.isMaximized);
+  const isMaximized = useAnalysisStore(props.analysisStore, state => state.isMaximized);
 
   const handleUnMaximize = React.useCallback(() => {
-    props.beamStore.getState().setIsMaximized(false);
-  }, [props.beamStore]);
+    props.analysisStore.getState().setIsMaximized(false);
+  }, [props.analysisStore]);
 
-  // memo the beamview
-  const beamView = React.useMemo(() => (
-    <BeamView
-      beamStore={props.beamStore}
+  // memo the analysisview
+  const analysisView = React.useMemo(() => (
+    <AnalysisView
+      analysisStore={props.analysisStore}
       isMobile={props.isMobile}
       showExplainer
     />
-  ), [props.beamStore, props.isMobile]);
+  ), [props.analysisStore, props.isMobile]);
 
   return isMaximized ? (
     <Modal open onClose={handleUnMaximize}>
-      <Box sx={beamWrapperStyles.wrapper}>
+      <Box sx={analysisWrapperStyles.wrapper}>
 
         <ScrollToBottom disableAutoStick>
-          {beamView}
+          {analysisView}
         </ScrollToBottom>
 
         {/* Modal-Close-alike */}
-        <Box sx={beamWrapperStyles.closeContainer}>
+        <Box sx={analysisWrapperStyles.closeContainer}>
           <GoodTooltip title='Exit maximized mode'>
-            <IconButton variant='solid' onClick={handleUnMaximize} sx={beamWrapperStyles.closeButton}>
+            <IconButton variant='solid' onClick={handleUnMaximize} sx={analysisWrapperStyles.closeButton}>
               <CloseFullscreenIcon />
               {/*<CloseRoundedIcon />*/}
             </IconButton>
@@ -82,7 +82,7 @@ export function ChatBeamWrapper(props: {
     </Modal>
   ) : (
     <Box sx={props.inlineSx}>
-      {beamView}
+      {analysisView}
     </Box>
   );
 }

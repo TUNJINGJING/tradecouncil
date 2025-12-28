@@ -11,14 +11,14 @@ import StopRoundedIcon from '@mui/icons-material/StopRounded';
 import { FormLabelStart } from '~/common/components/forms/FormLabelStart';
 import { TooltipOutlined } from '~/common/components/TooltipOutlined';
 
-import type { BeamStoreApi } from '../store-beam.hooks';
-import { BEAM_BTN_SX, SCATTER_COLOR, SCATTER_RAY_PRESETS } from '../beam.config';
-import { BeamScatterDropdown } from './BeamScatterPaneDropdown';
-import { beamPaneSx } from '../BeamCard';
+import type { AnalysisStoreApi } from '../store-analysis.hooks';
+import { ANALYSIS_BTN_SX, SCATTER_COLOR, SCATTER_RAY_PRESETS } from '../analysis.config';
+import { AnalysisScatterDropdown } from './AnalysisScatterDropdown';
+import { analysisPaneSx } from '../AnalysisCard';
 
 
 const scatterPaneSx: SxProps = {
-  ...beamPaneSx,
+  ...analysisPaneSx,
   backgroundColor: 'background.popup',
 
   // col gap is pad/2 (8px), row is double (1rem)
@@ -60,8 +60,8 @@ const _styles = {
 } as const;
 
 
-export function BeamScatterPane(props: {
-  beamStore: BeamStoreApi,
+export function AnalysisScatterPane(props: {
+  analysisStore: AnalysisStoreApi,
   isMobile: boolean,
   rayCount: number,
   setRayCount: (n: number) => void,
@@ -75,11 +75,11 @@ export function BeamScatterPane(props: {
 }) {
 
   const dropdownMemo = React.useMemo(() => (
-    <BeamScatterDropdown
-      beamStore={props.beamStore}
+    <AnalysisScatterDropdown
+      analysisStore={props.analysisStore}
       onExplainerShow={props.onExplainerShow}
     />
-  ), [props.beamStore, props.onExplainerShow]);
+  ), [props.analysisStore, props.onExplainerShow]);
 
   const { onStart, startRestart } = props;
 
@@ -100,17 +100,17 @@ export function BeamScatterPane(props: {
           {props.startBusy
             ? <AutoAwesomeIcon sx={_styles.iconActive} />
             : <AutoAwesomeOutlinedIcon sx={_styles.icon} />}
-          Beam
+          Analysis
         </Typography>
         <Typography level='body-sm' sx={{ whiteSpace: 'nowrap' }}>
-          Explore different replies
+          Explore different analyses
           {/* Explore the solution space */}
         </Typography>
       </Box>
 
       {/* Ray presets */}
       <FormControl sx={{ my: '-0.25rem' }}>
-        <FormLabelStart title='Beam Count' sx={/*{ mb: '0.25rem' }*/ undefined} />
+        <FormLabelStart title='Expert Count' sx={/*{ mb: '0.25rem' }*/ undefined} />
         <ButtonGroup variant='outlined'>
           {SCATTER_RAY_PRESETS.map((n) => {
             const isActive = n === props.rayCount;
@@ -153,14 +153,14 @@ export function BeamScatterPane(props: {
 
       {/* Start / Stop buttons */}
       {!props.startBusy ? (
-        <TooltipOutlined slowEnter title={startRestart ? 'Shift + Click to re-run active Beams' : null} placement='top-end'>
+        <TooltipOutlined slowEnter title={startRestart ? 'Shift + Click to re-run active Analyses' : null} placement='top-end'>
           <Button
             // key='scatter-start' // used for animation triggering, which we don't have now
             variant='solid' color={SCATTER_COLOR}
             disabled={!props.startEnabled || props.startBusy} loading={props.startBusy}
             endDecorator={<PlayArrowRoundedIcon />}
             onClick={handleStartClicked}
-            sx={BEAM_BTN_SX}
+            sx={ANALYSIS_BTN_SX}
           >
             Start
           </Button>
@@ -171,7 +171,7 @@ export function BeamScatterPane(props: {
           variant='solid' color='danger'
           endDecorator={<StopRoundedIcon />}
           onClick={props.onStop}
-          sx={BEAM_BTN_SX}
+          sx={ANALYSIS_BTN_SX}
         >
           Stop
           {/*{props.rayCount > props.raysReady && ` (${props.rayCount - props.raysReady})`}*/}

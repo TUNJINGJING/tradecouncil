@@ -3,21 +3,21 @@ import { Box, styled } from '@mui/joy';
 
 import { animationShadowLimey } from '~/common/util/animUtils';
 
-import { BEAM_INVERT_BACKGROUND, BEAM_PANE_ZINDEX } from './beam.config';
+import { ANALYSIS_INVERT_BACKGROUND, ANALYSIS_PANE_ZINDEX } from './analysis.config';
 
 
-export const beamCardClasses = {
-  fusionIdle: 'beamCard-fusionIdle',
-  errored: 'beamCard-Errored',
-  selectable: 'beamCard-Selectable',
-  attractive: 'beamCard-Attractive',
-  smashTop: 'beamCard-SmashTop',
+export const analysisCardClasses = {
+  fusionIdle: 'analysisCard-fusionIdle',
+  errored: 'analysisCard-Errored',
+  selectable: 'analysisCard-Selectable',
+  attractive: 'analysisCard-Attractive',
+  smashTop: 'analysisCard-SmashTop',
 };
 
 /**
  * Used for message-containing cards.
  */
-export const BeamCard = styled(Box)(({ theme }) => ({
+export const AnalysisCard = styled(Box)(({ theme }) => ({
   '--Card-padding': '1rem',
 
   backgroundColor: theme.vars.palette.background.surface,
@@ -27,24 +27,24 @@ export const BeamCard = styled(Box)(({ theme }) => ({
 
   padding: 'var(--Card-padding)',
 
-  // [`&.${beamCardClasses.active}`]: {
+  // [`&.${analysisCardClasses.active}`]: {
   //   boxShadow: 'inset 0 0 0 2px #00f, inset 0 0 0 4px #00a',
   // },
 
-  [`&.${beamCardClasses.fusionIdle}`]: {
-    backgroundColor: BEAM_INVERT_BACKGROUND ? theme.vars.palette.background.level2 : theme.vars.palette.background.surface,
+  [`&.${analysisCardClasses.fusionIdle}`]: {
+    backgroundColor: ANALYSIS_INVERT_BACKGROUND ? theme.vars.palette.background.level2 : theme.vars.palette.background.surface,
   },
-  [`&.${beamCardClasses.selectable}`]: {
+  [`&.${analysisCardClasses.selectable}`]: {
     backgroundColor: theme.vars.palette.background.popup,
   },
-  [`&.${beamCardClasses.errored}`]: {
+  [`&.${analysisCardClasses.errored}`]: {
     backgroundColor: theme.vars.palette.danger.softBg,
     borderColor: theme.vars.palette.danger.outlinedBorder,
   },
-  [`&.${beamCardClasses.attractive}`]: {
+  [`&.${analysisCardClasses.attractive}`]: {
     animation: `${animationShadowLimey} 2s linear infinite`,
   },
-  [`&.${beamCardClasses.smashTop}`]: {
+  [`&.${analysisCardClasses.smashTop}`]: {
     borderTop: 'none',
     borderTopLeftRadius: 0,
     borderTopRightRadius: 0,
@@ -60,10 +60,10 @@ export const BeamCard = styled(Box)(({ theme }) => ({
   // maxHeight: 'calc(0.8 * (100dvh - 16rem))',
   // overflow: 'auto',
 }));
-BeamCard.displayName = 'BeamCard'; // [shared] scatter/gather pane style
+AnalysisCard.displayName = 'AnalysisCard'; // [shared] scatter/gather pane style
 
 
-export const beamCardMessageWrapperSx: SxProps = {
+export const analysisCardMessageWrapperSx: SxProps = {
   minHeight: '1.5rem',
   display: 'flex',
   flexDirection: 'column',
@@ -73,7 +73,7 @@ export const beamCardMessageWrapperSx: SxProps = {
   // aspectRatio: 1,
 };
 
-export const beamCardMessageSx: SxProps = {
+export const analysisCardMessageSx: SxProps = {
   // style: to undo the style of ChatMessage
   backgroundColor: 'none',
   border: 'none',
@@ -83,8 +83,8 @@ export const beamCardMessageSx: SxProps = {
   py: 0,
 };
 
-export const beamCardMessageScrollingSx: SxProps = {
-  ...beamCardMessageSx,
+export const analysisCardMessageScrollingSx: SxProps = {
+  ...analysisCardMessageSx,
   overflow: 'auto',
   maxHeight: 'max(18rem, calc(50lvh - 16rem))',
 };
@@ -93,11 +93,11 @@ export const beamCardMessageScrollingSx: SxProps = {
 /**
  * Props for the two panes.
  */
-export const beamPaneSx: SxProps = {
+export const analysisPaneSx: SxProps = {
   // style
   p: 'var(--Pad)',
   py: 'calc(3 * var(--Pad) / 4)',
-  zIndex: BEAM_PANE_ZINDEX, // cast shadow on the rays/fusion, and be on top of the overlay pane
+  zIndex: ANALYSIS_PANE_ZINDEX, // cast shadow on the rays/fusion, and be on top of the overlay pane
 
   // layout
   display: 'flex',

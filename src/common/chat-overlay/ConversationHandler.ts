@@ -4,8 +4,8 @@ import { bareBonesPromptMixer } from '~/modules/persona/pmix/pmix';
 
 import { SystemPurposes } from '../../data';
 
-import { BeamStore, createBeamVanillaStore } from '~/modules/beam/store-beam_vanilla';
-import { useModuleBeamStore } from '~/modules/beam/store-module-beam';
+import { AnalysisStore, createAnalysisVanillaStore } from '~/modules/analysis/store-analysis_vanilla';
+import { useModuleAnalysisStore } from '~/modules/analysis/store-module-analysis';
 
 import type { DConversationId } from '~/common/stores/chat/chat.conversation';
 import type { DLLMId } from '~/common/stores/llms/llms.types';
@@ -33,17 +33,17 @@ const _chatStoreActions = useChatStore.getState() as ChatActions;
  */
 export class ConversationHandler {
 
-  private readonly beamStore: StoreApi<BeamStore>;
+  private readonly analysisStore: StoreApi<AnalysisStore>;
   private readonly overlayStore: StoreApi<PerChatOverlayStore>;
 
   constructor(private readonly conversationId: DConversationId) {
-    this.beamStore = createBeamVanillaStore();
+    this.analysisStore = createAnalysisVanillaStore();
     this.overlayStore = createPerChatVanillaStore();
 
-    // track the open status of beams - this is meant to be an accelerator for the UI
-    this.beamStore.subscribe((state, prevState) => {
+    // track the open status of analysis - this is meant to be an accelerator for the UI
+    this.analysisStore.subscribe((state, prevState) => {
       if (state.isOpen === prevState.isOpen) return;
-      useModuleBeamStore.getState().setBeamOpenForConversation(this.conversationId, state.isOpen);
+      useModuleAnalysisStore.getState().setAnalysisOpenForConversation(this.conversationId, state.isOpen);
     });
   }
 
@@ -207,9 +207,9 @@ export class ConversationHandler {
 
     void gcChatImageAssets(); // fire/forget
 
-    // if zeroing the messages, also terminate an active beam
+    // if zeroing the messages, also terminate an active analysis
     if (!messages.length)
-      this.beamStore.getState().terminateKeepingSettings();
+      this.analysisStore.getState().terminateKeepingSettings();
   }
 
   historyTruncateTo(messageId: DMessageId, offset: number = 0): void {
@@ -236,41 +236,41 @@ export class ConversationHandler {
   }
 
 
-  // Beam
+  // Analysis
 
-  getBeamStore = () => this.beamStore;
+  getAnalysisStore = () => this.analysisStore;
 
   /**
-   * Opens a beam over the given history
+   * Opens an analysis over the given history
    *
-   * @param viewHistory The history up to the point where the beam is invoked
-   * @param importMessages If set, any message to import into the beam as pre-set rays
+   * @param viewHistory The history up to the point where the analysis is invoked
+   * @param importMessages If set, any message to import into the analysis as pre-set rays
    * @param destReplaceMessageId If set, the output will replace the message with this id, otherwise it will append to the history
    */
-  beamInvoke(viewHistory: Readonly<DMessage[]>, importMessages: DMessage[], destReplaceMessageId: DMessage['id'] | null): void {
-    const { open: beamOpen, importRays: beamImportRays, terminateKeepingSettings } = this.beamStore.getState();
+  analysisInvoke(viewHistory: Readonly<DMessage[]>, importMessages: DMessage[], destReplaceMessageId: DMessage['id'] | null): void {
+    const { open: analysisOpen, importRays: analysisImportRays, terminateKeepingSettings } = this.analysisStore.getState();
 
-    const onBeamSuccess = (messageUpdate: Pick<DMessage, 'fragments' | 'generator'>) => {
+    const onAnalysisSuccess = (messageUpdate: Pick<DMessage, 'fragments' | 'generator'>) => {
 
       // set output when going back to the chat
       if (destReplaceMessageId) {
         // replace a single message in the conversation history
-        this.messageEdit(destReplaceMessageId, messageUpdate, true, true); // [chat] replace assistant:Beam contentParts
+        this.messageEdit(destReplaceMessageId, messageUpdate, true, true); // [chat] replace assistant:Analysis contentParts
       } else {
         // replace (may truncate) the conversation history and append a message
-        const newMessage = createDMessageFromFragments('assistant', messageUpdate.fragments); // [chat] append Beam message
+        const newMessage = createDMessageFromFragments('assistant', messageUpdate.fragments); // [chat] append Analysis message
         newMessage.purposeId = getConversationSystemPurposeId(this.conversationId) ?? undefined;
         newMessage.generator = messageUpdate.generator;
         // TODO: put the other rays in the metadata?! (reqby @Techfren)
         this.messageAppend(newMessage);
       }
 
-      // close beam
+      // close analysis
       terminateKeepingSettings();
     };
 
-    beamOpen(viewHistory, getChatLLMId(), !!destReplaceMessageId, onBeamSuccess);
-    importMessages.length && beamImportRays(importMessages, getChatLLMId());
+    analysisOpen(viewHistory, getChatLLMId(), !!destReplaceMessageId, onAnalysisSuccess);
+    importMessages.length && analysisImportRays(importMessages, getChatLLMId());
   }
 
 

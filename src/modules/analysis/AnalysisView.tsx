@@ -10,18 +10,18 @@ import { copyToClipboard } from '~/common/util/clipboardUtils';
 import { messageFragmentsReduceText } from '~/common/stores/chat/chat.message';
 import { useUICounter } from '~/common/stores/store-ui';
 
-import { BeamExplainer } from './BeamExplainer';
-import { BeamFusionGrid } from './gather/BeamFusionGrid';
-import { BeamGatherPane } from './gather/BeamGatherPane';
-import { BeamRayGrid } from './scatter/BeamRayGrid';
-import { BeamScatterInput } from './scatter/BeamScatterInput';
-import { BeamScatterPane } from './scatter/BeamScatterPane';
-import { BeamStoreApi, useBeamStore } from './store-beam.hooks';
-import { useModuleBeamStore } from './store-module-beam';
+import { AnalysisExplainer } from './AnalysisExplainer';
+import { ConsensusGrid } from './gather/ConsensusGrid';
+import { AnalysisGatherPane } from './gather/AnalysisGatherPane';
+import { ExpertGrid } from './scatter/ExpertGrid';
+import { AnalysisInput } from './scatter/AnalysisInput';
+import { AnalysisScatterPane } from './scatter/AnalysisScatterPane';
+import { AnalysisStoreApi, useAnalysisStore } from './store-analysis.hooks';
+import { useModuleAnalysisStore } from './store-module-analysis';
 
 
-export function BeamView(props: {
-  beamStore: BeamStoreApi,
+export function AnalysisView(props: {
+  analysisStore: AnalysisStoreApi,
   isMobile: boolean,
   showExplainer?: boolean,
   // sx?: SxProps,
@@ -32,20 +32,20 @@ export function BeamView(props: {
   const [warnIsScattering, setWarnIsScattering] = React.useState(false);
 
   // external state
-  const { novel: explainerUnseen, touch: explainerCompleted, forget: explainerShow } = useUICounter('beam-wizard');
-  const { cardAdd, gatherAutoStartAfterScatter } = useModuleBeamStore(useShallow(state => ({
+  const { novel: explainerUnseen, touch: explainerCompleted, forget: explainerShow } = useUICounter('analysis-wizard');
+  const { cardAdd, gatherAutoStartAfterScatter } = useModuleAnalysisStore(useShallow(state => ({
     cardAdd: state.cardAdd,
     gatherAutoStartAfterScatter: state.gatherAutoStartAfterScatter,
   })));
   const {
     /* root */ inputHistoryReplaceMessageFragment,
     /* scatter */ setRayCount, startScatteringAll, stopScatteringAll,
-  } = props.beamStore.getState();
+  } = props.analysisStore.getState();
   const {
     /* root */ inputHistory, inputIssues, inputReady,
     /* scatter */ hadImportedRays, isScattering, raysReady,
     /* gather (composite) */ canGather,
-  } = useBeamStore(props.beamStore, useShallow(state => ({
+  } = useAnalysisStore(props.analysisStore, useShallow(state => ({
     // input
     inputHistory: state.inputHistory,
     inputIssues: state.inputIssues,
@@ -58,8 +58,8 @@ export function BeamView(props: {
     canGather: state.raysReady >= 2 && state.currentFactoryId !== null && state.currentGatherLlmId !== null,
   })));
   // the following are independent because of useShallow, which would break in the above call
-  const rayIds = useBeamStore(props.beamStore, useShallow(state => state.rays.map(ray => ray.rayId)));
-  const fusionIds = useBeamStore(props.beamStore, useShallow(state => state.fusions.map(fusion => fusion.fusionId)));
+  const rayIds = useAnalysisStore(props.analysisStore, useShallow(state => state.rays.map(ray => ray.rayId)));
+  const fusionIds = useAnalysisStore(props.analysisStore, useShallow(state => state.fusions.map(fusion => fusion.fusionId)));
 
   // derived state
   const raysCount = rayIds.length;
@@ -72,20 +72,20 @@ export function BeamView(props: {
   const handleRayIncreaseCount = React.useCallback(() => setRayCount(raysCount + 1), [setRayCount, raysCount]);
 
   const handleRaysOperation = React.useCallback((operation: 'copy' | 'use') => {
-    const { rays, onSuccessCallback } = props.beamStore.getState();
+    const { rays, onSuccessCallback } = props.analysisStore.getState();
     const allFragments = rays.flatMap(ray => ray.message.fragments);
     if (allFragments.length) {
       switch (operation) {
         case 'copy':
           const combinedText = messageFragmentsReduceText(allFragments, '\n\n\n---\n\n\n');
-          copyToClipboard(combinedText, 'All Beams');
+          copyToClipboard(combinedText, 'All Analyses');
           break;
         case 'use':
           onSuccessCallback?.({ fragments: allFragments });
           break;
       }
     }
-  }, [props.beamStore]);
+  }, [props.analysisStore]);
 
   const handleScatterStart = React.useCallback((restart: boolean) => {
     setHasAutoMerged(false);
@@ -99,8 +99,8 @@ export function BeamView(props: {
       setWarnIsScattering(true);
       return;
     }
-    props.beamStore.getState().createFusion();
-  }, [isScattering, props.beamStore]);
+    props.analysisStore.getState().createFusion();
+  }, [isScattering, props.analysisStore]);
 
 
   const handleStartMergeConfirmation = React.useCallback(() => {
@@ -140,25 +140,25 @@ export function BeamView(props: {
 
 
   // intercept ctrl+enter and esc
-  useGlobalShortcuts('BeamView', React.useMemo(() => [
+  useGlobalShortcuts('AnalysisView', React.useMemo(() => [
     { key: ShortcutKey.Enter, ctrl: true, action: () => handleScatterStart(false), disabled: isScattering, level: 1 },
-    ...(isScattering ? [{ key: ShortcutKey.Esc, action: stopScatteringAll, level: 10 + 1 /* becasuse > ChatBarAltBeam */ }] : []),
+    ...(isScattering ? [{ key: ShortcutKey.Esc, action: stopScatteringAll, level: 10 + 1 /* becasuse > ChatBarAltAnalysis */ }] : []),
   ], [handleScatterStart, isScattering, stopScatteringAll]));
 
 
   // Explainer, if unseen
   if (props.showExplainer && explainerUnseen)
-    return <BeamExplainer onWizardComplete={explainerCompleted} />;
+    return <AnalysisExplainer onWizardComplete={explainerCompleted} />;
 
   return <>
 
-    <Box role='beam-list' sx={{
+    <Box role='analysis-list' sx={{
       // scroller fill
       minHeight: '100%',
       // ...props.sx,
 
       // enter animation
-      // NOTE: disabled: off-putting/confusing when the beam content is large - things won't combine nicely
+      // NOTE: disabled: off-putting/confusing when the analysis content is large - things won't combine nicely
       // animation: `${animationEnterScaleUp} 5s cubic-bezier(.17,.84,.44,1)`,
 
       // config
@@ -176,15 +176,15 @@ export function BeamView(props: {
 
 
       {/* User Message */}
-      <BeamScatterInput
+      <AnalysisInput
         isMobile={props.isMobile}
         history={inputHistory}
         onMessageFragmentReplace={inputHistoryReplaceMessageFragment}
       />
 
       {/* Scatter Controls */}
-      <BeamScatterPane
-        beamStore={props.beamStore}
+      <AnalysisScatterPane
+        analysisStore={props.analysisStore}
         isMobile={props.isMobile}
         rayCount={raysCount}
         setRayCount={handleRaySetCount}
@@ -198,9 +198,9 @@ export function BeamView(props: {
       />
 
 
-      {/* Rays Grid - BeamRay[] > <ChatMessage /> */}
-      <BeamRayGrid
-        beamStore={props.beamStore}
+      {/* Rays Grid - ExpertAnalysis[] > <ChatMessage /> */}
+      <ExpertGrid
+        analysisStore={props.analysisStore}
         isMobile={props.isMobile}
         rayIds={rayIds}
         showRayAdd={cardAdd}
@@ -217,8 +217,8 @@ export function BeamView(props: {
 
 
       {/* Gather Controls */}
-      <BeamGatherPane
-        beamStore={props.beamStore}
+      <AnalysisGatherPane
+        analysisStore={props.analysisStore}
         canGather={canGather}
         isMobile={props.isMobile}
         // onAddFusion={handleCreateFusion}
@@ -226,8 +226,8 @@ export function BeamView(props: {
       />
 
       {/* Fusion Grid - Fusion[] > <ChatMessage /> */}
-      <BeamFusionGrid
-        beamStore={props.beamStore}
+      <ConsensusGrid
+        analysisStore={props.analysisStore}
         canGather={canGather}
         fusionIds={fusionIds}
         isMobile={props.isMobile}

@@ -3,53 +3,53 @@ import { type StoreApi, useStore } from 'zustand';
 
 import { useShallowStable } from '~/common/util/hooks/useShallowObject';
 
-import type { BeamStore } from './store-beam_vanilla';
+import type { AnalysisStore } from './store-analysis_vanilla';
 
 
-export type BeamStoreApi = Readonly<StoreApi<BeamStore>>;
+export type AnalysisStoreApi = Readonly<StoreApi<AnalysisStore>>;
 
 
-export const useBeamStore = <T, >(beamStore: BeamStoreApi, selector: (store: BeamStore) => T): T =>
-  useStore(beamStore, selector);
+export const useAnalysisStore = <T, >(analysisStore: AnalysisStoreApi, selector: (store: AnalysisStore) => T): T =>
+  useStore(analysisStore, selector);
 
-/*export const useIsBeamOpen = (beamStore?: BeamStoreApi) => {
+/*export const useIsAnalysisOpen = (analysisStore?: AnalysisStoreApi) => {
   const [open, setOpen] = React.useState(false);
 
-  // attach to the current beamStore
+  // attach to the current analysisStore
   React.useEffect(() => {
-    if (!beamStore) {
+    if (!analysisStore) {
       setOpen(false);
       return;
     }
-    setOpen(beamStore.getState().isOpen);
-    return beamStore.subscribe((state: BeamState, prevState: BeamState) => {
+    setOpen(analysisStore.getState().isOpen);
+    return analysisStore.subscribe((state: AnalysisState, prevState: AnalysisState) => {
       (state.isOpen !== prevState.isOpen) && setOpen(state.isOpen);
     });
-  }, [beamStore]);
+  }, [analysisStore]);
 
   return open;
 };*/
 
-export function useAreBeamsOpen(beamStores: (BeamStoreApi | null)[]): boolean[] {
+export function useAreAnalysisOpen(analysisStores: (AnalysisStoreApi | null)[]): boolean[] {
 
   // state
   const [_changeVersion, setChangeVersion] = React.useState(0);
 
   // [effect] monitor the stores for changes
   React.useEffect(() => {
-    const updateIfOpenChanges = (state: BeamStore, prevState: BeamStore) => {
+    const updateIfOpenChanges = (state: AnalysisStore, prevState: AnalysisStore) => {
       if (state.isOpen !== prevState.isOpen)
         setChangeVersion(version => version + 1);
     };
 
     // monitor the open status of all stores
-    const unsubscribes = beamStores.filter(store => !!store).map((beamStore) => {
-      return beamStore?.subscribe(updateIfOpenChanges);
+    const unsubscribes = analysisStores.filter(store => !!store).map((analysisStore) => {
+      return analysisStore?.subscribe(updateIfOpenChanges);
     });
 
     // unsubscribe on cleanup or when the stores change
     return () => unsubscribes.forEach((unsubscribe) => unsubscribe?.());
-  }, [beamStores]);
+  }, [analysisStores]);
 
-  return useShallowStable(beamStores.map(beamStore => beamStore?.getState().isOpen ?? false));
+  return useShallowStable(analysisStores.map(analysisStore => analysisStore?.getState().isOpen ?? false));
 }

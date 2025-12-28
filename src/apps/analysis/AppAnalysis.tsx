@@ -3,9 +3,9 @@ import { useShallow } from 'zustand/react/shallow';
 
 import { Box, Button, Typography } from '@mui/joy';
 
-import { BeamStoreApi, useBeamStore } from '~/modules/beam/store-beam.hooks';
-import { BeamView } from '~/modules/beam/BeamView';
-import { createBeamVanillaStore } from '~/modules/beam/store-beam_vanilla';
+import { AnalysisStoreApi, useAnalysisStore } from '~/modules/analysis/store-analysis.hooks';
+import { AnalysisView } from '~/modules/analysis/AnalysisView';
+import { createAnalysisVanillaStore } from '~/modules/analysis/store-analysis_vanilla';
 
 import { OptimaToolbarIn } from '~/common/layout/optima/portals/OptimaPortalsIn';
 import { createDConversation, DConversation } from '~/common/stores/chat/chat.conversation';
@@ -15,45 +15,45 @@ import { useIsMobile } from '~/common/components/useMatchMedia';
 
 function initTestConversation(): DConversation {
   const conversation = createDConversation();
-  conversation.messages.push(createDMessageTextContent('system', 'You are a helpful assistant.')); // Beam Test - seed1
-  conversation.messages.push(createDMessageTextContent('user', 'Hello, who are you? (please expand...)')); // Beam Test - seed2
+  conversation.messages.push(createDMessageTextContent('system', 'You are a helpful assistant.')); // Analysis Test - seed1
+  conversation.messages.push(createDMessageTextContent('user', 'Hello, who are you? (please expand...)')); // Analysis Test - seed2
   return conversation;
 }
 
-function initTestBeamStore(messages: DMessage[], beamStore: BeamStoreApi): BeamStoreApi {
-  beamStore.getState().open(messages, null, false, (content) => alert(content));
-  return beamStore;
+function initTestAnalysisStore(messages: DMessage[], analysisStore: AnalysisStoreApi): AnalysisStoreApi {
+  analysisStore.getState().open(messages, null, false, (content) => alert(content));
+  return analysisStore;
 }
 
 
-export function AppBeam() {
+export function AppAnalysis() {
 
   // state
   const [showDebug, setShowDebug] = React.useState(false);
 
   const [conversation, setConversation] = React.useState<DConversation>(() => initTestConversation());
-  const [beamStoreApi] = React.useState(() => createBeamVanillaStore());
+  const [analysisStoreApi] = React.useState(() => createAnalysisVanillaStore());
 
 
-  // reinit the beam store if the conversation changes
+  // reinit the analysis store if the conversation changes
   React.useEffect(() => {
-    initTestBeamStore(conversation.messages, beamStoreApi);
-  }, [beamStoreApi, conversation]);
+    initTestAnalysisStore(conversation.messages, analysisStoreApi);
+  }, [analysisStoreApi, conversation]);
 
 
   // external state
   const isMobile = useIsMobile();
-  const { isOpen, beamState } = useBeamStore(beamStoreApi, useShallow(state => {
+  const { isOpen, analysisState } = useAnalysisStore(analysisStoreApi, useShallow(state => {
     return {
       isOpen: state.isOpen,
-      beamState: showDebug ? state : null,
+      analysisState: showDebug ? state : null,
     };
   }));
 
 
   const handleClose = React.useCallback(() => {
-    beamStoreApi.getState().terminateKeepingSettings();
-  }, [beamStoreApi]);
+    analysisStoreApi.getState().terminateKeepingSettings();
+  }, [analysisStoreApi]);
 
 
   const toolbarItems = React.useMemo(() => <>
@@ -80,8 +80,8 @@ export function AppBeam() {
     <Box sx={{ flexGrow: 1, overflowY: 'auto', position: 'relative' }}>
 
       {isOpen && (
-        <BeamView
-          beamStore={beamStoreApi}
+        <AnalysisView
+          analysisStore={analysisStoreApi}
           isMobile={isMobile}
         />
       )}
@@ -91,11 +91,11 @@ export function AppBeam() {
           whiteSpace: 'pre',
           position: 'absolute',
           inset: 0,
-          zIndex: 1 /* debug on top of BeamView */,
+          zIndex: 1 /* debug on top of AnalysisView */,
           backdropFilter: 'blur(4px)',
           padding: '1rem',
         }}>
-          {JSON.stringify(beamState, null, 2)
+          {JSON.stringify(analysisState, null, 2)
             // add an extra newline between first level properties (space, space, double quote) to make it more readable
             .split('\n').map(line => line.replace(/^\s\s"/g, '\n  ')).join('\n')}
         </Typography>

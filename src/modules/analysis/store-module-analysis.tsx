@@ -5,12 +5,12 @@ import type { DConversationId } from '~/common/stores/chat/chat.conversation';
 import type { DLLMId } from '~/common/stores/llms/llms.types';
 import { agiUuid } from '~/common/util/idUtils';
 
-import type { FFactoryId } from './gather/instructions/beam.gather.factories';
+import type { FFactoryId } from './gather/instructions/analysis.gather.factories';
 
 
 /// Presets (persisted as zustand store) ///
 
-export interface BeamConfigSnapshot {
+export interface AnalysisConfigSnapshot {
   id: string;
   name: string;
   rayLlmIds: DLLMId[];
@@ -19,11 +19,11 @@ export interface BeamConfigSnapshot {
 }
 
 
-interface ModuleBeamState {
+interface ModuleAnalysisState {
 
   // stored
-  presets: BeamConfigSnapshot[];
-  lastConfig: BeamConfigSnapshot | null;
+  presets: AnalysisConfigSnapshot[];
+  lastConfig: AnalysisConfigSnapshot | null;
   cardAdd: boolean;
   cardScrolling: boolean;
   scatterShowLettering: boolean;
@@ -32,16 +32,16 @@ interface ModuleBeamState {
   gatherShowAllPrompts: boolean;
 
   // non-stored, temporary but useful for the UI
-  openBeamConversationIds: Record<string, boolean>;
+  openAnalysisConversationIds: Record<string, boolean>;
 
 }
 
-interface ModuleBeamStore extends ModuleBeamState {
+interface ModuleAnalysisStore extends ModuleAnalysisState {
   addPreset: (name: string, rayLlmIds: DLLMId[], gatherLlmId: DLLMId | null, gatherFactoryId: FFactoryId | null) => void;
   deletePreset: (id: string) => void;
   renamePreset: (id: string, name: string) => void;
 
-  updateLastConfig: (update: Partial<BeamConfigSnapshot>) => void;
+  updateLastConfig: (update: Partial<AnalysisConfigSnapshot>) => void;
   deleteLastConfig: () => void;
 
   toggleCardAdd: () => void;
@@ -51,12 +51,12 @@ interface ModuleBeamStore extends ModuleBeamState {
   toggleGatherAutoStartAfterScatter: () => void;
   toggleGatherShowAllPrompts: () => void;
 
-  setBeamOpenForConversation: (conversationId: DConversationId, isOpen: boolean) => void;
-  clearBeamOpenForConversation: (conversationId: DConversationId) => void;
+  setAnalysisOpenForConversation: (conversationId: DConversationId, isOpen: boolean) => void;
+  clearAnalysisOpenForConversation: (conversationId: DConversationId) => void;
 }
 
 
-export const useModuleBeamStore = create<ModuleBeamStore>()(persist(
+export const useModuleAnalysisStore = create<ModuleAnalysisStore>()(persist(
   (_set, _get) => ({
 
     presets: [],
@@ -67,12 +67,12 @@ export const useModuleBeamStore = create<ModuleBeamStore>()(persist(
     scatterShowPrevMessages: false,
     gatherShowAllPrompts: false,
     gatherAutoStartAfterScatter: false,
-    openBeamConversationIds: {},
+    openAnalysisConversationIds: {},
 
 
     addPreset: (name, rayLlmIds, gatherLlmId, gatherFactoryId) => _set(state => ({
       presets: [...state.presets, {
-        id: agiUuid('beam-preset-config'),
+        id: agiUuid('analysis-preset-config'),
         name,
         rayLlmIds,
         gatherLlmId: gatherLlmId ?? undefined,
@@ -110,32 +110,32 @@ export const useModuleBeamStore = create<ModuleBeamStore>()(persist(
 
     toggleGatherShowAllPrompts: () => _set(state => ({ gatherShowAllPrompts: !state.gatherShowAllPrompts })),
 
-    setBeamOpenForConversation: (conversationId, isOpen) => _set(state => {
-      const openBeams = { ...state.openBeamConversationIds };
+    setAnalysisOpenForConversation: (conversationId, isOpen) => _set(state => {
+      const openAnalysis = { ...state.openAnalysisConversationIds };
       if (isOpen)
-        openBeams[conversationId] = true;
+        openAnalysis[conversationId] = true;
       else
-        delete openBeams[conversationId];
-      return { openBeamConversationIds: openBeams };
+        delete openAnalysis[conversationId];
+      return { openAnalysisConversationIds: openAnalysis };
     }),
 
-    clearBeamOpenForConversation: (conversationId) => _set(state => {
-      const openBeams = { ...state.openBeamConversationIds };
-      delete openBeams[conversationId];
-      return { openBeamConversationIds: openBeams };
+    clearAnalysisOpenForConversation: (conversationId) => _set(state => {
+      const openAnalysis = { ...state.openAnalysisConversationIds };
+      delete openAnalysis[conversationId];
+      return { openAnalysisConversationIds: openAnalysis };
     }),
 
   }), {
-    name: 'app-module-beam',
+    name: 'app-module-analysis',
     version: 1,
 
     partialize: (state) => {
-      // exclude openBeamConversationIds from persistence
-      const { openBeamConversationIds, ...persistedState } = state;
+      // exclude openAnalysisConversationIds from persistence
+      const { openAnalysisConversationIds, ...persistedState } = state;
       return persistedState;
     },
 
-    migrate: (state: any, fromVersion: number): Omit<ModuleBeamState, 'openBeamConversationIds'> => {
+    migrate: (state: any, fromVersion: number): Omit<ModuleAnalysisState, 'openAnalysisConversationIds'> => {
       // 0 -> 1: rename 'scatterPresets' to 'presets'
       if (state && fromVersion === 0 && !state.presets)
         return { ...state, presets: state.scatterPresets || [] };
@@ -145,22 +145,22 @@ export const useModuleBeamStore = create<ModuleBeamStore>()(persist(
 ));
 
 
-export function getBeamCardScrolling() {
-  return useModuleBeamStore.getState().cardScrolling;
+export function getAnalysisCardScrolling() {
+  return useModuleAnalysisStore.getState().cardScrolling;
 }
 
-export function useBeamCardScrolling() {
-  return useModuleBeamStore((state) => state.cardScrolling);
+export function useAnalysisCardScrolling() {
+  return useModuleAnalysisStore((state) => state.cardScrolling);
 }
 
-export function useBeamScatterShowLettering() {
-  return useModuleBeamStore((state) => state.scatterShowLettering);
+export function useAnalysisScatterShowLettering() {
+  return useModuleAnalysisStore((state) => state.scatterShowLettering);
 }
 
-export function useIsBeamOpenForConversation(conversationId: DConversationId | null): boolean {
-  return useModuleBeamStore(state => conversationId ? state.openBeamConversationIds[conversationId] ?? false : false);
+export function useIsAnalysisOpenForConversation(conversationId: DConversationId | null): boolean {
+  return useModuleAnalysisStore(state => conversationId ? state.openAnalysisConversationIds[conversationId] ?? false : false);
 }
 
-export function updateBeamLastConfig(update: Partial<BeamConfigSnapshot>) {
-  useModuleBeamStore.getState().updateLastConfig(update);
+export function updateAnalysisLastConfig(update: Partial<AnalysisConfigSnapshot>) {
+  useModuleAnalysisStore.getState().updateLastConfig(update);
 }

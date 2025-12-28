@@ -1,8 +1,8 @@
 import * as React from 'react';
 
-import { AppBeam } from '../../src/apps/beam/AppBeam';
+import { AppAnalysis } from '../../src/apps/analysis/AppAnalysis';
 
 import { withNextJSPerPageLayout } from '~/common/layout/withLayout';
 
 
-export default withNextJSPerPageLayout({ type: 'optima' }, () => <AppBeam />);
+export default withNextJSPerPageLayout({ type: 'optima' }, () => <AppAnalysis />);

@@ -6,18 +6,18 @@ import type { DMessage, DMessageId } from '~/common/stores/chat/chat.message';
 import type { DMessageFragment, DMessageFragmentId } from '~/common/stores/chat/chat.fragments';
 import { llmsHeuristicGetTopDiverseLlmIds } from '~/common/stores/llms/store-llms-domains_slice';
 
-import { BeamConfigSnapshot, useModuleBeamStore } from './store-module-beam';
-import { SCATTER_RAY_DEF } from './beam.config';
-import { createGatherSlice, GatherStoreSlice, reInitGatherStateSlice } from './gather/beam.gather';
-import { createScatterSlice, reInitScatterStateSlice, ScatterStoreSlice } from './scatter/beam.scatter';
+import { AnalysisConfigSnapshot, useModuleAnalysisStore } from './store-module-analysis';
+import { SCATTER_RAY_DEF } from './analysis.config';
+import { createGatherSlice, GatherStoreSlice, reInitGatherStateSlice } from './gather/analysis.gather';
+import { createScatterSlice, reInitScatterStateSlice, ScatterStoreSlice } from './scatter/analysis.scatter';
 
 
-/// Beam Store (vanilla, creator function) ///
+/// Analysis Store (vanilla, creator function) ///
 // Uses the Slices pattern, described in: https://docs.pmnd.rs/zustand/guides/typescript#slices-pattern
 
-export type BeamStore = RootStoreSlice & GatherStoreSlice & ScatterStoreSlice;
+export type AnalysisStore = RootStoreSlice & GatherStoreSlice & ScatterStoreSlice;
 
-export const createBeamVanillaStore = (): StoreApi<BeamStore> => createVanillaStore<BeamStore>()((...a) => ({
+export const createAnalysisVanillaStore = (): StoreApi<AnalysisStore> => createVanillaStore<AnalysisStore>()((...a) => ({
 
   ...createRootSlice(...a),
   ...createScatterSlice(...a),
@@ -28,7 +28,7 @@ export const createBeamVanillaStore = (): StoreApi<BeamStore> => createVanillaSt
 
 /// Common Store Slice ///
 
-type BeamSuccessCallback = (messageUpdate: Pick<DMessage, 'fragments' | 'generator'>) => void;
+type AnalysisSuccessCallback = (messageUpdate: Pick<DMessage, 'fragments' | 'generator'>) => void;
 
 interface RootStateSlice {
 
@@ -38,7 +38,7 @@ interface RootStateSlice {
   inputHistory: DMessage[] | null;
   inputIssues: string | null;
   inputReady: boolean;
-  onSuccessCallback: BeamSuccessCallback | null;
+  onSuccessCallback: AnalysisSuccessCallback | null;
 
 }
 
@@ -57,9 +57,9 @@ const initRootStateSlice = (): RootStateSlice => ({
 export interface RootStoreSlice extends RootStateSlice {
 
   // lifecycle
-  open: (chatHistory: Readonly<DMessage[]>, initialChatLlmId: DLLMId | null, isEditMode: boolean, callback: BeamSuccessCallback) => void;
+  open: (chatHistory: Readonly<DMessage[]>, initialChatLlmId: DLLMId | null, isEditMode: boolean, callback: AnalysisSuccessCallback) => void;
   terminateKeepingSettings: () => void;
-  loadBeamConfig: (preset: BeamConfigSnapshot | null) => void;
+  loadAnalysisConfig: (preset: AnalysisConfigSnapshot | null) => void;
 
   setIsMaximized: (maximized: boolean) => void;
   inputHistoryReplaceMessageFragment: (messageId: DMessageId, fragmentId: DMessageFragmentId, newFragment: DMessageFragment) => void;
@@ -67,14 +67,14 @@ export interface RootStoreSlice extends RootStateSlice {
 }
 
 
-const createRootSlice: StateCreator<BeamStore, [], [], RootStoreSlice> = (_set, _get) => ({
+const createRootSlice: StateCreator<AnalysisStore, [], [], RootStoreSlice> = (_set, _get) => ({
 
   // init state
   ...initRootStateSlice(),
 
 
-  open: (chatHistory: Readonly<DMessage[]>, initialChatLlmId: DLLMId | null, isEditMode: boolean, callback: BeamSuccessCallback) => {
-    const { isOpen: wasAlreadyOpen, terminateKeepingSettings, loadBeamConfig, hadImportedRays, setRayLlmIds, setCurrentGatherLlmId } = _get();
+  open: (chatHistory: Readonly<DMessage[]>, initialChatLlmId: DLLMId | null, isEditMode: boolean, callback: AnalysisSuccessCallback) => {
+    const { isOpen: wasAlreadyOpen, terminateKeepingSettings, loadAnalysisConfig, hadImportedRays, setRayLlmIds, setCurrentGatherLlmId } = _get();
 
     // reset pending operations
     terminateKeepingSettings();
@@ -102,12 +102,12 @@ const createRootSlice: StateCreator<BeamStore, [], [], RootStoreSlice> = (_set, 
       } satisfies Partial<GatherStoreSlice>),
     });
 
-    // if not empty (recycle an existing open beam for this chat), we're done
+    // if not empty (recycle an existing open analysis for this chat), we're done
     if (_get().rays.length)
       return;
 
     // if empty, initialize from the persisted config, if any
-    loadBeamConfig(useModuleBeamStore.getState().lastConfig);
+    loadAnalysisConfig(useModuleAnalysisStore.getState().lastConfig);
     if (_get().rays.length)
       return;
 
@@ -127,7 +127,7 @@ const createRootSlice: StateCreator<BeamStore, [], [], RootStoreSlice> = (_set, 
     })),
 
 
-  loadBeamConfig: (preset: BeamConfigSnapshot | null) => {
+  loadAnalysisConfig: (preset: AnalysisConfigSnapshot | null) => {
     if (preset) {
       const { setRayLlmIds, setCurrentGatherLlmId, setCurrentFactoryId } = _get();
       preset.rayLlmIds?.length && setRayLlmIds(preset.rayLlmIds);
