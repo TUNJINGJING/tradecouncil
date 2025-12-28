@@ -7,7 +7,6 @@
 
 import Router, { useRouter } from 'next/router';
 
-import type { AppCallIntent } from '../apps/call/AppCall';
 import type { AppChatIntent } from '../apps/chat/AppChat';
 
 import type { DConversationId } from '~/common/stores/chat/chat.conversation';
@@ -17,10 +16,9 @@ import { isBrowser } from './util/pwaUtils';
 
 export const ROUTE_INDEX = '/';
 export const ROUTE_APP_CHAT = '/';
-export const ROUTE_APP_CALL = '/call';
 export const ROUTE_APP_LINK_CHAT = '/link/chat/[chatLinkId]';
 export const ROUTE_APP_NEWS = '/news';
-export const ROUTE_APP_PERSONAS = '/personas';
+export const ROUTE_APP_STRATEGIES = '/strategies';
 const ROUTE_CALLBACK_OPENROUTER = '/link/callback_openrouter';
 
 
@@ -58,7 +56,7 @@ export const navigateToIndex = navigateFn(ROUTE_INDEX);
 
 export const navigateToNews = navigateFn(ROUTE_APP_NEWS);
 
-export const navigateToPersonas = navigateFn(ROUTE_APP_PERSONAS);
+export const navigateToStrategies = navigateFn(ROUTE_APP_STRATEGIES);
 
 export const navigateToChatLinkList = navigateFn(ROUTE_APP_LINK_CHAT.replace('[chatLinkId]', 'list'));
 
@@ -84,20 +82,6 @@ export async function launchAppChat(conversationId?: DConversationId) {
     },
     ROUTE_APP_CHAT,
   );
-}
-
-export function launchAppCall(conversationId: string, personaId: string) {
-  void Router.push(
-    {
-      pathname: ROUTE_APP_CALL,
-      query: {
-        conversationId,
-        personaId,
-        backTo: 'app-chat',
-      } satisfies AppCallIntent,
-    },
-    // ROUTE_APP_CALL,
-  ).then();
 }
 
 

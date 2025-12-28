@@ -1,15 +1,11 @@
 import type { FunctionComponent } from 'react';
 
 // App icons
-import CallIcon from '@mui/icons-material/Call';
-import CallOutlinedIcon from '@mui/icons-material/CallOutlined';
 import DifferenceOutlinedIcon from '@mui/icons-material/DifferenceOutlined';
 import Diversity2Icon from '@mui/icons-material/Diversity2';
 import EventNoteIcon from '@mui/icons-material/EventNote';
 import EventNoteOutlinedIcon from '@mui/icons-material/EventNoteOutlined';
 import GrainIcon from '@mui/icons-material/Grain';
-import ImageIcon from '@mui/icons-material/Image';
-import ImageOutlinedIcon from '@mui/icons-material/ImageOutlined';
 import IosShareIcon from '@mui/icons-material/IosShare';
 import IosShareOutlinedIcon from '@mui/icons-material/IosShareOutlined';
 // Link icons
@@ -93,57 +89,6 @@ export const navItems: {
       type: 'app',
       route: '/',
     },
-    {
-      name: 'Call',
-      barTitle: 'Voice Calls',
-      icon: CallOutlinedIcon,
-      iconActive: CallIcon,
-      type: 'app',
-      route: '/call',
-      hideDrawer: true,
-      panelAsMenu: true,
-      fullWidth: true,
-    },
-    // {
-    //   name: 'Draw',
-    //   icon: FormatPaintOutlinedIcon,
-    //   iconActive: FormatPaintTwoToneIcon,
-    //   type: 'app',
-    //   route: '/draw',
-    //   hideDrawer: true,
-    //   // hideOnMobile: true,
-    //   // isDev: true,
-    //   _delete: true, // FIXME: not yet ready for prime time
-    // },
-    // {
-    //   name: 'Cortex',
-    //   icon: AutoAwesomeOutlinedIcon,
-    //   iconActive: AutoAwesomeIcon,
-    //   type: 'app',
-    //   route: '/cortex',
-    //   isDev: true,
-    //   _delete: true,
-    // },
-    // {
-    //   name: 'Patterns',
-    //   icon: AccountTreeOutlinedIcon,
-    //   iconActive: AccountTreeTwoToneIcon,
-    //   type: 'app',
-    //   route: '/patterns',
-    //   isDev: true,
-    //   _delete: true, // FIXME: not even begun
-    // },
-    // {
-    //   name: 'Workspace',
-    //   icon: WorkspacesOutlinedIcon,
-    //   iconActive: WorkspacesIcon,
-    //   type: 'app',
-    //   route: '/workspace',
-    //   hideDrawer: true,
-    //   hideOnMobile: true,
-    //   isDev: true,
-    //   _delete: true, // FIXME: the all-in-one, not even begun
-    // },
     // <-- divider here -->
     {
       name: SPECIAL_DIVIDER,
@@ -152,12 +97,11 @@ export const navItems: {
       icon: () => null,
     },
     {
-      name: 'Create Personas',
-      mobileName: 'Personas',
-      icon: Diversity2Icon, // was: Outlined.. but they look the same
-      // iconActive: Diversity2Icon,
+      name: 'Trading Strategies',
+      mobileName: 'Strategies',
+      icon: Diversity2Icon,
       type: 'app',
-      route: '/personas',
+      route: '/strategies',
       hideBar: true,
     },
     {
@@ -181,22 +125,13 @@ export const navItems: {
       isDev: true,
     },
     {
-      name: 'Beam',
+      name: 'Analysis',
       icon: ChatBeamIcon,
       type: 'app',
-      route: '/dev/beam',
+      route: '/dev/analysis',
       hideDrawer: true,
       hideIcon: true,
       isDev: true,
-    },
-    {
-      name: 'Media Library',
-      icon: ImageOutlinedIcon,
-      iconActive: ImageIcon,
-      type: 'app',
-      route: '/media',
-      isDev: true,
-      _delete: true,
     },
     {
       name: 'Shared Chats',
