@@ -9,18 +9,18 @@ import { CreatorDrawer } from './creator/CreatorDrawer';
 import { Viewer } from './creator/Viewer';
 
 
-export function AppPersonas() {
+export function AppStrategies() {
 
   // state
-  const [selectedSimplePersonaId, setSelectedSimplePersonaId] = React.useState<string | null>(null);
+  const [selectedSimpleStrategyId, setSelectedSimpleStrategyId] = React.useState<string | null>(null);
 
   return <>
 
     {/* -> Drawer */}
     <OptimaDrawerIn>
       <CreatorDrawer
-        selectedSimplePersonaId={selectedSimplePersonaId}
-        setSelectedSimplePersonaId={setSelectedSimplePersonaId}
+        selectedSimplePersonaId={selectedSimpleStrategyId}
+        setSelectedSimplePersonaId={setSelectedSimpleStrategyId}
       />
     </OptimaDrawerIn>
 
@@ -33,14 +33,14 @@ export function AppPersonas() {
       <Container disableGutters maxWidth='md' sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
 
         <Typography level='title-lg' sx={{ textAlign: 'center' }}>
-          AI Personas Creator
+          Trading Strategies Creator
         </Typography>
 
         <ListDivider sx={{ my: 2 }} />
 
-        {!!selectedSimplePersonaId && <Viewer selectedSimplePersonaId={selectedSimplePersonaId} />}
+        {!!selectedSimpleStrategyId && <Viewer selectedSimplePersonaId={selectedSimpleStrategyId} />}
 
-        <Creator display={!selectedSimplePersonaId} />
+        <Creator display={!selectedSimpleStrategyId} />
 
       </Container>
 
