@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import { useModuleBeamStore } from '~/modules/beam/store-module-beam';
+import { useModuleAnalysisStore } from '~/modules/analysis/store-module-analysis';
 
 import type { DFolder } from '~/common/stores/folders/store-chat-folders';
 import { DMessage, DMessageUserFlag, MESSAGE_FLAG_STARRED, messageFragmentsReduceText, messageHasUserFlag, messageUserFlagToEmoji } from '~/common/stores/chat/chat.message';
@@ -100,7 +100,7 @@ export function useChatDrawerRenderItems(
   const [_, setJustAMinuteCounter] = React.useState(0);
 
   // external state
-  const openBeamConversationIds = useModuleBeamStore(state => state.openBeamConversationIds);
+  const openBeamConversationIds = useModuleAnalysisStore(state => state.openBeamConversationIds);
 
 
   // [effect] Refresh every minute because the `getTimeBucketEn` function uses the current time

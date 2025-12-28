@@ -6,11 +6,11 @@ import AddCircleOutlineRoundedIcon from '@mui/icons-material/AddCircleOutlineRou
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import TelegramIcon from '@mui/icons-material/Telegram';
 
-import type { BeamStoreApi } from '../store-beam.hooks';
-import { BeamCard } from '../BeamCard';
-import { SCATTER_RAY_MAX, SCATTER_RAY_MIN } from '../beam.config';
+import type { AnalysisStoreApi } from '../store-analysis.hooks';
+import { BeamCard } from '../AnalysisCard';
+import { SCATTER_RAY_MAX, SCATTER_RAY_MIN } from '../analysis.config';
 
-import { BeamRay } from './BeamRay';
+import { ExpertAnalysis } from './BeamRay';
 
 
 const rayGridDesktopSx: SxProps = {
@@ -27,8 +27,8 @@ const rayGridMobileSx: SxProps = {
 } as const;
 
 
-export function BeamRayGrid(props: {
-  beamStore: BeamStoreApi,
+export function ExpertGrid(props: {
+  analysisStore: AnalysisStoreApi,
   hadImportedRays: boolean,
   isMobile: boolean,
   onIncreaseRayCount: () => void,
@@ -45,10 +45,10 @@ export function BeamRayGrid(props: {
 
       {/* Rays */}
       {props.rayIds.map((rayId, index) => (
-        <BeamRay
+        <ExpertAnalysis
           key={'ray-' + rayId}
           rayIndexWeak={index}
-          beamStore={props.beamStore}
+          analysisStore={props.analysisStore}
           hadImportedRays={props.hadImportedRays}
           isMobile={props.isMobile}
           isRemovable={raysCount > SCATTER_RAY_MIN}
@@ -59,7 +59,7 @@ export function BeamRayGrid(props: {
 
       {/* Add Ray */}
       {(props.showRayAdd && raysCount < SCATTER_RAY_MAX) && (
-        <BeamCard sx={{ mb: 'auto' }}>
+        <AnalysisCard sx={{ mb: 'auto' }}>
           <Button variant='plain' color='neutral' onClick={props.onIncreaseRayCount} sx={{
             minHeight: 'calc(2 * var(--Card-padding) + 2rem - 0.5rem)',
             marginBlock: 'calc(-1 * var(--Card-padding) + 0.25rem)',
@@ -102,14 +102,14 @@ export function BeamRayGrid(props: {
       {/*{props.fusionIds.map((fusionId) => (*/}
       {/*  <BeamFusion*/}
       {/*    key={'fusion-' + fusionId}*/}
-      {/*    beamStore={props.beamStore}*/}
+      {/*    analysisStore={props.analysisStore}*/}
       {/*    fusionId={fusionId}*/}
       {/*  />*/}
       {/*))}*/}
 
       {/* Add Fusion */}
       {/*<BeamFusionAdd*/}
-      {/*  beamStore={props.beamStore}*/}
+      {/*  analysisStore={props.analysisStore}*/}
       {/*  isMobile={props.isMobile}*/}
       {/*/>*/}
 

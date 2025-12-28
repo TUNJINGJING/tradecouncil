@@ -11,8 +11,8 @@ import { DEV_MODE_SETTINGS } from '../../../apps/settings-modal/UxLabsSettings';
 
 import type { DLLMId } from '~/common/stores/llms/llms.types';
 
-import type { BeamStoreApi } from '../store-beam.hooks';
-import { useModuleBeamStore } from '../store-module-beam';
+import type { AnalysisStoreApi } from '../store-analysis.hooks';
+import { useModuleAnalysisStore } from '../store-module-analysis';
 
 
 /// Naming Dialog ///
@@ -57,8 +57,8 @@ function DialogNamePreset(props: {
 }
 
 
-export function BeamScatterDropdown(props: {
-  beamStore: BeamStoreApi,
+export function AnalysisScatterDropdown(props: {
+  analysisStore: AnalysisStoreApi,
   onExplainerShow: () => any,
 }) {
 
@@ -74,7 +74,7 @@ export function BeamScatterDropdown(props: {
     scatterShowLettering, toggleScatterShowLettering,
     gatherAutoStartAfterScatter, toggleGatherAutoStartAfterScatter,
     gatherShowAllPrompts, toggleGatherShowAllPrompts,
-  } = useModuleBeamStore();
+  } = useModuleAnalysisStore();
 
 
   // handlers - load/save presets
@@ -82,21 +82,21 @@ export function BeamScatterDropdown(props: {
   const handleClosePresetNaming = React.useCallback(() => setNamingOpened(false), []);
 
   const handlePresetSave = React.useCallback((presetName: string) => {
-    const { rays, currentGatherLlmId, currentFactoryId } = props.beamStore.getState();
+    const { rays, currentGatherLlmId, currentFactoryId } = props.analysisStore.getState();
     const rayLlmIds = rays.map(ray => ray.rayLlmId).filter(Boolean) as DLLMId[];
     addPreset(presetName, rayLlmIds, currentGatherLlmId, currentFactoryId);
     handleClosePresetNaming();
-  }, [addPreset, handleClosePresetNaming, props.beamStore]);
+  }, [addPreset, handleClosePresetNaming, props.analysisStore]);
 
   const handlePresetLoad = React.useCallback((presetId: string) => {
-    const preset = useModuleBeamStore.getState().presets.find(preset => preset.id === presetId);
-    preset && props.beamStore.getState().loadBeamConfig(preset);
-  }, [props.beamStore]);
+    const preset = useModuleAnalysisStore.getState().presets.find(preset => preset.id === presetId);
+    preset && props.analysisStore.getState().loadBeamConfig(preset);
+  }, [props.analysisStore]);
 
   // NOTE: DEVS only - DEBUG only
   const handleClearLastConfig = React.useCallback(() => {
     // this is used to debug the heuristics for model selection
-    useModuleBeamStore.getState().deleteLastConfig();
+    useModuleAnalysisStore.getState().deleteLastConfig();
   }, []);
 
 

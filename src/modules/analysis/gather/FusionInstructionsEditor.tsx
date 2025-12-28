@@ -5,11 +5,11 @@ import { Box, Divider, Typography } from '@mui/joy';
 
 import { InlineTextarea } from '~/common/components/InlineTextarea';
 
-import type { BeamStoreApi } from '../store-beam.hooks';
+import type { AnalysisStoreApi } from '../store-analysis.hooks';
 import type { GatherInstruction } from './instructions/GatherInstruction';
-import type { FusionFactorySpec } from './instructions/beam.gather.factories';
-import type { Instruction } from './instructions/beam.gather.execution';
-import { useModuleBeamStore } from '../store-module-beam';
+import type { FusionFactorySpec } from './instructions/analysis.gather.factories';
+import type { Instruction } from './instructions/analysis.gather.execution';
+import { useModuleAnalysisStore } from '../store-module-analysis';
 
 
 // Editor for a ChatInstruction
@@ -89,7 +89,7 @@ function EditableInstruction(props: {
 }) {
 
   // external state
-  const gatherShowAllPrompts = useModuleBeamStore(state => state.gatherShowAllPrompts);
+  const gatherShowAllPrompts = useModuleAnalysisStore(state => state.gatherShowAllPrompts);
 
   // derived state
   const { instruction, instructionIndex, onInstructionEdit } = props;
@@ -166,7 +166,7 @@ const instructionsListSx: SxProps = {
 
 
 export function FusionInstructionsEditor(props: {
-  beamStore: BeamStoreApi,
+  analysisStore: AnalysisStoreApi,
   factory: FusionFactorySpec,
   fusionId: string,
   instructions: Instruction[],
@@ -176,17 +176,17 @@ export function FusionInstructionsEditor(props: {
 }) {
 
   // derived state
-  const { beamStore, fusionId, instructions, isFusing } = props;
+  const { analysisStore, fusionId, instructions, isFusing } = props;
 
 
   // handlers
   // const handleFusionCopyAsCustom = React.useCallback(() => {
-  //   beamStore.getState().fusionRecreateAsCustom(fusionId);
-  // }, [fusionId, beamStore]);
+  //   analysisStore.getState().fusionRecreateAsCustom(fusionId);
+  // }, [fusionId, analysisStore]);
 
   const handleInstructionEdit = React.useCallback((instructionIndex: number, update: Partial<Instruction>) => {
-    beamStore.getState().fusionInstructionUpdate(fusionId, instructionIndex, update);
-  }, [fusionId, beamStore]);
+    analysisStore.getState().fusionInstructionUpdate(fusionId, instructionIndex, update);
+  }, [fusionId, analysisStore]);
 
 
   const instructionsMemo = React.useMemo(() => {

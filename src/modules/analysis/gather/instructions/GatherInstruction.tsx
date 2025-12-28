@@ -11,9 +11,9 @@ import { createDMessageTextContent, DMessage, messageFragmentsReduceText, messag
 import { getIsMobile } from '~/common/components/useMatchMedia';
 import { getUXLabsHighPerformance } from '~/common/stores/store-ux-labs';
 
-import type { BaseInstruction, ExecutionInputState } from './beam.gather.execution';
-import { beamCardMessageScrollingSx, beamCardMessageSx } from '../../BeamCard';
-import { getBeamCardScrolling } from '../../store-module-beam';
+import type { BaseInstruction, ExecutionInputState } from './analysis.gather.execution';
+import { analysisCardMessageScrollingSx, analysisCardMessageSx } from '../../BeamCard';
+import { getAnalysisCardScrolling } from '../../store-module-analysis';
 
 
 type ChatGenerateMethods =
@@ -96,7 +96,7 @@ export async function executeGatherInstruction(_i: GatherInstruction, inputs: Ex
             isMobile={isMobile}
             hideAvatar
             adjustContentScaling={-1}
-            sx={!getBeamCardScrolling() ? beamCardMessageSx : beamCardMessageScrollingSx}
+            sx={!getAnalysisCardScrolling() ? analysisCardMessageSx : analysisCardMessageScrollingSx}
           />,
         );
         return;

@@ -12,8 +12,8 @@ import { TooltipOutlined } from '~/common/components/TooltipOutlined';
 
 import { rayControlsMobileSx, rayControlsSx } from '../scatter/BeamRay';
 
-import type { BFusion } from './beam.gather';
-import type { FusionFactorySpec } from './instructions/beam.gather.factories';
+import type { BFusion } from './analysis.gather';
+import type { FusionFactorySpec } from './instructions/analysis.gather.factories';
 
 
 export const FusionControlsMemo = React.memo(FusionControls);

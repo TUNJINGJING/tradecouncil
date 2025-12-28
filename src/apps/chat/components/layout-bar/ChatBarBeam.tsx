@@ -4,7 +4,7 @@ import { useShallow } from 'zustand/react/shallow';
 import { Box, IconButton, Typography } from '@mui/joy';
 import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
 
-import { BeamStoreApi, useBeamStore } from '~/modules/beam/store-beam.hooks';
+import { AnalysisStoreApi, useAnalysisStore } from '~/modules/analysis/store-analysis.hooks';
 
 import { AppBreadcrumbs } from '~/common/components/AppBreadcrumbs';
 import { ConfirmationModal } from '~/common/components/modals/ConfirmationModal';
@@ -51,7 +51,7 @@ const _styles = {
 
 
 export function ChatBarBeam(props: {
-  beamStore: BeamStoreApi,
+  analysisStore: AnalysisStoreApi,
   conversationTitle: string,
   isMobile: boolean,
 }) {
@@ -61,7 +61,7 @@ export function ChatBarBeam(props: {
 
 
   // external beam state
-  const { isEditMode, isScattering, isGatheringAny, requiresConfirmation, setIsMaximized, terminateBeam } = useBeamStore(props.beamStore, useShallow((store) => ({
+  const { isEditMode, isScattering, isGatheringAny, requiresConfirmation, setIsMaximized, terminateBeam } = useAnalysisStore(props.analysisStore, useShallow((store) => ({
     // state
     isEditMode: store.isEditMode,
     isScattering: store.isScattering,

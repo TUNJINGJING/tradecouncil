@@ -1,6 +1,6 @@
 import { bareBonesPromptMixer } from '~/modules/persona/pmix/pmix';
 
-import type { BaseInstruction, ExecutionInputState } from './beam.gather.execution';
+import type { BaseInstruction, ExecutionInputState } from './analysis.gather.execution';
 import { parseTextToChecklist, UserInputChecklistComponent } from './UserInputChecklistComponent';
 
 

@@ -10,9 +10,9 @@ import { findLLMOrThrow } from '~/common/stores/llms/store-llms';
 import { getUXLabsHighPerformance } from '~/common/stores/store-ux-labs';
 import { splitSystemMessageFromHistory } from '~/common/stores/chat/chat.conversation';
 
-import type { RootStoreSlice } from '../store-beam_vanilla';
-import { SCATTER_DEBUG_STATE, SCATTER_PLACEHOLDER } from '../beam.config';
-import { updateBeamLastConfig } from '../store-module-beam';
+import type { RootStoreSlice } from '../store-analysis_vanilla';
+import { SCATTER_DEBUG_STATE, SCATTER_PLACEHOLDER } from '../analysis.config';
+import { updateAnalysisLastConfig } from '../store-module-analysis';
 
 
 export type BRayId = string;
@@ -396,7 +396,7 @@ export const createScatterSlice: StateCreator<RootStoreSlice & ScatterStoreSlice
     })),
 
   _storeLastScatterConfig: () => {
-    updateBeamLastConfig({
+    updateAnalysisLastConfig({
       rayLlmIds: _get().rays.map(ray => ray.rayLlmId).filter(Boolean) as DLLMId[],
     });
   },

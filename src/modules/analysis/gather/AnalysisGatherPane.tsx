@@ -10,11 +10,11 @@ import { LLM_IF_OAI_Reasoning } from '~/common/stores/llms/llms.types';
 import { animationColorBeamGather } from '~/common/util/animUtils';
 import { useLLMSelect } from '~/common/components/forms/useLLMSelect';
 
-import { BeamStoreApi, useBeamStore } from '../store-beam.hooks';
-import { FFactoryId, FUSION_FACTORIES } from './instructions/beam.gather.factories';
-import { BEAM_SHOW_REASONING_ICON, GATHER_COLOR } from '../beam.config';
-import { beamPaneSx } from '../BeamCard';
-import { useModuleBeamStore } from '../store-module-beam';
+import { AnalysisStoreApi, useAnalysisStore } from '../store-analysis.hooks';
+import { FFactoryId, FUSION_FACTORIES } from './instructions/analysis.gather.factories';
+import { ANALYSIS_SHOW_REASONING_ICON, GATHER_COLOR } from '../analysis.config';
+import { analysisPaneSx } from '../AnalysisCard';
+import { useModuleAnalysisStore } from '../store-module-analysis';
 
 
 const gatherPaneClasses = {
@@ -23,7 +23,7 @@ const gatherPaneClasses = {
 };
 
 const gatherPaneSx: SxProps = {
-  ...beamPaneSx,
+  ...analysisPaneSx,
   borderTop: '1px solid',
   borderTopColor: 'neutral.outlinedBorder',
 
@@ -55,8 +55,8 @@ const desktopGatherPaneSx: SxProps = {
 };
 
 
-export function BeamGatherPane(props: {
-  beamStore: BeamStoreApi,
+export function AnalysisGatherPane(props: {
+  analysisStore: AnalysisStoreApi,
   canGather: boolean,
   isMobile: boolean,
   // onAddFusion: () => void,
@@ -69,7 +69,7 @@ export function BeamGatherPane(props: {
   const {
     currentFactoryId, currentGatherLlmId, isGatheringAny, hasFusions,
     setCurrentFactoryId, setCurrentGatherLlmId,
-  } = useBeamStore(props.beamStore, useShallow(state => ({
+  } = useAnalysisStore(props.analysisStore, useShallow(state => ({
     // state
     // currentFactory: findFusionFactory(state.currentFactoryId),
     currentFactoryId: state.currentFactoryId,
@@ -81,7 +81,7 @@ export function BeamGatherPane(props: {
     setCurrentFactoryId: state.setCurrentFactoryId,
     setCurrentGatherLlmId: state.setCurrentGatherLlmId,
   })));
-  const gatherAutoStartAfterScatter = useModuleBeamStore(state => state.gatherAutoStartAfterScatter);
+  const gatherAutoStartAfterScatter = useModuleAnalysisStore(state => state.gatherAutoStartAfterScatter);
   const disableUnlessAutoStart = !props.canGather && !gatherAutoStartAfterScatter;
   const [llmOrNull, gatherLlmComponent/*, gatherLlmIcon*/] = useLLMSelect(currentGatherLlmId, setCurrentGatherLlmId, {
     label: props.isMobile ? '' : 'Merge Model',
@@ -90,7 +90,7 @@ export function BeamGatherPane(props: {
   });
 
   // derived state
-  const llmShowReasoning = !BEAM_SHOW_REASONING_ICON ? false : llmOrNull?.interfaces?.includes(LLM_IF_OAI_Reasoning) ?? false;
+  const llmShowReasoning = !ANALYSIS_SHOW_REASONING_ICON ? false : llmOrNull?.interfaces?.includes(LLM_IF_OAI_Reasoning) ?? false;
   // const isNoFactorySelected = currentFactoryId === null;
 
   // const CurrentFactoryIcon = currentFactory?.Icon ?? null;
@@ -160,7 +160,7 @@ export function BeamGatherPane(props: {
       </FormControl>
 
       {/* Display a Reasoning LLM */}
-      {(BEAM_SHOW_REASONING_ICON && llmShowReasoning) ? '🧠' : null}
+      {(ANALYSIS_SHOW_REASONING_ICON && llmShowReasoning) ? '🧠' : null}
 
       {/* LLM */}
       <Box sx={{ my: '-0.25rem', minWidth: 190, maxWidth: 300 }}>
@@ -173,7 +173,7 @@ export function BeamGatherPane(props: {
       {/*  canGather={props.canGather}*/}
       {/*  currentFactory={currentFactory}*/}
       {/*  onAddFusion={props.onAddFusion}*/}
-      {/*  sx={BEAM_BTN_SX}*/}
+      {/*  sx={ANALYSIS_BTN_SX}*/}
       {/*/>*/}
 
       {/* pad */}

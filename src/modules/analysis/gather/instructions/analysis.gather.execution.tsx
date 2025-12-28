@@ -5,9 +5,9 @@ import type { DLLMId } from '~/common/stores/llms/llms.types';
 import { createDMessageEmpty, DMessage } from '~/common/stores/chat/chat.message';
 import { createPlaceholderVoidFragment } from '~/common/stores/chat/chat.fragments';
 
-import type { BFusion, FusionUpdateOrFn } from '../beam.gather';
+import type { BFusion, FusionUpdateOrFn } from '../analysis.gather';
 import { executeGatherInstruction, GatherInstruction } from './GatherInstruction';
-import { GATHER_PLACEHOLDER } from '../../beam.config';
+import { GATHER_PLACEHOLDER } from '../../analysis.config';
 import { executeUserInputChecklistInstruction, UserInputChecklistInstruction } from './UserInputChecklistInstruction';
 
 

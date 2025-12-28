@@ -10,7 +10,7 @@ import type { DiagramConfig } from '~/modules/aifn/digrams/DiagramsModal';
 import type { TradeConfig } from '~/modules/trade/TradeModal';
 import { downloadSingleChat, importConversationsFromFilesAtRest, openConversationsAtRestPicker } from '~/modules/trade/trade.client';
 import { imaginePromptFromTextOrThrow } from '~/modules/aifn/imagine/imaginePromptFromText';
-import { useAreBeamsOpen } from '~/modules/beam/store-beam.hooks';
+import { useAreBeamsOpen } from '~/modules/analysis/store-analysis.hooks';
 import { useCapabilityTextToImage } from '~/modules/t2i/t2i.client';
 
 import type { DConversation, DConversationId } from '~/common/stores/chat/chat.conversation';
@@ -169,22 +169,22 @@ export function AppChat() {
     setFocusedPaneIndex,
   } = usePanesManager();
 
-  const { paneUniqueConversationIds, paneHandlers, paneBeamStores } = React.useMemo(() => {
+  const { paneUniqueConversationIds, paneHandlers, paneAnalysisStores } = React.useMemo(() => {
     const paneConversationIds: (DConversationId | null)[] = chatPanes.map(pane => pane.conversationId || null);
     const paneHandlers = paneConversationIds.map(cId => cId ? ConversationsManager.getHandler(cId) : null);
-    const paneBeamStores = paneHandlers.map(handler => handler?.getBeamStore() ?? null);
+    const paneAnalysisStores = paneHandlers.map(handler => handler?.getAnalysisStore() ?? null);
     const paneUniqueConversationIds = Array.from(new Set(paneConversationIds.filter(Boolean))) as DConversationId[];
     return {
       paneHandlers: paneHandlers,
-      paneBeamStores: paneBeamStores,
+      paneAnalysisStores: paneAnalysisStores,
       paneUniqueConversationIds: paneUniqueConversationIds,
     };
   }, [chatPanes]);
 
-  const beamsOpens = useAreBeamsOpen(paneBeamStores);
+  const beamsOpens = useAreBeamsOpen(paneAnalysisStores);
   const beamOpenStoreInFocusedPane = focusedPaneIndex === null ? null
     : !beamsOpens?.[focusedPaneIndex] ? null
-      : paneBeamStores?.[focusedPaneIndex] ?? null;
+      : paneAnalysisStores?.[focusedPaneIndex] ?? null;
   const focusedChatBeamOpen = focusedPaneIndex !== null && !!beamsOpens?.[focusedPaneIndex];
 
   const {
@@ -466,7 +466,7 @@ export function AppChat() {
   const barAltTitle = showAltTitleBar ? focusedChatTitle ?? 'No Chat' : null;
 
   const focusedBarContent = React.useMemo(() => beamOpenStoreInFocusedPane
-      ? <ChatBarBeam conversationTitle={focusedChatTitle ?? 'No Chat'} beamStore={beamOpenStoreInFocusedPane} isMobile={isMobile} />
+      ? <ChatBarBeam conversationTitle={focusedChatTitle ?? 'No Chat'} analysisStore={beamOpenStoreInFocusedPane} isMobile={isMobile} />
       : (barAltTitle === null)
         ? <ChatBarChat conversationId={focusedPaneConversationId} llmDropdownRef={llmDropdownRef} personaDropdownRef={personaDropdownRef} />
         : <ChatBarAltTitle conversationId={focusedPaneConversationId} conversationTitle={barAltTitle} />
@@ -627,8 +627,8 @@ export function AppChat() {
         const _paneConversationId = pane.conversationId;
         const _paneChatHandler = paneHandlers[idx] ?? null;
         const _paneIsIncognito = _paneChatHandler?.isIncognito() ?? false;
-        const _paneBeamStoreApi = paneBeamStores[idx] ?? null;
-        const _paneBeamIsOpen = !!beamsOpens?.[idx] && !!_paneBeamStoreApi;
+        const _paneAnalysisStoreApi = paneAnalysisStores[idx] ?? null;
+        const _paneBeamIsOpen = !!beamsOpens?.[idx] && !!_paneAnalysisStoreApi;
         const _panesCount = chatPanes.length;
         const _keyAndId = `chat-pane-${pane.paneId}`;
         const _sepId = `sep-pane-${idx}`;
@@ -725,7 +725,7 @@ export function AppChat() {
 
               {_paneBeamIsOpen && (
                 <ChatBeamWrapper
-                  beamStore={_paneBeamStoreApi}
+                  analysisStore={_paneAnalysisStoreApi}
                   isMobile={isMobile}
                   inlineSx={chatBeamWrapperSx}
                 />

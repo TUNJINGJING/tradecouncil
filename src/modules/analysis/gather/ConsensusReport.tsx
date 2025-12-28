@@ -17,19 +17,19 @@ import { animationEnterBelow } from '~/common/util/animUtils';
 import { copyToClipboard } from '~/common/util/clipboardUtils';
 import { useLLMSelect } from '~/common/components/forms/useLLMSelect';
 
-import { BeamCard, beamCardClasses, beamCardMessageScrollingSx, beamCardMessageSx, beamCardMessageWrapperSx } from '../BeamCard';
-import { BeamStoreApi, useBeamStore } from '../store-beam.hooks';
+import { AnalysisCard, analysisCardClasses, analysisCardMessageScrollingSx, analysisCardMessageSx, analysisCardMessageWrapperSx } from '../AnalysisCard';
+import { AnalysisStoreApi, useAnalysisStore } from '../store-analysis.hooks';
 import { FusionControlsMemo } from './FusionControls';
 import { FusionInstructionsEditor } from './FusionInstructionsEditor';
-import { GATHER_COLOR } from '../beam.config';
-import { findFusionFactory } from './instructions/beam.gather.factories';
-import { fusionIsEditable, fusionIsError, fusionIsFusing, fusionIsIdle, fusionIsStopped, fusionIsUsableOutput } from './beam.gather';
-import { useBeamCardScrolling } from '../store-module-beam';
+import { GATHER_COLOR } from '../analysis.config';
+import { findFusionFactory } from './instructions/analysis.gather.factories';
+import { fusionIsEditable, fusionIsError, fusionIsFusing, fusionIsIdle, fusionIsStopped, fusionIsUsableOutput } from './analysis.gather';
+import { useAnalysisCardScrolling } from '../store-module-analysis';
 import { useMessageAvatarLabel } from '~/common/util/dMessageUtils';
 
 
 export function Fusion(props: {
-  beamStore: BeamStoreApi,
+  analysisStore: AnalysisStoreApi,
   fusionId: string,
   isMobile: boolean,
 }) {
@@ -38,8 +38,8 @@ export function Fusion(props: {
   const [showLlmSelector, setShowLlmSelector] = React.useState(false);
 
   // external state
-  const fusion = useBeamStore(props.beamStore, store => store.fusions.find(fusion => fusion.fusionId === props.fusionId) ?? null);
-  const cardScrolling = useBeamCardScrolling();
+  const fusion = useAnalysisStore(props.analysisStore, store => store.fusions.find(fusion => fusion.fusionId === props.fusionId) ?? null);
+  const cardScrolling = useAnalysisCardScrolling();
 
   // derived state
   const isEditable = fusionIsEditable(fusion);
@@ -53,7 +53,7 @@ export function Fusion(props: {
 
   const factory = findFusionFactory(fusion?.factoryId);
 
-  const { removeFusion, toggleFusionGathering, fusionSetLlmId } = props.beamStore.getState();
+  const { removeFusion, toggleFusionGathering, fusionSetLlmId } = props.analysisStore.getState();
 
   // get LLM Label and Vendor Icon
   const llmId = fusion?.llmId ?? null;
@@ -74,29 +74,29 @@ export function Fusion(props: {
 
   // handlers
   const handleFusionCopyToClipboard = React.useCallback(() => {
-    const { fusions } = props.beamStore.getState();
+    const { fusions } = props.analysisStore.getState();
     const fusion = fusions.find(fusion => fusion.fusionId === props.fusionId);
     if (fusion?.outputDMessage?.fragments.length)
       copyToClipboard(messageFragmentsReduceText(fusion.outputDMessage.fragments), 'Merge');
-  }, [props.beamStore, props.fusionId]);
+  }, [props.analysisStore, props.fusionId]);
 
   const handleFusionUse = React.useCallback(() => {
     // get snapshot values, so we don't have to react to the hook
-    const { fusions, onSuccessCallback } = props.beamStore.getState();
+    const { fusions, onSuccessCallback } = props.analysisStore.getState();
     const fusion = fusions.find(fusion => fusion.fusionId === props.fusionId);
     if (fusion?.outputDMessage?.fragments.length && onSuccessCallback)
       onSuccessCallback(fusion.outputDMessage);
-  }, [props.beamStore, props.fusionId]);
+  }, [props.analysisStore, props.fusionId]);
 
   const handleIconClick = React.useCallback((event: React.MouseEvent) => {
     if (event.shiftKey) {
-      const fusion = props.beamStore.getState().fusions.find(fusion => fusion.fusionId === props.fusionId);
+      const fusion = props.analysisStore.getState().fusions.find(fusion => fusion.fusionId === props.fusionId);
       console.log({ fusion });
       return;
     }
     // Toggle LLM selector
     setShowLlmSelector(!showLlmSelector);
-  }, [showLlmSelector, props.beamStore, props.fusionId]);
+  }, [showLlmSelector, props.analysisStore, props.fusionId]);
 
   const handleFusionRemove = React.useCallback(() => {
     removeFusion(props.fusionId);
@@ -107,33 +107,33 @@ export function Fusion(props: {
   }, [props.fusionId, toggleFusionGathering]);
 
   const handleFragmentDelete = React.useCallback((messageId: DMessageId, fragmentId: DMessageFragmentId) => {
-    const { fusions, fusionDeleteFragment } = props.beamStore.getState();
+    const { fusions, fusionDeleteFragment } = props.analysisStore.getState();
     const fusion = fusions.find(f => f.outputDMessage?.id === messageId);
     if (fusion)
       fusionDeleteFragment(fusion.fusionId, fragmentId);
-  }, [props.beamStore]);
+  }, [props.analysisStore]);
 
   const handleFragmentReplace = React.useCallback((messageId: DMessageId, fragmentId: DMessageFragmentId, newFragment: DMessageFragment) => {
-    const { fusions, fusionReplaceFragment } = props.beamStore.getState();
+    const { fusions, fusionReplaceFragment } = props.analysisStore.getState();
     const fusion = fusions.find(f => f.outputDMessage?.id === messageId);
     if (fusion)
       fusionReplaceFragment(fusion.fusionId, fragmentId, newFragment);
-  }, [props.beamStore]);
+  }, [props.analysisStore]);
 
   // escape hatch: no factory, no fusion - nothing to do
   if (!fusion || !factory)
     return;
 
   return (
-    <BeamCard
+    <AnalysisCard
       role='beam-card'
       tabIndex={-1}
       className={
-        // (isIdle ? beamCardClasses.fusionIdle : '')
-        (isError ? beamCardClasses.errored + ' ' : '')
-        + ((isUsable || isFusing || isIdle) ? beamCardClasses.selectable + ' ' : '')
-        + (isFusing ? beamCardClasses.attractive + ' ' : '')
-        // + (beamCardClasses.smashTop + ' ')
+        // (isIdle ? analysisCardClasses.fusionIdle : '')
+        (isError ? analysisCardClasses.errored + ' ' : '')
+        + ((isUsable || isFusing || isIdle) ? analysisCardClasses.selectable + ' ' : '')
+        + (isFusing ? analysisCardClasses.attractive + ' ' : '')
+        // + (analysisCardClasses.smashTop + ' ')
       }
     >
 
@@ -156,7 +156,7 @@ export function Fusion(props: {
 
       {isEditable && (
         <FusionInstructionsEditor
-          beamStore={props.beamStore}
+          analysisStore={props.analysisStore}
           factory={factory}
           fusionId={props.fusionId}
           instructions={fusion.instructions}
@@ -175,7 +175,7 @@ export function Fusion(props: {
 
       {/* Output Message */}
       {(!!fusion?.outputDMessage?.fragments.length || fusion?.stage === 'fusing') && (
-        <Box sx={beamCardMessageWrapperSx}>
+        <Box sx={analysisCardMessageWrapperSx}>
           {!!fusion.outputDMessage && (
             <ChatMessageMemo
               message={fusion.outputDMessage}
@@ -186,7 +186,7 @@ export function Fusion(props: {
               adjustContentScaling={-1}
               onMessageFragmentDelete={handleFragmentDelete}
               onMessageFragmentReplace={handleFragmentReplace}
-              sx={!cardScrolling ? beamCardMessageSx : beamCardMessageScrollingSx}
+              sx={!cardScrolling ? analysisCardMessageSx : analysisCardMessageScrollingSx}
             />
           )}
         </Box>
@@ -216,7 +216,7 @@ export function Fusion(props: {
               onClick={handleFusionUse}
               // endDecorator={<TelegramIcon />}
               sx={{
-                // ...BEAM_BTN_SX,
+                // ...ANALYSIS_BTN_SX,
                 fontSize: 'xs',
                 // '--Icon-fontSize': 'var(--joy-fontSize-xl)',
                 // backgroundColor: 'background.popup',

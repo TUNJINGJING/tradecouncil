@@ -6,11 +6,11 @@ import type { DMessage } from '~/common/stores/chat/chat.message';
 import type { DMessageFragment, DMessageFragmentId } from '~/common/stores/chat/chat.fragments';
 import { agiUuid } from '~/common/util/idUtils';
 
-import { CUSTOM_FACTORY_ID, FFactoryId, findFusionFactory, FUSION_FACTORIES, FUSION_FACTORY_DEFAULT } from './instructions/beam.gather.factories';
-import { RootStoreSlice } from '../store-beam_vanilla';
-import { ScatterStoreSlice } from '../scatter/beam.scatter';
-import { gatherStartFusion, gatherStopFusion, Instruction } from './instructions/beam.gather.execution';
-import { updateBeamLastConfig } from '../store-module-beam';
+import { CUSTOM_FACTORY_ID, FFactoryId, findFusionFactory, FUSION_FACTORIES, FUSION_FACTORY_DEFAULT } from './instructions/analysis.gather.factories';
+import { RootStoreSlice } from '../store-analysis_vanilla';
+import { ScatterStoreSlice } from '../scatter/analysis.scatter';
+import { gatherStartFusion, gatherStopFusion, Instruction } from './instructions/analysis.gather.execution';
+import { updateAnalysisLastConfig } from '../store-module-analysis';
 
 
 /// Gather Store > BFusion ///
@@ -151,14 +151,14 @@ export const createGatherSlice: StateCreator<RootStoreSlice & ScatterStoreSlice 
     _set({
       currentFactoryId: factoryId,
     });
-    updateBeamLastConfig({ gatherFactoryId: factoryId });
+    updateAnalysisLastConfig({ gatherFactoryId: factoryId });
   },
 
   setCurrentGatherLlmId: (llmId: DLLMId | null) => {
     _set({
       currentGatherLlmId: llmId,
     });
-    updateBeamLastConfig({ gatherLlmId: llmId });
+    updateAnalysisLastConfig({ gatherLlmId: llmId });
   },
 
 

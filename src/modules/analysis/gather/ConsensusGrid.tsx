@@ -9,11 +9,11 @@ import LanguageRoundedIcon from '@mui/icons-material/LanguageRounded';
 import { BrowserLang } from '~/common/util/pwaUtils';
 
 import { Fusion } from './Fusion';
-import { findFusionFactory, FusionFactorySpec } from './instructions/beam.gather.factories';
+import { findFusionFactory, FusionFactorySpec } from './instructions/analysis.gather.factories';
 
-import { BeamCard, beamCardClasses } from '../BeamCard';
-import { BeamStoreApi, useBeamStore } from '../store-beam.hooks';
-import { GATHER_COLOR } from '../beam.config';
+import { AnalysisCard, analysisCardClasses } from '../AnalysisCard';
+import { AnalysisStoreApi, useAnalysisStore } from '../store-analysis.hooks';
+import { GATHER_COLOR } from '../analysis.config';
 
 
 const fusionGridDesktopSx: SxProps = {
@@ -66,8 +66,8 @@ export function FusionAddButton(props: {
 }
 
 
-export function BeamFusionGrid(props: {
-  beamStore: BeamStoreApi,
+export function ConsensusGrid(props: {
+  analysisStore: AnalysisStoreApi,
   canGather: boolean,
   fusionIds: string[],
   isMobile: boolean,
@@ -78,7 +78,7 @@ export function BeamFusionGrid(props: {
   // external state
   const {
     currentFactory,
-  } = useBeamStore(props.beamStore, useShallow(state => ({
+  } = useAnalysisStore(props.analysisStore, useShallow(state => ({
     currentFactory: findFusionFactory(state.currentFactoryId),
   })));
   const isDarkMode = useTheme().palette.mode === 'dark';
@@ -110,7 +110,7 @@ export function BeamFusionGrid(props: {
       {props.fusionIds.map((fusionId) => (
         <Fusion
           key={'fusion-' + fusionId}
-          beamStore={props.beamStore}
+          analysisStore={props.analysisStore}
           fusionId={fusionId}
           isMobile={props.isMobile}
         />
@@ -118,8 +118,8 @@ export function BeamFusionGrid(props: {
 
       {/* Add Fusion (Card) */}
       {(isEmpty || !isNoFactorySelected) && (
-        <BeamCard
-          className={isEmpty ? beamCardClasses.smashTop : undefined}
+        <AnalysisCard
+          className={isEmpty ? analysisCardClasses.smashTop : undefined}
           sx={{
             backgroundColor: props.canGather ? `${GATHER_COLOR}.softBg` : isDarkMode ? 'neutral.700' : undefined,
             // boxShadow: `0px 6px 16px -12px rgb(var(--joy-palette-${props.canGather ? GATHER_COLOR : 'neutral'}-darkChannel) / 40%)`,

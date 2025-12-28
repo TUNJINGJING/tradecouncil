@@ -9,8 +9,8 @@ import type { DMessage, DMessageId } from '~/common/stores/chat/chat.message';
 import type { DMessageFragment, DMessageFragmentId } from '~/common/stores/chat/chat.fragments';
 import { hasSystemMessageInHistory } from '~/common/stores/chat/chat.conversation';
 
-import { BEAM_INVERT_BACKGROUND } from '../beam.config';
-import { useModuleBeamStore } from '../store-module-beam';
+import { ANALYSIS_INVERT_BACKGROUND } from '../analysis.config';
+import { useModuleAnalysisStore } from '../store-module-analysis';
 
 
 const userMessageWrapperSx: SxProps = {
@@ -54,7 +54,7 @@ const userChatMessageSx: SxProps = {
 } as const;
 
 
-export function BeamScatterInput(props: {
+export function AnalysisInput(props: {
   isMobile: boolean,
   history: DMessage[] | null,
   onMessageFragmentReplace: (messageId: DMessageId, fragmentId: DMessageFragmentId, newFragment: DMessageFragment) => void,
@@ -65,7 +65,7 @@ export function BeamScatterInput(props: {
 
   // external state
   const isDarkMode = useTheme().palette.mode === 'dark';
-  const scatterShowPrevMessages = useModuleBeamStore(state => state.scatterShowPrevMessages);
+  const scatterShowPrevMessages = useModuleAnalysisStore(state => state.scatterShowPrevMessages);
 
   // derived state
 
@@ -94,7 +94,7 @@ export function BeamScatterInput(props: {
     return null;
 
   return (
-    <Box sx={!BEAM_INVERT_BACKGROUND ? userMessageWrapperSx : isDarkMode ? userMessageWrapperDarkINVSx : userMessageWrapperINVSx}>
+    <Box sx={!ANALYSIS_INVERT_BACKGROUND ? userMessageWrapperSx : isDarkMode ? userMessageWrapperDarkINVSx : userMessageWrapperINVSx}>
       <ChatMessageMemo
         message={lastHistoryMessage}
         fitScreen={props.isMobile}

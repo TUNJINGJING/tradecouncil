@@ -4,7 +4,7 @@ import CheckBoxOutlinedIcon from '@mui/icons-material/CheckBoxOutlined';
 import MediationOutlinedIcon from '@mui/icons-material/MediationOutlined';
 import TableViewRoundedIcon from '@mui/icons-material/TableViewRounded';
 
-import type { Instruction } from './beam.gather.execution';
+import type { Instruction } from './analysis.gather.execution';
 
 
 export type FFactoryId = string;

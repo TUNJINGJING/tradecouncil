@@ -23,12 +23,12 @@ import { copyToClipboard } from '~/common/util/clipboardUtils';
 import { messageFragmentsReduceText } from '~/common/stores/chat/chat.message';
 import { useLLMSelect } from '~/common/components/forms/useLLMSelect';
 
-import { BeamCard, beamCardClasses, beamCardMessageScrollingSx, beamCardMessageSx, beamCardMessageWrapperSx } from '../BeamCard';
-import { BeamStoreApi, useBeamStore } from '../store-beam.hooks';
-import { BEAM_SHOW_REASONING_ICON, GATHER_COLOR, SCATTER_COLOR, SCATTER_RAY_SHOW_DRAG_HANDLE } from '../beam.config';
+import { AnalysisCard, analysisCardClasses, analysisCardMessageScrollingSx, analysisCardMessageSx, analysisCardMessageWrapperSx } from '../AnalysisCard';
+import { AnalysisStoreApi, useAnalysisStore } from '../store-analysis.hooks';
+import { ANALYSIS_SHOW_REASONING_ICON, GATHER_COLOR, SCATTER_COLOR, SCATTER_RAY_SHOW_DRAG_HANDLE } from '../analysis.config';
 import { TooltipOutlined } from '~/common/components/TooltipOutlined';
-import { rayIsError, rayIsImported, rayIsScattering, rayIsSelectable, rayIsUserSelected } from './beam.scatter';
-import { useBeamCardScrolling, useBeamScatterShowLettering } from '../store-module-beam';
+import { rayIsError, rayIsImported, rayIsScattering, rayIsSelectable, rayIsUserSelected } from './analysis.scatter';
+import { useAnalysisCardScrolling, useAnalysisScatterShowLettering } from '../store-module-analysis';
 import { useMessageAvatarLabel } from '~/common/util/dMessageUtils';
 
 
@@ -105,7 +105,7 @@ function RayControls(props: {
     </TooltipOutlined>
 
     {/* Display a Reasoning LLM */}
-    {(BEAM_SHOW_REASONING_ICON && props.llmShowReasoning) ? '🧠' : null}
+    {(ANALYSIS_SHOW_REASONING_ICON && props.llmShowReasoning) ? '🧠' : null}
 
     {/* LLM Select */}
     <Box sx={{ flex: 1 }}>
@@ -146,7 +146,7 @@ function RayControls(props: {
 
 
 export function BeamRay(props: {
-  beamStore: BeamStoreApi,
+  analysisStore: AnalysisStoreApi,
   hadImportedRays: boolean,
   isMobile: boolean,
   isRemovable: boolean,
@@ -156,9 +156,9 @@ export function BeamRay(props: {
 }) {
 
   // external state
-  const ray = useBeamStore(props.beamStore, store => store.rays.find(ray => ray.rayId === props.rayId) ?? null);
-  const cardScrolling = useBeamCardScrolling();
-  const showLettering = useBeamScatterShowLettering();
+  const ray = useAnalysisStore(props.analysisStore, store => store.rays.find(ray => ray.rayId === props.rayId) ?? null);
+  const cardScrolling = useAnalysisCardScrolling();
+  const showLettering = useAnalysisScatterShowLettering();
 
   // derived state
   const isError = rayIsError(ray);
@@ -167,7 +167,7 @@ export function BeamRay(props: {
   const isSelected = rayIsUserSelected(ray);
   const isImported = rayIsImported(ray);
   const showUseButtons = isSelectable && !isScattering;
-  const { removeRay, rayToggleScattering, raySetLlmId } = props.beamStore.getState();
+  const { removeRay, rayToggleScattering, raySetLlmId } = props.analysisStore.getState();
   const { tooltip: rayAvatarTooltip } = useMessageAvatarLabel(ray?.message, 'pro');
 
   // This old code used the Gather LLM as Ray fallback - but now we use the last Scatter LLM as fallback
@@ -184,31 +184,31 @@ export function BeamRay(props: {
   });
 
   // more derived
-  const llmShowReasoning = !BEAM_SHOW_REASONING_ICON ? false : llmOrNull?.interfaces?.includes(LLM_IF_OAI_Reasoning) ?? false;
+  const llmShowReasoning = !ANALYSIS_SHOW_REASONING_ICON ? false : llmOrNull?.interfaces?.includes(LLM_IF_OAI_Reasoning) ?? false;
 
 
   // handlers
 
   const handleRayCopyToClipboard = React.useCallback(() => {
-    const { rays } = props.beamStore.getState();
+    const { rays } = props.analysisStore.getState();
     const ray = rays.find(ray => ray.rayId === props.rayId);
     if (ray?.message.fragments.length)
       copyToClipboard(messageFragmentsReduceText(ray.message.fragments), 'Response');
-  }, [props.beamStore, props.rayId]);
+  }, [props.analysisStore, props.rayId]);
 
   const handleRayUse = React.useCallback(() => {
     // get snapshot values, so we don't have to react to the hook
-    const { rays, onSuccessCallback } = props.beamStore.getState();
+    const { rays, onSuccessCallback } = props.analysisStore.getState();
     const ray = rays.find(ray => ray.rayId === props.rayId);
     if (ray && ray.message.fragments.length && onSuccessCallback)
       onSuccessCallback(ray.message);
-  }, [props.beamStore, props.rayId]);
+  }, [props.analysisStore, props.rayId]);
 
   const handleDebugPrint = React.useCallback((event: React.MouseEvent) => {
     if (!event.shiftKey) return;
-    const ray = props.beamStore.getState().rays.find(ray => ray.rayId === props.rayId);
+    const ray = props.analysisStore.getState().rays.find(ray => ray.rayId === props.rayId);
     console.log({ ray });
-  }, [props.beamStore, props.rayId]);
+  }, [props.analysisStore, props.rayId]);
 
   const handleRayRemove = React.useCallback(() => {
     removeRay(props.rayId);
@@ -219,18 +219,18 @@ export function BeamRay(props: {
   }, [props.rayId, rayToggleScattering]);
 
   const handleFragmentDelete = React.useCallback((messageId: DMessageId, fragmentId: DMessageFragmentId) => {
-    const { rays, rayDeleteFragment } = props.beamStore.getState();
+    const { rays, rayDeleteFragment } = props.analysisStore.getState();
     const ray = rays.find(ray => ray.message.id === messageId);
     if (ray)
       rayDeleteFragment(ray.rayId, fragmentId);
-  }, [props.beamStore]);
+  }, [props.analysisStore]);
 
   const handleFragmentReplace = React.useCallback((messageId: DMessageId, fragmentId: DMessageFragmentId, newFragment: DMessageFragment) => {
-    const { rays, rayReplaceFragment } = props.beamStore.getState();
+    const { rays, rayReplaceFragment } = props.analysisStore.getState();
     const ray = rays.find(ray => ray.message.id === messageId);
     if (ray)
       rayReplaceFragment(ray.rayId, fragmentId, newFragment);
-  }, [props.beamStore]);
+  }, [props.analysisStore]);
 
   /*const handleRayToggleSelect = React.useCallback(() => {
     toggleUserSelection(props.rayId);
@@ -238,13 +238,13 @@ export function BeamRay(props: {
 
 
   return (
-    <BeamCard
+    <AnalysisCard
       role='beam-card'
       tabIndex={-1}
       // onClick={isSelectable ? handleRayToggleSelect : undefined}
       className={
-        (isError ? beamCardClasses.errored : '')
-        + (isSelectable ? beamCardClasses.selectable + ' ' : '')
+        (isError ? analysisCardClasses.errored : '')
+        + (isSelectable ? analysisCardClasses.selectable + ' ' : '')
       }
     >
 
@@ -271,7 +271,7 @@ export function BeamRay(props: {
 
       {/* Ray Message */}
       {(!!ray?.message?.fragments.length || ray?.status === 'scattering') && (
-        <Box sx={beamCardMessageWrapperSx}>
+        <Box sx={analysisCardMessageWrapperSx}>
           {!!ray.message && (
             <ChatMessageMemo
               message={ray.message}
@@ -282,7 +282,7 @@ export function BeamRay(props: {
               adjustContentScaling={-1}
               onMessageFragmentDelete={handleFragmentDelete}
               onMessageFragmentReplace={handleFragmentReplace}
-              sx={!cardScrolling ? beamCardMessageSx : beamCardMessageScrollingSx}
+              sx={!cardScrolling ? analysisCardMessageSx : analysisCardMessageScrollingSx}
             />
           )}
         </Box>

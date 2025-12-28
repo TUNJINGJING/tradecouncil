@@ -2,7 +2,7 @@ import * as React from 'react';
 
 import { Box, Button, Checkbox } from '@mui/joy';
 
-import { GATHER_COLOR } from '../../beam.config';
+import { GATHER_COLOR } from '../../analysis.config';
 import { UserChecklistOption } from './UserInputChecklistInstruction';
 
 
