@@ -97,7 +97,7 @@ const beamExplainerSx: SxProps = {
 };
 
 
-export function BeamExplainer(props: {
+export function AnalysisExplainer(props: {
   onWizardComplete: () => any,
 }) {
 

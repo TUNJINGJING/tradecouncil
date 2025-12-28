@@ -12,7 +12,7 @@ import { OptimaDrawerList } from '~/common/layout/optima/drawer/OptimaDrawerList
 import { optimaCloseDrawer } from '~/common/layout/optima/useOptima';
 
 import { CreatorDrawerItem } from './CreatorDrawerItem';
-import { deleteSimplePersona, deleteSimplePersonas, useSimplePersonas } from '../store-app-personas';
+import { deleteSimplePersona, deleteSimplePersonas, useSimplePersonas } from '../store-app-strategies';
 
 
 export function CreatorDrawer(props: {

@@ -7,7 +7,7 @@ import { Link } from '~/common/components/Link';
 import { useUIContentScaling } from '~/common/stores/store-ui';
 
 import { PersonaPromptCard } from './Creator';
-import { useSimplePersona } from '../store-app-personas';
+import { useSimplePersona } from '../store-app-strategies';
 
 
 export function Viewer(props: { selectedSimplePersonaId: string }) {

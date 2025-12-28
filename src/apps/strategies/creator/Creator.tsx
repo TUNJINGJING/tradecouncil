@@ -19,7 +19,7 @@ import { useUIContentScaling } from '~/common/stores/store-ui';
 
 import { FromText } from './FromText';
 import { FromYouTube } from './FromYouTube';
-import { prependSimplePersona, SimplePersonaProvenance } from '../store-app-personas';
+import { prependSimplePersona, SimplePersonaProvenance } from '../store-app-strategies';
 
 
 // delay to start a new chain after the previous one finishes

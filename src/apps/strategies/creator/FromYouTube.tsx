@@ -11,7 +11,7 @@ import { useYouTubeTranscript, YTVideoTranscript } from '~/modules/youtube/useYo
 import { GoodTooltip } from '~/common/components/GoodTooltip';
 import { InlineError } from '~/common/components/InlineError';
 
-import type { SimplePersonaProvenance } from '../store-app-personas';
+import type { SimplePersonaProvenance } from '../store-app-strategies';
 
 
 // configuration

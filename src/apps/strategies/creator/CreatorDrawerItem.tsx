@@ -7,7 +7,7 @@ import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import TextFieldsIcon from '@mui/icons-material/TextFields';
 import YouTubeIcon from '@mui/icons-material/YouTube';
 
-import type { SimplePersona } from '../store-app-personas';
+import type { SimplePersona } from '../store-app-strategies';
 
 
 export function CreatorDrawerItem(props: {

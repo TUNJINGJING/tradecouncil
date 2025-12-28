@@ -152,7 +152,7 @@ export function ConsensusGrid(props: {
               Waiting for multiple responses.
             </Typography>
           )}
-        </BeamCard>
+        </AnalysisCard>
       )}
 
       {/* Full-width warning if not */}

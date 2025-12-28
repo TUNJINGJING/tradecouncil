@@ -5,7 +5,7 @@ import TextFieldsIcon from '@mui/icons-material/TextFields';
 
 import { lineHeightTextareaMd } from '~/common/app.theme';
 
-import type { SimplePersonaProvenance } from '../store-app-personas';
+import type { SimplePersonaProvenance } from '../store-app-strategies';
 
 
 // minimum number of characters required to create from text
