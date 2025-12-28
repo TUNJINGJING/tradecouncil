@@ -38,7 +38,7 @@ function YouTubeDisabledCard() {
         YouTube transcript extraction is currently unavailable due to API changes.
       </Typography>
       <Typography level='body-xs' color='neutral'>
-        Download transcripts manually and use the &quot;From Text&quot; option instead.
+        Download transcripts manually and use the &quot;From Trading Book&quot; option instead.
       </Typography>
     </Card>
   );
@@ -143,7 +143,7 @@ export function FromYouTube(props: {
   if (TEMP_DISABLE_YOUTUBE_TRANSCRIPT)
     return <>
       <Typography level='title-md' startDecorator={<YouTubeIcon sx={{ color: '#f00' }} />} sx={{ mb: 3 }}>
-        YouTube -&gt; Persona
+        Trading Video -&gt; Strategy
       </Typography>
       <YouTubeDisabledCard />
     </>;
@@ -151,7 +151,7 @@ export function FromYouTube(props: {
   return <>
 
     <Typography level='title-md' startDecorator={<YouTubeIcon sx={{ color: '#f00' }} />} sx={{ mb: 3 }}>
-      YouTube -&gt; Persona
+      Trading Video -&gt; Strategy
     </Typography>
 
     <form onSubmit={handleCreateFromTranscript}>
@@ -177,7 +177,7 @@ export function FromYouTube(props: {
           Create
         </Button>
 
-        <GoodTooltip title='This example comes from the popular Fireship YouTube channel, which presents technical topics with irreverent humor.'>
+        <GoodTooltip title='This example is a trading-related video. The AI will extract trading rules and create a strategy prompt.'>
           <Button variant='outlined' color='neutral' onClick={() => setVideoURL('https://www.youtube.com/watch?v=M_wZpSEvOkc')}>
             Example
           </Button>

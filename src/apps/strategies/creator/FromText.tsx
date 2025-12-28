@@ -28,7 +28,7 @@ export function FromText(props: {
   return <>
 
     <Typography level='title-md' startDecorator={<TextFieldsIcon />} sx={{ mb: 3 }}>
-      <b>Text</b> -&gt; Persona
+      <b>Trading Book</b> -&gt; Strategy
     </Typography>
 
     <form onSubmit={handleCreateFromText}>
@@ -36,7 +36,7 @@ export function FromText(props: {
         required
         variant='outlined'
         minRows={4} maxRows={8}
-        placeholder='Paste your text (e.g. tweets, social media, etc.) here...'
+        placeholder='Paste text from trading books, research papers, or strategy descriptions here...'
         value={text}
         onChange={event => setText(event.target.value)}
         sx={{

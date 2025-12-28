@@ -20,6 +20,7 @@ import { useUIContentScaling } from '~/common/stores/store-ui';
 import { FromText } from './FromText';
 import { FromYouTube } from './FromYouTube';
 import { prependSimplePersona, SimplePersonaProvenance } from '../store-app-strategies';
+import { CustomStrategyEditor } from '../CustomStrategyEditor';
 
 
 // delay to start a new chain after the previous one finishes
@@ -27,23 +28,23 @@ const CONTINUE_DELAY: number | false = false;
 
 
 const Prompts: string[] = [
-  'You are skilled in analyzing and embodying diverse characters. You meticulously study transcripts to capture key attributes, draft comprehensive character sheets, and refine them for authenticity. Feel free to make assumptions without hedging, be concise and be creative.',
-  'Conduct comprehensive research on the provided transcript. Identify key characteristics of the speaker, including age, professional field, distinct personality traits, style of communication, narrative context, and self-awareness. Additionally, consider any unique aspects such as their use of humor, their cultural background, core values, passions, fears, personal history, and social interactions. Your output for this stage is an in-depth written analysis that exhibits an understanding of both the superficial and more profound aspects of the speaker\'s persona.',
-  'Craft your documented analysis into a draft of the \'You are a...\' character sheet. It should encapsulate all crucial personality dimensions, along with the motivations and aspirations of the persona. Keep in mind to balance succinctness and depth of detail for each dimension. The deliverable here is a comprehensive draft of the character sheet that captures the speaker\'s unique essence.',
-  'Compare the draft character sheet with the original transcript, validating its content and ensuring it captures both the speaker’s overt characteristics and the subtler undertones. Omit unknown information, fine-tune any areas that require clarity, have been overlooked, or require more authenticity. Use clear and illustrative examples from the transcript to refine your sheet and offer meaningful, tangible reference points. Your output is a coherent, comprehensive, and nuanced instruction that begins with \'You are a...\' and  serves as a go-to guide for an actor recreating the persona.',
+  'You are a quantitative analyst and trading system architect. You excel at extracting trading rules, entry/exit logic, and risk management principles from various sources including trading books, research papers, video tutorials, and market analysis. Be precise, systematic, and focus on actionable trading parameters.',
+  'Extract the core trading logic from the provided content. Identify and document:\n\n1. TRADING PHILOSOPHY: Core beliefs, market approach, preferred conditions\n2. ENTRY RULES: Specific triggers, confirmation signals, timing filters\n3. EXIT RULES: Stop loss methodology, take profit targets, trailing stops\n4. RISK MANAGEMENT: Position sizing, maximum risk per trade, portfolio exposure\n5. TIMEFRAMES: Preferred chart intervals, holding periods\n6. ASSET CLASSES: Which markets/instruments this strategy applies to\n\nYour output should be a comprehensive extraction of all trading rules mentioned.',
+  'Transform the extracted trading logic into a structured strategy framework:\n\n**STRATEGY NAME**: [Descriptive name]\n**CATEGORY**: [Scalping/Day Trading/Swing Trading/Investing]\n**ASSET CLASS**: [Stocks/Forex/Crypto/Futures/etc.]\n\n**ENTRY LOGIC**:\n- Trigger: [Primary entry condition]\n- Confirmation: [Secondary signals required]\n- Timing: [When to execute]\n\n**EXIT LOGIC**:\n- Stop Loss: [Specific rule]\n- Take Profit: [Targets]\n- Trail: [Trailing stop method]\n\n**RISK MANAGEMENT**:\n- Risk per Trade: [Percentage]\n- Position Sizing: [Formula or method]\n- Max Positions: [Limit]\n\nMake the framework specific and actionable with concrete parameters.',
+  'Generate a production-ready System Prompt for an AI trading analyst. The prompt should:\n\n1. Begin with "You are a [Strategy Name] specialist/analyst..."\n2. Include the ANALYSIS FRAMEWORK section with numbered steps\n3. Define clear ENTRY LOGIC with trigger, confirmation, and timing\n4. Define clear EXIT LOGIC with stop loss and take profit rules\n5. Include RISK MANAGEMENT parameters\n6. End with a structured OUTPUT format that includes:\n   - Trend assessment\n   - Trade signal (Entry/Wait/Exit)\n   - Specific price levels (Entry, Stop Loss, Take Profit)\n   - Risk/Reward ratio\n   - Detailed reasoning\n\nThe final output should be a complete, self-contained system prompt that an AI can use to analyze charts and provide trading recommendations according to this specific strategy.',
 ];
 
 const getTitlesForTab = (selectedTab: number): string[] => {
-  const analyzeSubject: string = selectedTab ? 'text' : 'transcript';
+  const analyzeSubject: string = selectedTab ? 'trading material' : 'video content';
   return [
-    'Common: Creator System Prompt',
-    `Analyze the ${analyzeSubject}`,
-    'Define the character',
-    'Cross the t\'s',
+    'Common: Strategy Architect System Prompt',
+    `Extract trading logic from ${analyzeSubject}`,
+    'Define strategy framework',
+    'Generate system prompt',
   ];
 };
 
-// chain to convert a text input string (e.g. youtube transcript) into a persona prompt
+// chain to convert a text input string (e.g. trading video/book) into a strategy system prompt
 function createChain(instructions: string[], titles: string[]): LLMChainStep[] {
   return [
     {
@@ -66,7 +67,7 @@ function createChain(instructions: string[], titles: string[]): LLMChainStep[] {
 }
 
 
-export const PersonaPromptCard = (props: {
+export const StrategyPromptCard = (props: {
   content: string,
   contentScaling: ContentScaling,
 }) =>
@@ -74,10 +75,10 @@ export const PersonaPromptCard = (props: {
 
     <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
       <Typography level='title-lg' color='success' startDecorator={<SettingsAccessibilityIcon color='success' />}>
-        Persona Prompt
+        Strategy System Prompt
       </Typography>
       <GoodTooltip title='Copy system prompt'>
-        <Button color='success' onClick={() => copyToClipboard(props.content, 'Persona prompt')} endDecorator={<ContentCopyIcon />} sx={{ minWidth: 120 }}>
+        <Button color='success' onClick={() => copyToClipboard(props.content, 'Strategy prompt')} endDecorator={<ContentCopyIcon />} sx={{ minWidth: 120 }}>
           Copy
         </Button>
       </GoodTooltip>
@@ -85,7 +86,7 @@ export const PersonaPromptCard = (props: {
 
     <CardContent>
       <Alert variant='soft' color='success' sx={{ mb: 1 }}>
-        You may now copy the text below and use it as Custom prompt!
+        Your trading strategy is ready! Copy the text below and use it as a Custom Strategy prompt.
       </Alert>
       <ScaledTextBlockRenderer
         text={props.content}
@@ -107,8 +108,8 @@ export function Creator(props: { display: boolean }) {
 
   // external state
   const contentScaling = useUIContentScaling();
-  const [personaLlmId, setPersonaLlmId] = useLLMSelectLocalState(true);
-  const [personaLlm, llmComponent] = useLLMSelect(personaLlmId, setPersonaLlmId, { label: 'Persona Creation Model', larger: true });
+  const [strategyLlmId, setStrategyLlmId] = useLLMSelectLocalState(true);
+  const [strategyLlm, llmComponent] = useLLMSelect(strategyLlmId, setStrategyLlmId, { label: 'Strategy Creation Model', larger: true });
 
 
   // editable prompts
@@ -125,9 +126,9 @@ export function Creator(props: { display: boolean }) {
     };
   }, [editedInstructions, promptTitles]);
 
-  const llmLabel = personaLlm?.label || undefined;
-  const savePersona = React.useCallback((personaPrompt: string, inputText: string) => {
-    prependSimplePersona(personaPrompt, inputText, inputProvenance ?? undefined, llmLabel);
+  const llmLabel = strategyLlm?.label || undefined;
+  const saveStrategy = React.useCallback((strategyPrompt: string, inputText: string) => {
+    prependSimplePersona(strategyPrompt, inputText, inputProvenance ?? undefined, llmLabel);
   }, [inputProvenance, llmLabel]);
 
   const {
@@ -143,11 +144,11 @@ export function Creator(props: { display: boolean }) {
     restartChain,
   } = useLLMChain(
     creationChainSteps,
-    personaLlm?.id,
+    strategyLlm?.id,
     chainInputText ?? undefined,
     'persona-extract',
     chainId,
-    savePersona,
+    saveStrategy,
   );
 
 
@@ -186,7 +187,7 @@ export function Creator(props: { display: boolean }) {
   return <>
 
     <Typography level='title-sm' mb={3}>
-      Create the <em>System Prompt</em> of an AI Persona from YouTube or Text.
+      Create a <em>Trading Strategy System Prompt</em> from YouTube trading videos or text from trading books.
     </Typography>
 
 
@@ -216,8 +217,9 @@ export function Creator(props: { display: boolean }) {
           '& > *:first-of-type': { borderTopLeftRadius: '0.5rem' },
         }}
       >
-        <Tab>From YouTube</Tab>
-        <Tab>From Text</Tab>
+        <Tab>From Trading Video</Tab>
+        <Tab>From Trading Book</Tab>
+        <Tab>Custom Strategy</Tab>
       </TabList>
       <TabPanel keepMounted value={0} sx={{ p: 3 }}>
         <FromYouTube isTransforming={isTransforming} onCreate={handleCreate} />
@@ -225,26 +227,32 @@ export function Creator(props: { display: boolean }) {
       <TabPanel keepMounted value={1} sx={{ p: 3 }}>
         <FromText isCreating={isTransforming} onCreate={handleCreate} />
       </TabPanel>
+      <TabPanel keepMounted value={2} sx={{ p: 3 }}>
+        <CustomStrategyEditor />
+      </TabPanel>
 
-      <Divider orientation='horizontal' />
+      {/* LLM Options - only for tabs 0 and 1 */}
+      {selectedTab < 2 && <>
+        <Divider orientation='horizontal' />
 
-      <Box sx={{ p: 3, display: 'flex', flexDirection: 'column', gap: 2 }}>
-        {llmComponent}
+        <Box sx={{ p: 3, display: 'flex', flexDirection: 'column', gap: 2 }}>
+          {llmComponent}
 
-        {advanced.on && (
-          <Box sx={{ my: 1, display: 'flex', flexDirection: 'column', gap: 2 }}>
-            {instructionEditors}
-          </Box>
-        )}
+          {advanced.on && (
+            <Box sx={{ my: 1, display: 'flex', flexDirection: 'column', gap: 2 }}>
+              {instructionEditors}
+            </Box>
+          )}
 
-        <FormLabel onClick={advanced.toggle} sx={{ textDecoration: 'underline', cursor: 'pointer' }}>
-          {advanced.on ? 'Hide Advanced' : 'Advanced: Prompts'}
-        </FormLabel>
-      </Box>
+          <FormLabel onClick={advanced.toggle} sx={{ textDecoration: 'underline', cursor: 'pointer' }}>
+            {advanced.on ? 'Hide Advanced' : 'Advanced: Prompts'}
+          </FormLabel>
+        </Box>
+      </>}
     </Tabs>
 
 
-    {/* Embodiment Progress */}
+    {/* Strategy Creation Progress */}
     {/* <GoodModal open> */}
     {isTransforming && <Card><CardContent sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
       <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', my: 2 }}>
@@ -252,10 +260,10 @@ export function Creator(props: { display: boolean }) {
       </Box>
       <Box>
         <Typography color='success' level='title-lg'>
-          Embodying Persona ...
+          Creating Trading Strategy ...
         </Typography>
         <Typography level='title-sm' sx={{ mt: 1 }}>
-          Using: {personaLlm?.label}
+          Using: {strategyLlm?.label}
         </Typography>
       </Box>
       <Box>
@@ -269,8 +277,8 @@ export function Creator(props: { display: boolean }) {
       </Box>
       <Typography level='title-sm'>
         This may take 1-2 minutes.
-        While larger models will produce higher quality prompts,
-        if you experience any errors (e.g. LLM timeouts, or context overflows for larger videos)
+        Larger models will produce higher quality strategy prompts.
+        If you experience any errors (e.g. LLM timeouts, or context overflows for larger content)
         please try again with faster/smaller models.
       </Typography>
       <Button variant='soft' color='neutral' onClick={handleCancel} sx={{ ml: 'auto', minWidth: 100, mt: 3 }}>
@@ -286,9 +294,9 @@ export function Creator(props: { display: boolean }) {
       </Alert>
     )}
 
-    {/* The Persona (Output) */}
+    {/* The Strategy (Output) */}
     {chainOutputText && <>
-      <PersonaPromptCard
+      <StrategyPromptCard
         content={chainOutputText}
         contentScaling={contentScaling}
       />
