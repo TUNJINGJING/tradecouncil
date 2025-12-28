@@ -87,7 +87,7 @@ export const navItems: {
       icon: PhChats, // was: TextsmsOutlinedIcon
       iconActive: PhChatsDuotone, // was: TextsmsIcon
       type: 'app',
-      route: '/',
+      route: '/chat',
     },
     // <-- divider here -->
     {
