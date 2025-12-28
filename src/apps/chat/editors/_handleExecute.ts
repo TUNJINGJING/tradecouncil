@@ -73,7 +73,7 @@ export async function _handleExecute(chatExecuteMode: ChatExecuteMode, conversat
 
     case 'beam-content':
       const updatedInputHistory = cHandler.historyViewHeadOrThrow('chat-beam-execute');
-      cHandler.beamInvoke(updatedInputHistory, [], null);
+      cHandler.analysisInvoke(updatedInputHistory, [], null);
       return true;
 
     case 'append-user':

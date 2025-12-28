@@ -149,14 +149,14 @@ export function ChatMessageList(props: {
     // assistant: do an in-place beam
     if (lastTruncatedMessage.role === 'assistant') {
       if (truncatedHistory.length >= 2)
-        conversationHandler.beamInvoke(truncatedHistory.slice(0, -1), [lastTruncatedMessage], lastTruncatedMessage.id);
+        conversationHandler.analysisInvoke(truncatedHistory.slice(0, -1), [lastTruncatedMessage], lastTruncatedMessage.id);
     } else if (lastTruncatedMessage.role === 'user') {
       // user: truncate and append (but if the next message is an assistant message, import it)
       const possibleNextMessage = inputHistory[truncatedHistory.length];
       if (possibleNextMessage?.role === 'assistant')
-        conversationHandler.beamInvoke(truncatedHistory, [possibleNextMessage], null);
+        conversationHandler.analysisInvoke(truncatedHistory, [possibleNextMessage], null);
       else
-        conversationHandler.beamInvoke(truncatedHistory, [], null);
+        conversationHandler.analysisInvoke(truncatedHistory, [], null);
     }
   }, [conversationHandler, conversationId]);
 

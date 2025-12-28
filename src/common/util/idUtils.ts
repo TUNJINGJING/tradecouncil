@@ -2,10 +2,10 @@ import { nanoid } from 'nanoid';
 
 // This is here to index all the UUIDs in the application
 type UidScope =
+  | 'analysis-fusion'
+  | 'analysis-preset-config'
+  | 'analysis-ray'
   | 'attachment-draft'
-  | 'beam-fusion'
-  | 'beam-preset-config'
-  | 'beam-ray'
   | 'chat-block'
   | 'chat-dconversation'
   | 'chat-dmessage'

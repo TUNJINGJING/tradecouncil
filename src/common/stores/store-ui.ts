@@ -247,8 +247,7 @@ export function uiSetPanelGroupCollapsed(key: string, collapsed: boolean): void 
 type KnownKeys =
   | 'acknowledge-pwa-desktop-mode-warning' // displayed if mobile PWA is in desktop mode (layout issues)
   | 'acknowledge-translation-warning' // displayed if Chrome is translating the page (may crash)
-  | 'beam-wizard'                     // first Beam
-  | 'call-wizard'                     // first Call
+  | 'analysis-wizard'                  // first Analysis (was: beam-wizard)
   | 'composer-shift-enter'            // not used Shift + Enter in the Composer yet
   | 'composer-alt-enter'              // not used Alt + Enter in the Composer yet
   | 'composer-ctrl-enter'             // not used Ctrl + Enter in the Composer yet

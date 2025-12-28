@@ -47,7 +47,7 @@ export interface BFusion {
 
 const createBFusion = (factoryId: FFactoryId, instructions: Instruction[], llmId: DLLMId | null): BFusion => ({
   // const
-  fusionId: agiUuid('beam-fusion'),
+  fusionId: agiUuid('analysis-fusion'),
   factoryId,
 
   // options

@@ -10,7 +10,7 @@ import type { DiagramConfig } from '~/modules/aifn/digrams/DiagramsModal';
 import type { TradeConfig } from '~/modules/trade/TradeModal';
 import { downloadSingleChat, importConversationsFromFilesAtRest, openConversationsAtRestPicker } from '~/modules/trade/trade.client';
 import { imaginePromptFromTextOrThrow } from '~/modules/aifn/imagine/imaginePromptFromText';
-import { useAreBeamsOpen } from '~/modules/analysis/store-analysis.hooks';
+import { useAreAnalysisOpen } from '~/modules/analysis/store-analysis.hooks';
 import { useCapabilityTextToImage } from '~/modules/t2i/t2i.client';
 
 import type { DConversation, DConversationId } from '~/common/stores/chat/chat.conversation';
@@ -46,7 +46,7 @@ import { ChatPane } from './components/layout-pane/ChatPane';
 import { ChatBarBeam } from './components/layout-bar/ChatBarBeam';
 import { ChatBarAltTitle } from './components/layout-bar/ChatBarAltTitle';
 import { ChatBarChat } from './components/layout-bar/ChatBarChat';
-import { ChatBeamWrapper } from './components/ChatBeamWrapper';
+import { ChatAnalysisWrapper } from './components/ChatBeamWrapper';
 import { ChatDrawerMemo } from './components/layout-drawer/ChatDrawer';
 import { ChatMessageList } from './components/ChatMessageList';
 import { Composer } from './components/composer/Composer';
@@ -181,7 +181,7 @@ export function AppChat() {
     };
   }, [chatPanes]);
 
-  const beamsOpens = useAreBeamsOpen(paneAnalysisStores);
+  const beamsOpens = useAreAnalysisOpen(paneAnalysisStores);
   const beamOpenStoreInFocusedPane = focusedPaneIndex === null ? null
     : !beamsOpens?.[focusedPaneIndex] ? null
       : paneAnalysisStores?.[focusedPaneIndex] ?? null;
@@ -321,9 +321,9 @@ export function AppChat() {
     // replace the prompt in history
     const lastMessage = inputHistory[inputHistory.length - 1];
     if (lastMessage.role === 'assistant')
-      cHandler.beamInvoke(inputHistory.slice(0, -1), [lastMessage], lastMessage.id);
+      cHandler.analysisInvoke(inputHistory.slice(0, -1), [lastMessage], lastMessage.id);
     else if (lastMessage.role === 'user')
-      cHandler.beamInvoke(inputHistory, [], null);
+      cHandler.analysisInvoke(inputHistory, [], null);
   }, [focusedPaneConversationId]);
 
   const handleTextDiagram = React.useCallback((diagramConfig: DiagramConfig | null) => setDiagramConfig(diagramConfig), []);
@@ -724,7 +724,7 @@ export function AppChat() {
               )}
 
               {_paneBeamIsOpen && (
-                <ChatBeamWrapper
+                <ChatAnalysisWrapper
                   analysisStore={_paneAnalysisStoreApi}
                   isMobile={isMobile}
                   inlineSx={chatBeamWrapperSx}

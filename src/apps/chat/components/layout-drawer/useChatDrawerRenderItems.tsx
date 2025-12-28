@@ -100,7 +100,7 @@ export function useChatDrawerRenderItems(
   const [_, setJustAMinuteCounter] = React.useState(0);
 
   // external state
-  const openBeamConversationIds = useModuleAnalysisStore(state => state.openBeamConversationIds);
+  const openAnalysisConversationIds = useModuleAnalysisStore(state => state.openAnalysisConversationIds);
 
 
   // [effect] Refresh every minute because the `getTimeBucketEn` function uses the current time
@@ -186,7 +186,7 @@ export function useChatDrawerRenderItems(
                 ? allFolders.find(folder => folder.conversationIds.includes(_c.id)) ?? null
                 : null,
             updatedAt: _c.updated || _c.created || 0,
-            hasBeamOpen: !!openBeamConversationIds?.[_c.id],
+            hasBeamOpen: !!openAnalysisConversationIds?.[_c.id],
             messageCount,
             beingGenerated: !!_c._abortController, // FIXME: when the AbortController is moved at the message level, derive the state in the conv
             systemPurposeId: _c.systemPurposeId,

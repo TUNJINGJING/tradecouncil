@@ -19,7 +19,7 @@ import type { DConversationId } from '~/common/stores/chat/chat.conversation';
 import { ExpanderControlledBox } from '~/common/components/ExpanderControlledBox';
 import { createDMessageTextContent } from '~/common/stores/chat/chat.message';
 import { lineHeightTextareaMd } from '~/common/app.theme';
-import { navigateToPersonas } from '~/common/app.routes';
+import { navigateToStrategies } from '~/common/app.routes';
 import { useChatStore } from '~/common/stores/chat/store-chats';
 import { useChipBoolean } from '~/common/components/useChipBoolean';
 import { useModelDomain } from '~/common/stores/llms/hooks/useModelDomain';
@@ -323,7 +323,7 @@ export function PersonaSelector(props: {
             isActive={false}
             isEditMode={editMode}
             isHidden={hidePersonaCreator}
-            onClick={() => editMode ? toggleHiddenPurposeId(PURPOSE_ID_PERSONA_CREATOR) : void navigateToPersonas()}
+            onClick={() => editMode ? toggleHiddenPurposeId(PURPOSE_ID_PERSONA_CREATOR) : void navigateToStrategies()}
             sx={{
               fontSize: 'xs',
               boxShadow: 'xs',

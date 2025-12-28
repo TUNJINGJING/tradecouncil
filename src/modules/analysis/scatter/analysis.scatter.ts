@@ -31,7 +31,7 @@ export interface BRay {
 
 export function createBRayEmpty(llmId: DLLMId | null): BRay {
   return {
-    rayId: agiUuid('beam-ray'),
+    rayId: agiUuid('analysis-ray'),
     status: 'empty',
     message: createDMessageEmpty('assistant'), // [state] assistant:Ray_empty
     rayLlmId: llmId,

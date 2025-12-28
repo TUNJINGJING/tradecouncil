@@ -90,7 +90,7 @@ export function AnalysisScatterDropdown(props: {
 
   const handlePresetLoad = React.useCallback((presetId: string) => {
     const preset = useModuleAnalysisStore.getState().presets.find(preset => preset.id === presetId);
-    preset && props.analysisStore.getState().loadBeamConfig(preset);
+    preset && props.analysisStore.getState().loadAnalysisConfig(preset);
   }, [props.analysisStore]);
 
   // NOTE: DEVS only - DEBUG only

@@ -68,7 +68,7 @@ export async function _handleExecuteCommand(lastMessageId: DMessageId, lastMessa
     //     return false;
     //   // remove '/beam ', as we want to be a user chat message
     //   cHandler.messageFragmentReplace(lastMessageId, lastMessageFirstFragment.fId, createTextContentFragment(userText), true);
-    //   cHandler.beamInvoke(cHandler.historyViewHead('cmd-mode-beam'), [], null);
+    //   cHandler.analysisInvoke(cHandler.historyViewHead('cmd-mode-beam'), [], null);
     //   return true;
 
     case 'cmd-mode-react':
