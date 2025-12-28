@@ -91,7 +91,7 @@
     "eslint-config-next": "~15.1.11",
     "prettier": "^3.7.4",
     "prisma": "~5.22.0",
-    "typescript": "^5.9.3"
+    "typescript": "5.9.3"
   },
   "engines": {
     "node": "^26.0.0 || ^24.0.0 || ^22.0.0 || ^20.0.0"

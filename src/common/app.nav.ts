@@ -126,12 +126,11 @@ export const navItems: {
     },
     {
       name: 'Analysis',
+      mobileName: 'Analysis',
       icon: ChatBeamIcon,
       type: 'app',
       route: '/dev/analysis',
       hideDrawer: true,
-      hideIcon: true,
-      isDev: true,
     },
     {
       name: 'Shared Chats',
