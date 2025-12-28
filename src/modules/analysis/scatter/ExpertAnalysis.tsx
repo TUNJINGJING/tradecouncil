@@ -145,7 +145,7 @@ function RayControls(props: {
 }
 
 
-export function BeamRay(props: {
+export function ExpertRay(props: {
   analysisStore: AnalysisStoreApi,
   hadImportedRays: boolean,
   isMobile: boolean,
@@ -347,6 +347,6 @@ export function BeamRay(props: {
           <CheckCircleOutlineRoundedIcon sx={{ fontSize: 'md', color: 'success.solidBg' }} />
         </Box>
       )}
-    </BeamCard>
+    </AnalysisCard>
   );
 }

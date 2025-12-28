@@ -7,10 +7,10 @@ import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import TelegramIcon from '@mui/icons-material/Telegram';
 
 import type { AnalysisStoreApi } from '../store-analysis.hooks';
-import { BeamCard } from '../AnalysisCard';
+import { AnalysisCard } from '../AnalysisCard';
 import { SCATTER_RAY_MAX, SCATTER_RAY_MIN } from '../analysis.config';
 
-import { ExpertAnalysis } from './BeamRay';
+import { ExpertRay } from './ExpertAnalysis';
 
 
 const rayGridDesktopSx: SxProps = {
@@ -45,7 +45,7 @@ export function ExpertGrid(props: {
 
       {/* Rays */}
       {props.rayIds.map((rayId, index) => (
-        <ExpertAnalysis
+        <ExpertRay
           key={'ray-' + rayId}
           rayIndexWeak={index}
           analysisStore={props.analysisStore}
@@ -68,7 +68,7 @@ export function ExpertGrid(props: {
           }}>
             <AddCircleOutlineRoundedIcon />
           </Button>
-        </BeamCard>
+        </AnalysisCard>
       )}
 
       {/* Multi-Use and Copy Buttons */}

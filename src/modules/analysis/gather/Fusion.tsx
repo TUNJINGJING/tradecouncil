@@ -216,7 +216,7 @@ export function Fusion(props: {
               onClick={handleFusionUse}
               // endDecorator={<TelegramIcon />}
               sx={{
-                // ...ANALYSIS_BTN_SX,
+                // ...BEAM_BTN_SX,
                 fontSize: 'xs',
                 // '--Icon-fontSize': 'var(--joy-fontSize-xl)',
                 // backgroundColor: 'background.popup',

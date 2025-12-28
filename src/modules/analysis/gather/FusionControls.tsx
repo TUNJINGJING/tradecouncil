@@ -10,7 +10,7 @@ import StopRoundedIcon from '@mui/icons-material/StopRounded';
 import { GoodTooltip } from '~/common/components/GoodTooltip';
 import { TooltipOutlined } from '~/common/components/TooltipOutlined';
 
-import { rayControlsMobileSx, rayControlsSx } from '../scatter/BeamRay';
+import { rayControlsMobileSx, rayControlsSx } from '../scatter/ExpertAnalysis';
 
 import type { BFusion } from './analysis.gather';
 import type { FusionFactorySpec } from './instructions/analysis.gather.factories';

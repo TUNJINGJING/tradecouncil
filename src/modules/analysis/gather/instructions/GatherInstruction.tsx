@@ -12,7 +12,7 @@ import { getIsMobile } from '~/common/components/useMatchMedia';
 import { getUXLabsHighPerformance } from '~/common/stores/store-ux-labs';
 
 import type { BaseInstruction, ExecutionInputState } from './analysis.gather.execution';
-import { analysisCardMessageScrollingSx, analysisCardMessageSx } from '../../BeamCard';
+import { analysisCardMessageScrollingSx, analysisCardMessageSx } from '../../AnalysisCard';
 import { getAnalysisCardScrolling } from '../../store-module-analysis';
 
 
