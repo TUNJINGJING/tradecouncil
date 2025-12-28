@@ -31,7 +31,11 @@
       "WebSearch",
       "mcp__chrome-devtools",
       "mcp__github",
-      "mcp__ide__getDiagnostics"
+      "mcp__ide__getDiagnostics",
+      "Bash(textutil -convert txt:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)"
     ],
     "deny": [
       "Read(node_modules)",
