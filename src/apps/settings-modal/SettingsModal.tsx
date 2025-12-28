@@ -6,7 +6,6 @@ import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
 import KeyboardCommandKeyOutlinedIcon from '@mui/icons-material/KeyboardCommandKeyOutlined';
 import LanguageRoundedIcon from '@mui/icons-material/LanguageRounded';
 import MicIcon from '@mui/icons-material/Mic';
-import ScienceIcon from '@mui/icons-material/Science';
 import SearchIcon from '@mui/icons-material/Search';
 import TerminalOutlinedIcon from '@mui/icons-material/TerminalOutlined';
 
@@ -25,7 +24,6 @@ import { useIsMobile } from '~/common/components/useMatchMedia';
 
 import { AppChatSettingsAI } from './AppChatSettingsAI';
 import { AppChatSettingsUI } from './settings-ui/AppChatSettingsUI';
-import { UxLabsSettings } from './UxLabsSettings';
 import { VoiceInSettings } from './VoiceInSettings';
 import { VoiceOutSettings } from './VoiceOutSettings';
 
@@ -262,9 +260,6 @@ export function SettingsModal(props: {
               // <>Chat AI <WarningRoundedIcon sx={{ ml: 1, color: 'orangered' }} /></>
             } startCollapsed>
               <AppChatSettingsAI />
-            </Topic>
-            <Topic icon={<ScienceIcon />} title='Labs' startCollapsed>
-              <UxLabsSettings />
             </Topic>
           </Topics>
         </TabPanel>

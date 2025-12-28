@@ -7,7 +7,7 @@ import DriveFileRenameOutlineRoundedIcon from '@mui/icons-material/DriveFileRena
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import SchoolRoundedIcon from '@mui/icons-material/SchoolRounded';
 
-import { DEV_MODE_SETTINGS } from '../../../apps/settings-modal/UxLabsSettings';
+import { DEV_MODE_SETTINGS } from '~/common/stores/store-ux-labs';
 
 import type { DLLMId } from '~/common/stores/llms/llms.types';
 

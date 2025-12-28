@@ -4,7 +4,7 @@ import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels';
 import type { SxProps } from '@mui/joy/styles/types';
 import { Box, useTheme } from '@mui/joy';
 
-import { DEV_MODE_SETTINGS } from '../settings-modal/UxLabsSettings';
+import { DEV_MODE_SETTINGS } from '~/common/stores/store-ux-labs';
 
 import type { DiagramConfig } from '~/modules/aifn/digrams/DiagramsModal';
 import type { TradeConfig } from '~/modules/trade/TradeModal';

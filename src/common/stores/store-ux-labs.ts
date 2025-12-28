@@ -6,7 +6,9 @@ import { Is } from '~/common/util/pwaUtils';
 
 // UX Labs Experiments
 
-// UxLabsSettings.tsx contains the graduated settings, but the following are not stated:
+// Flag to enable dev-only features in the UI
+export const DEV_MODE_SETTINGS = false;
+
 //  - Text Tools: dynamically shown where applicable
 //  - Chat Mode: Follow-Ups; moved to Chat Advanced UI
 interface UXLabsStore {
