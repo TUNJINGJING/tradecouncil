@@ -24,6 +24,8 @@ import { messageFragmentsReduceText } from '~/common/stores/chat/chat.message';
 import { useLLMSelect } from '~/common/components/forms/useLLMSelect';
 
 import { AnalysisCard, analysisCardClasses, analysisCardMessageScrollingSx, analysisCardMessageSx, analysisCardMessageWrapperSx } from '../AnalysisCard';
+import { TradingIndicatorsDisplay } from '../TradingIndicatorsDisplay';
+import { extractTradingIndicators } from '../trading-indicators';
 import { AnalysisStoreApi, useAnalysisStore } from '../store-analysis.hooks';
 import { ANALYSIS_SHOW_REASONING_ICON, GATHER_COLOR, SCATTER_COLOR, SCATTER_RAY_SHOW_DRAG_HANDLE } from '../analysis.config';
 import { TooltipOutlined } from '~/common/components/TooltipOutlined';
@@ -268,6 +270,13 @@ export function ExpertRay(props: {
 
       {/* Show issue, if any */}
       {!!ray?.scatterIssue && <InlineError error={ray.scatterIssue} />}
+
+      {/* Trading Indicators Header - extract from response */}
+      {!!ray?.message?.fragments.length && ray?.status !== 'scattering' && (
+        <TradingIndicatorsDisplay
+          indicators={extractTradingIndicators(messageFragmentsReduceText(ray.message.fragments))}
+        />
+      )}
 
       {/* Ray Message */}
       {(!!ray?.message?.fragments.length || ray?.status === 'scattering') && (

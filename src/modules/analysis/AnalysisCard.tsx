@@ -16,30 +16,45 @@ export const analysisCardClasses = {
 
 /**
  * Used for message-containing cards.
+ * DESIGN.md: Vault/Cyber-Noir aesthetic
+ * - Deep void background (#0a0a0a)
+ * - Swiss grid borders (#222)
+ * - Corner decorations
  */
 export const AnalysisCard = styled(Box)(({ theme }) => ({
   '--Card-padding': '1rem',
 
-  backgroundColor: theme.vars.palette.background.surface,
-  border: '1px solid',
-  borderColor: theme.vars.palette.neutral.outlinedBorder,
-  borderRadius: theme.radius.md,
+  // DESIGN.md: Deep background with concrete texture feel
+  backgroundColor: '#0e0e0e', // Surface color from DESIGN.md
+  border: '1px solid #222',   // Swiss grid border
+  borderRadius: '4px',        // Sharp corners for industrial feel
 
   padding: 'var(--Card-padding)',
 
-  // [`&.${analysisCardClasses.active}`]: {
-  //   boxShadow: 'inset 0 0 0 2px #00f, inset 0 0 0 4px #00a',
-  // },
+  // DESIGN.md: Corner decoration effect (subtle)
+  '&::before': {
+    content: '""',
+    position: 'absolute',
+    top: 0,
+    right: 0,
+    width: '20px',
+    height: '20px',
+    borderLeft: '1px solid rgba(255, 255, 255, 0.05)',
+    borderBottom: '1px solid rgba(255, 255, 255, 0.05)',
+    background: 'linear-gradient(135deg, transparent 50%, rgba(255, 255, 255, 0.02) 50%)',
+    pointerEvents: 'none',
+  },
 
   [`&.${analysisCardClasses.fusionIdle}`]: {
-    backgroundColor: ANALYSIS_INVERT_BACKGROUND ? theme.vars.palette.background.level2 : theme.vars.palette.background.surface,
+    backgroundColor: '#111',
   },
   [`&.${analysisCardClasses.selectable}`]: {
-    backgroundColor: theme.vars.palette.background.popup,
+    backgroundColor: '#0a0a0a', // DESIGN.md: --bg-deep
+    borderColor: 'rgba(0, 230, 118, 0.2)', // Subtle green hint
   },
   [`&.${analysisCardClasses.errored}`]: {
-    backgroundColor: theme.vars.palette.danger.softBg,
-    borderColor: theme.vars.palette.danger.outlinedBorder,
+    backgroundColor: 'rgba(255, 23, 68, 0.1)', // DESIGN.md: danger red with opacity
+    borderColor: '#FF1744',
   },
   [`&.${analysisCardClasses.attractive}`]: {
     animation: `${animationShadowLimey} 2s linear infinite`,
@@ -56,9 +71,11 @@ export const AnalysisCard = styled(Box)(({ theme }) => ({
   flexDirection: 'column',
   gap: 'var(--Pad_2)',
 
-  // uncomment the following to limit the card height
-  // maxHeight: 'calc(0.8 * (100dvh - 16rem))',
-  // overflow: 'auto',
+  // DESIGN.md: Hover state
+  transition: 'border-color 0.2s, transform 0.2s',
+  '&:hover': {
+    borderColor: '#333',
+  },
 }));
 AnalysisCard.displayName = 'AnalysisCard'; // [shared] scatter/gather pane style
 
@@ -92,8 +109,13 @@ export const analysisCardMessageScrollingSx: SxProps = {
 
 /**
  * Props for the two panes.
+ * DESIGN.md: Vault/Cyber-Noir aesthetic
  */
 export const analysisPaneSx: SxProps = {
+  // DESIGN.md: Deep background
+  backgroundColor: '#0a0a0a',
+  borderBottom: '1px solid #222',
+
   // style
   p: 'var(--Pad)',
   py: 'calc(3 * var(--Pad) / 4)',

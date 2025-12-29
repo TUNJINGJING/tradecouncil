@@ -14,7 +14,7 @@ export const ANALYSIS_SHOW_REASONING_ICON = false;
 // configuration [ANALYSIS Scatter]
 export const SCATTER_COLOR = 'neutral' as const;
 export const SCATTER_DEBUG_STATE = false;
-export const SCATTER_PLACEHOLDER = '🖊️ ...'; // 💫 ..., 🖊️ ...
+export const SCATTER_PLACEHOLDER = '...'; // No emojis - DESIGN.md
 export const SCATTER_RAY_DEF = 2;
 export const SCATTER_RAY_MAX = 8;
 export const SCATTER_RAY_MIN = 1;
@@ -23,4 +23,4 @@ export const SCATTER_RAY_SHOW_DRAG_HANDLE = false;
 
 // configuration [ANALYSIS Gather]
 export const GATHER_COLOR = 'success' as const;
-export const GATHER_PLACEHOLDER = '📦 ...';
+export const GATHER_PLACEHOLDER = '...';

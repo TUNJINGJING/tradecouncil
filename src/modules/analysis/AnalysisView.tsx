@@ -5,7 +5,6 @@ import { Alert, Box, CircularProgress } from '@mui/joy';
 
 import { ConfirmationModal } from '~/common/components/modals/ConfirmationModal';
 import { ShortcutKey, useGlobalShortcuts } from '~/common/components/shortcuts/useGlobalShortcuts';
-import { animationEnterScaleUp } from '~/common/util/animUtils';
 import { copyToClipboard } from '~/common/util/clipboardUtils';
 import { messageFragmentsReduceText } from '~/common/stores/chat/chat.message';
 import { useUICounter } from '~/common/stores/store-ui';
@@ -157,9 +156,10 @@ export function AnalysisView(props: {
       minHeight: '100%',
       // ...props.sx,
 
-      // enter animation
-      // NOTE: disabled: off-putting/confusing when the analysis content is large - things won't combine nicely
-      // animation: `${animationEnterScaleUp} 5s cubic-bezier(.17,.84,.44,1)`,
+      // DESIGN.md: Vault/Cyber-Noir aesthetic
+      backgroundColor: '#0a0a0a', // Deep void background
+      // Concrete noise texture via SVG
+      backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.03'/%3E%3C/svg%3E")`,
 
       // config
       '--Pad': { xs: '1rem', md: '1.5rem' },
