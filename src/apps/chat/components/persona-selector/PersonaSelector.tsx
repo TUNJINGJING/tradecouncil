@@ -11,6 +11,7 @@ import SearchIcon from '@mui/icons-material/Search';
 import TelegramIcon from '@mui/icons-material/Telegram';
 
 import { SystemPurposeData, SystemPurposeExample, SystemPurposeId, SystemPurposes } from '../../../../data';
+import { useSimplePersonas } from '../../../strategies/store-app-strategies';
 
 import { bareBonesPromptMixer } from '~/modules/persona/pmix/pmix';
 
@@ -72,7 +73,7 @@ function Tile(props: {
           //   },
           // }),
         } : {}),
-        flexDirection: 'column', gap: props.symbol === '🎭' ? 0.5 : 1.25, pt: 1.25,
+        flexDirection: 'column', gap: 1.25, pt: 1.25,
         ...props.sx,
       }}
     >
@@ -123,9 +124,11 @@ export function PersonaSelector(props: {
   const [searchQuery, setSearchQuery] = React.useState('');
   const [filteredIDs, setFilteredIDs] = React.useState<SystemPurposeId[] | null>(null);
   const [editMode, setEditMode] = React.useState(false);
+  const [selectedCustomStrategyId, setSelectedCustomStrategyId] = React.useState<string | null>(null);
 
 
   // external state
+  const { simplePersonas } = useSimplePersonas();
   const { complexityMode, showPersonaFinder } = useUIPreferencesStore(useShallow(state => ({
     complexityMode: state.complexityMode,
     showPersonaFinder: state.showPersonaFinder,
@@ -169,8 +172,18 @@ export function PersonaSelector(props: {
   // Handlers
 
   const handlePurposeChanged = React.useCallback((purposeId: SystemPurposeId | null) => {
-    if (purposeId && setSystemPurposeId)
+    if (purposeId && setSystemPurposeId) {
       setSystemPurposeId(props.conversationId, purposeId);
+      setSelectedCustomStrategyId(null); // Clear custom strategy selection when preset is selected
+    }
+  }, [props.conversationId, setSystemPurposeId]);
+
+  const handleSelectCustomStrategy = React.useCallback((strategyId: string, systemPrompt: string) => {
+    if (setSystemPurposeId) {
+      SystemPurposes['Custom'].systemMessage = systemPrompt;
+      setSystemPurposeId(props.conversationId, 'Custom');
+      setSelectedCustomStrategyId(strategyId);
+    }
   }, [props.conversationId, setSystemPurposeId]);
 
 
@@ -287,7 +300,7 @@ export function PersonaSelector(props: {
 
         {/* Personas Tiles */}
         {visiblePurposeIDs.map((spId: SystemPurposeId) => {
-          const isActive = systemPurposeId === spId;
+          const isActive = systemPurposeId === spId && !selectedCustomStrategyId;
           const systemPurpose = SystemPurposes[spId];
           return (
             <Tile
@@ -304,11 +317,37 @@ export function PersonaSelector(props: {
           );
         })}
 
+        {/* User-created Custom Strategies */}
+        {simplePersonas.length > 0 && (
+          <>
+            {simplePersonas.map((strategy) => {
+              const isActive = selectedCustomStrategyId === strategy.id;
+              // Get a short name from the strategy (first 10 chars or name if available)
+              const displayName = strategy.name || strategy.systemPrompt.slice(0, 20) + '...';
+              return (
+                <Tile
+                  key={'custom-' + strategy.id}
+                  text={displayName.length > 12 ? displayName.slice(0, 10) + '..' : displayName}
+                  symbol='S'
+                  isActive={isActive}
+                  isEditMode={editMode}
+                  isHidden={false}
+                  onClick={() => !editMode && handleSelectCustomStrategy(strategy.id, strategy.systemPrompt)}
+                  sx={{
+                    backgroundColor: isActive ? undefined : 'success.softBg',
+                    '&:hover': { backgroundColor: 'success.softHoverBg' },
+                  }}
+                />
+              );
+            })}
+          </>
+        )}
+
         {/* Strategy Creator Tile */}
         {(editMode || !hidePersonaCreator) && (
           <Tile
             text='Strategy Creator'
-            symbol='🎭'
+            symbol='+'
             isActive={false}
             isEditMode={editMode}
             isHidden={hidePersonaCreator}
@@ -368,8 +407,8 @@ export function PersonaSelector(props: {
                   >
                     <ListItemButton onClick={() => props.runExample(example)} sx={{ justifyContent: 'space-between', borderRadius: 'md' }}>
                       <Typography level='body-sm'>
-                        {/* Icon 📁 when the .action is 'require-data-attachment' */}
-                        {(typeof example === 'object' && example.action === 'require-data-attachment') ? '📁 ' : ''}
+                        {/* Attachment indicator */}
+                        {(typeof example === 'object' && example.action === 'require-data-attachment') ? '[Attach] ' : ''}
                         {(typeof example === 'string') ? example : example.prompt}
                       </Typography>
                       <TelegramIcon color='primary' sx={{}} />

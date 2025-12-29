@@ -6,6 +6,7 @@ import * as React from 'react';
  */
 
 export type SystemPurposeId =
+  | 'Auto'
   | 'VWAPBounce'
   | 'LiquiditySweep'
   | 'OpeningRange'
@@ -16,7 +17,7 @@ export type SystemPurposeId =
   | 'MomentumRotation'
   | 'Custom';
 
-export const defaultSystemPurposeId: SystemPurposeId = 'EMAPullbackSwing';
+export const defaultSystemPurposeId: SystemPurposeId = 'Auto';
 
 export type SystemPurposeData = {
   title: string;
@@ -36,13 +37,98 @@ export type SystemPurposeExample = string | { prompt: string, action?: 'require-
 export const SystemPurposes: { [key in SystemPurposeId]: SystemPurposeData } = {
 
   // ============================================
+  // AUTO - General Trading Analyst
+  // ============================================
+
+  Auto: {
+    title: 'Auto',
+    description: 'Intelligent trading analysis - automatically adapts to your query',
+    symbol: 'A',
+    highlighted: true,
+    examples: [
+      { prompt: 'Analyze this chart and give me trading recommendations', action: 'require-data-attachment' },
+      { prompt: 'What do you see in this setup?', action: 'require-data-attachment' },
+      'Is now a good time to buy?',
+      'What are the key levels to watch?',
+    ],
+    systemMessage: `You are an expert trading analyst with deep knowledge across all trading styles and timeframes. Your role is to provide comprehensive, actionable trading analysis tailored to whatever the user asks.
+
+CORE CAPABILITIES:
+- Chart pattern recognition and technical analysis
+- Support/resistance identification
+- Trend analysis across multiple timeframes
+- Risk management recommendations
+- Entry/exit strategy suggestions
+
+ANALYSIS APPROACH:
+
+1. ASSESS THE CONTEXT
+   - Identify the asset class and timeframe
+   - Determine the user's likely trading style from their question
+   - Consider current market conditions
+
+2. TECHNICAL ANALYSIS
+   - Trend Direction: Identify primary trend using price action and structure
+   - Key Levels: Mark significant support/resistance, highs/lows
+   - Indicators: Apply relevant indicators (MA, RSI, MACD, Volume) based on context
+   - Patterns: Identify chart patterns, candlestick formations
+
+3. TRADE ASSESSMENT
+   - Signal: Clear BUY/SELL/WAIT recommendation
+   - Entry Zone: Specific price range for entry
+   - Stop Loss: Risk-defined exit level
+   - Take Profit: Target levels (multiple if appropriate)
+   - Risk/Reward: Calculate the ratio
+
+4. RISK MANAGEMENT
+   - Position sizing guidance
+   - Risk percentage recommendation
+   - Key invalidation levels
+
+OUTPUT FORMAT:
+
+**MARKET OVERVIEW**
+- Asset: [identified or mentioned]
+- Timeframe: [identified]
+- Current Trend: [Bullish/Bearish/Neutral/Ranging]
+
+**TECHNICAL ANALYSIS**
+- Key Levels: [Support and Resistance]
+- Trend Structure: [Higher highs/lows or lower highs/lows]
+- Momentum: [indicator readings if relevant]
+- Volume: [assessment if visible]
+
+**TRADE RECOMMENDATION**
+- Signal: [BUY / SELL / WAIT / NO TRADE]
+- Confidence: [High / Medium / Low]
+- Entry: [price or zone]
+- Stop Loss: [price] (X% risk)
+- Target 1: [price] (X% reward)
+- Target 2: [price] (X% reward)
+- Risk/Reward: [X:X]
+
+**REASONING**
+[Explain the logic behind your analysis and recommendation]
+
+**CAUTION**
+[Any warnings, risks, or things to watch]
+
+IMPORTANT GUIDELINES:
+- Be specific with price levels when chart data is provided
+- Acknowledge uncertainty when information is limited
+- Adapt your analysis depth to match the user's question
+- Always include risk management considerations
+- If the user asks about a specific strategy or style, focus your analysis accordingly`,
+  },
+
+  // ============================================
   // SCALPING STRATEGIES
   // ============================================
 
   VWAPBounce: {
     title: 'VWAP Scalper',
     description: 'Quick scalps off VWAP with RSI/MACD confirmation',
-    symbol: '⚡',
+    symbol: 'V',
     examples: [
       { prompt: 'Analyze this 5m chart for VWAP scalp opportunities', action: 'require-data-attachment' },
       { prompt: 'Is this a good VWAP bounce setup?', action: 'require-data-attachment' },
@@ -83,7 +169,7 @@ OUTPUT STRUCTURE:
   LiquiditySweep: {
     title: 'Liquidity Sweep',
     description: 'Trade reversals after stop hunts at key levels',
-    symbol: '🎯',
+    symbol: 'L',
     examples: [
       { prompt: 'Did price just sweep liquidity at this level?', action: 'require-data-attachment' },
       { prompt: 'Identify the liquidity pools on this chart', action: 'require-data-attachment' },
@@ -128,7 +214,7 @@ OUTPUT STRUCTURE:
   OpeningRange: {
     title: 'Opening Range',
     description: 'Trade breakouts from the first 15-30 min range',
-    symbol: '📈',
+    symbol: 'O',
     examples: [
       { prompt: 'The market just opened, analyze the opening range', action: 'require-data-attachment' },
       { prompt: 'Is this ORB breakout valid?', action: 'require-data-attachment' },
@@ -170,7 +256,7 @@ OUTPUT STRUCTURE:
   TrendPullback: {
     title: 'Trend Pullback',
     description: 'Enter trends on pullbacks to 9/21 EMA',
-    symbol: '📉',
+    symbol: 'T',
     examples: [
       { prompt: 'Price just pulled back to the 21 EMA, is this a buy?', action: 'require-data-attachment' },
       { prompt: 'Analyze this EMA pullback setup', action: 'require-data-attachment' },
@@ -217,7 +303,7 @@ OUTPUT STRUCTURE:
   EMAPullbackSwing: {
     title: 'EMA Swing',
     description: 'Multi-day swings on 20/50 EMA pullbacks',
-    symbol: '📊',
+    symbol: 'E',
     highlighted: true,
     examples: [
       { prompt: 'Analyze this daily chart for swing entry at EMA', action: 'require-data-attachment' },
@@ -265,7 +351,7 @@ OUTPUT STRUCTURE:
   BreakoutRetest: {
     title: 'Breakout Retest',
     description: 'Swing trades on retests of broken S/R',
-    symbol: '🔄',
+    symbol: 'B',
     examples: [
       { prompt: 'Price just broke out and is retesting, should I enter?', action: 'require-data-attachment' },
       { prompt: 'Is this retest holding support?', action: 'require-data-attachment' },
@@ -311,7 +397,7 @@ OUTPUT STRUCTURE:
   DMAFilteredDCA: {
     title: 'DMA DCA',
     description: 'Smart DCA using 200 DMA as trend filter',
-    symbol: '💰',
+    symbol: 'D',
     examples: [
       { prompt: 'Should I DCA into this asset now based on the 200 DMA?', action: 'require-data-attachment' },
       { prompt: 'What is the current position relative to the 200 DMA?', action: 'require-data-attachment' },
@@ -352,7 +438,7 @@ OUTPUT STRUCTURE:
   MomentumRotation: {
     title: 'Momentum Rotation',
     description: 'Sector/asset rotation based on relative strength',
-    symbol: '🔀',
+    symbol: 'M',
     examples: [
       { prompt: 'Which sectors are showing the best momentum?', action: 'require-data-attachment' },
       { prompt: 'Should I rotate out of this sector?', action: 'require-data-attachment' },
@@ -397,7 +483,7 @@ OUTPUT STRUCTURE:
   Custom: {
     title: 'Custom',
     description: 'Create your own trading strategy',
-    symbol: '✏️',
+    symbol: 'C',
     examples: [
       { prompt: 'Analyze this chart', action: 'require-data-attachment' },
       'What do you see in this setup?',

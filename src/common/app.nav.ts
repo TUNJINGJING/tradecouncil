@@ -10,9 +10,6 @@ import HomeOutlinedIcon from '@mui/icons-material/HomeOutlined';
 import HomeIcon from '@mui/icons-material/Home';
 import IosShareIcon from '@mui/icons-material/IosShare';
 import IosShareOutlinedIcon from '@mui/icons-material/IosShareOutlined';
-// Link icons
-import GitHubIcon from '@mui/icons-material/GitHub';
-import { DiscordIcon } from '~/common/components/icons/3rdparty/DiscordIcon';
 // Modal icons
 import BuildCircleIcon from '@mui/icons-material/BuildCircle';
 import SettingsIcon from '@mui/icons-material/Settings';
@@ -188,24 +185,7 @@ export const navItems: {
 
   // External links
   links: [
-    // {
-    //   type: 'extLink',
-    //   name: 'X',
-    //   icon: TwitterIcon,
-    //   href: 'https://twitter.com',
-    // },
-    {
-      type: 'extLink',
-      name: 'Discord',
-      icon: DiscordIcon,
-      href: Brand.URIs.SupportInvite,
-    },
-    {
-      type: 'extLink',
-      name: 'GitHub',
-      icon: GitHubIcon,
-      href: Brand.URIs.OpenRepo,
-    },
+    // Removed for TradeCouncil - no external links needed
   ],
 
 };

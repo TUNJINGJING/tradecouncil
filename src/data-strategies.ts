@@ -48,7 +48,7 @@ export const TradingStrategyPresets: { [key in StrategyPresetId]: StrategyData }
     title: 'VWAP Bounce Scalper',
     category: 'Scalping',
     description: 'Quick scalps off VWAP with RSI/MACD confirmation',
-    symbol: '⚡',
+    symbol: 'V',
     examples: [
       { prompt: 'Analyze this 5m chart for VWAP scalp opportunities', action: 'require-data-attachment' },
       { prompt: 'Is this a good VWAP bounce setup?', action: 'require-data-attachment' },
@@ -135,7 +135,7 @@ OUTPUT STRUCTURE:
     title: 'Liquidity Sweep Scalper',
     category: 'Scalping',
     description: 'Trade reversals after stop hunts at key levels',
-    symbol: '🎯',
+    symbol: 'L',
     examples: [
       { prompt: 'Did price just sweep liquidity at this level?', action: 'require-data-attachment' },
       { prompt: 'Identify the liquidity pools on this chart', action: 'require-data-attachment' },
@@ -227,7 +227,7 @@ OUTPUT STRUCTURE:
     title: 'Opening Range Breakout',
     category: 'Day Trading',
     description: 'Trade breakouts from the first 15-30 minute range',
-    symbol: '📈',
+    symbol: 'O',
     examples: [
       { prompt: 'The market just opened, analyze the opening range', action: 'require-data-attachment' },
       { prompt: 'Is this ORB breakout valid?', action: 'require-data-attachment' },
@@ -321,7 +321,7 @@ OUTPUT STRUCTURE:
     title: 'Trend Pullback (EMA)',
     category: 'Day Trading',
     description: 'Enter trends on pullbacks to 9/21 EMA',
-    symbol: '📉',
+    symbol: 'T',
     examples: [
       { prompt: 'Price just pulled back to the 21 EMA, is this a buy?', action: 'require-data-attachment' },
       { prompt: 'Analyze this EMA pullback setup', action: 'require-data-attachment' },
@@ -416,7 +416,7 @@ OUTPUT STRUCTURE:
     title: 'EMA Pullback Swing',
     category: 'Swing Trading',
     description: 'Multi-day swings on 20/50 EMA pullbacks',
-    symbol: '📊',
+    symbol: 'E',
     highlighted: true,
     examples: [
       { prompt: 'Analyze this daily chart for swing entry at EMA', action: 'require-data-attachment' },
@@ -518,7 +518,7 @@ OUTPUT STRUCTURE:
     title: 'Breakout Retest Swing',
     category: 'Swing Trading',
     description: 'Swing trades on retests of broken support/resistance',
-    symbol: '🔄',
+    symbol: 'B',
     examples: [
       { prompt: 'Price just broke out and is retesting, should I enter?', action: 'require-data-attachment' },
       { prompt: 'Is this retest holding support?', action: 'require-data-attachment' },
@@ -620,7 +620,7 @@ OUTPUT STRUCTURE:
     title: 'DMA Filtered DCA',
     category: 'Investing',
     description: 'Smart DCA using 200 DMA as trend filter',
-    symbol: '💰',
+    symbol: 'D',
     examples: [
       { prompt: 'Should I DCA into this asset now based on the 200 DMA?', action: 'require-data-attachment' },
       { prompt: 'What is the current position relative to the 200 DMA?', action: 'require-data-attachment' },
@@ -708,7 +708,7 @@ OUTPUT STRUCTURE:
     title: 'Momentum Rotation',
     category: 'Investing',
     description: 'Sector/asset rotation based on relative strength',
-    symbol: '🔀',
+    symbol: 'M',
     examples: [
       { prompt: 'Which sectors are showing the best momentum?', action: 'require-data-attachment' },
       { prompt: 'Should I rotate out of this sector?', action: 'require-data-attachment' },
@@ -810,7 +810,7 @@ OUTPUT STRUCTURE:
     title: 'Custom Strategy',
     category: 'Day Trading',
     description: 'Create your own trading strategy',
-    symbol: '✏️',
+    symbol: 'C',
     examples: [
       { prompt: 'Analyze this chart', action: 'require-data-attachment' },
       'What do you see in this setup?',

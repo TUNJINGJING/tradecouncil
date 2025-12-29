@@ -59,14 +59,14 @@ export const Release = {
 
 
 export const BaseProduct = {
-  ProductName: 'Big-AGI',
-  ProductURL: 'https://big-agi.com',
-  PrivacyPolicy: 'https://big-agi.com/privacy',
-  TermsOfService: 'https://big-agi.com/terms',
+  ProductName: 'TradeCouncil',
+  ProductURL: 'https://tradecouncil.vercel.app',
+  PrivacyPolicy: '',
+  TermsOfService: '',
   // ecosystem
-  DocsBaseSite: 'https://big-agi.com/docs',
-  OpenSupportDiscord: 'https://discord.gg/MkH4qj2Jp9',
-  OpenSourceRepo: 'https://github.com/enricoros/big-agi',
+  DocsBaseSite: 'https://tradecouncil.vercel.app/docs',
+  OpenSupportDiscord: '',
+  OpenSourceRepo: '',
   ReleaseNotes: '',
-  SupportForm: (_userId?: string) => 'https://github.com/enricoros/big-AGI/issues/new?template=ai-triage.yml',
+  SupportForm: (_userId?: string) => '',
 } as const;

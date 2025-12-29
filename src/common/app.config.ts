@@ -8,27 +8,25 @@
  */
 export const Brand = {
   Title: {
-    Base: 'big-AGI',
-    Common: (process.env.NODE_ENV === 'development' ? '[DEV] ' : '') + 'big-AGI',
+    Base: 'TradeCouncil',
+    Common: (process.env.NODE_ENV === 'development' ? '[DEV] ' : '') + 'TradeCouncil',
   },
   Meta: {
-    Description: 'Launch big-AGI to unlock the full potential of AI, with precise control over your data and models. Voice interface, AI personas, advanced features, and fun UX.',
-    SiteName: 'big-AGI | Precision AI for You',
+    Description: 'AI-powered trading analysis platform with multiple expert strategies. Get professional trading analysis with preset strategies for scalping, day trading, swing trading, and investing.',
+    SiteName: 'TradeCouncil | AI Trading Analysis',
     ThemeColor: '#32383E',
-    TwitterSite: '@enricoros',
+    TwitterSite: '',
   },
   URIs: {
-    Home: 'https://big-agi.com',
-    // App: 'https://get.big-agi.com',
-    CardImage: 'https://big-agi.com/icons/card-dark-1200.png',
-    OpenRepo: 'https://github.com/enricoros/big-agi',
-    OpenProject: 'https://github.com/users/enricoros/projects/4',
-    SupportInvite: 'https://discord.gg/MkH4qj2Jp9',
-    // Twitter: 'https://www.twitter.com/enricoros',
-    PrivacyPolicy: 'https://big-agi.com/privacy',
-    TermsOfService: 'https://big-agi.com/terms',
+    Home: 'https://tradecouncil.vercel.app',
+    CardImage: '',
+    OpenRepo: '',
+    OpenProject: '',
+    SupportInvite: '',
+    PrivacyPolicy: '',
+    TermsOfService: '',
   },
   Docs: {
-    Public: (docPage: string) => `https://big-agi.com/docs/${docPage}`,
+    Public: (docPage: string) => `https://tradecouncil.vercel.app/docs/${docPage}`,
   }
 } as const;
