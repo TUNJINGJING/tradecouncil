@@ -164,7 +164,7 @@ export function AnalysisScatterDropdown(props: {
 
         <MenuItem onClick={toggleCardScrolling}>
           <ListItemDecorator>{cardScrolling && <CheckRoundedIcon />}</ListItemDecorator>
-          Resize Beams
+          Resize Experts
         </MenuItem>
 
         <MenuItem onClick={toggleScatterShowLettering}>

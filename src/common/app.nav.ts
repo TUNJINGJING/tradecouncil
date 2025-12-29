@@ -6,6 +6,8 @@ import Diversity2Icon from '@mui/icons-material/Diversity2';
 import EventNoteIcon from '@mui/icons-material/EventNote';
 import EventNoteOutlinedIcon from '@mui/icons-material/EventNoteOutlined';
 import GrainIcon from '@mui/icons-material/Grain';
+import HomeOutlinedIcon from '@mui/icons-material/HomeOutlined';
+import HomeIcon from '@mui/icons-material/Home';
 import IosShareIcon from '@mui/icons-material/IosShare';
 import IosShareOutlinedIcon from '@mui/icons-material/IosShareOutlined';
 // Link icons
@@ -83,6 +85,16 @@ export const navItems: {
   // User-chosen apps
   apps: [
     {
+      name: 'Home',
+      icon: HomeOutlinedIcon,
+      iconActive: HomeIcon,
+      type: 'app',
+      route: '/',
+      hideBar: true,
+      hideDrawer: true,
+      hideNav: true,
+    },
+    {
       name: 'Chat',
       icon: PhChats, // was: TextsmsOutlinedIcon
       iconActive: PhChatsDuotone, // was: TextsmsIcon
@@ -129,7 +141,7 @@ export const navItems: {
       mobileName: 'Analysis',
       icon: ChatBeamIcon,
       type: 'app',
-      route: '/dev/analysis',
+      route: '/analysis',
       hideDrawer: true,
     },
     {
@@ -154,6 +166,7 @@ export const navItems: {
       hideBar: true,
       hideDrawer: true,
       hideOnMobile: true,
+      _delete: true, // Remove from TradeCouncil
     },
   ],
 

@@ -107,7 +107,7 @@ export function ChatBarBeam(props: {
 
       {/* [desktop] maximize button, or a disabled spacer  */}
       {!props.isMobile && (
-        <GoodTooltip variantOutlined title={<Box sx={{ p: 1 }}>Maximize Beam</Box>}>
+        <GoodTooltip variantOutlined title={<Box sx={{ p: 1 }}>Maximize Council</Box>}>
           <IconButton size='sm' onClick={handleMaximizeBeam}>
             {/*<OpenInFullIcon sx={{ fontSize: 'md' }} />*/}
           </IconButton>
@@ -129,7 +129,7 @@ export function ChatBarBeam(props: {
                 : isScattering ? _styles.barScatter
                   : undefined}
           >
-            {isGatheringAny ? 'Merging...' : isScattering ? 'Beaming...' : isEditMode ? 'Beam Edit' : 'Beam'}
+            {isGatheringAny ? 'Merging...' : isScattering ? 'Analyzing...' : isEditMode ? 'Council Edit' : 'Council'}
           </Box>
           {(!isGatheringAny && !isScattering && !isEditMode) && ' Mode'}
         </Typography>
@@ -152,7 +152,7 @@ export function ChatBarBeam(props: {
           onPositive={handleCloseConfirmation}
           lowStakes
           noTitleBar
-          confirmationText='Are you sure you want to close Beam Mode? Unsaved text will be lost.'
+          confirmationText='Are you sure you want to close Council Mode? Unsaved text will be lost.'
           positiveActionText='Yes, close'
         />
       )}

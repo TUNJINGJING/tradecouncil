@@ -16,7 +16,7 @@ const desktopLegend =
 
 const desktopLegendNoContent =
   <Box sx={{ px: 1, py: 0.75, lineHeight: '1.5rem' }}>
-    Enter the text to Beam, then press this
+    Enter the text to analyze, then press this
   </Box>;
 
 const mobileSx: SxProps = {
@@ -49,7 +49,7 @@ function ButtonBeam(props: {
   ) : (
     <Tooltip disableInteractive variant='solid' arrow placement='right' title={props.hasContent ? desktopLegend : desktopLegendNoContent}>
       <Button variant='soft' color={props.color ?? 'primary'} disabled={props.disabled} onClick={props.onClick} endDecorator={<ChatBeamIcon />} sx={desktopSx}>
-        Beam
+        Council
       </Button>
     </Tooltip>
   );

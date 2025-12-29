@@ -729,7 +729,7 @@ export function Composer(props: {
       // else if (explainAltEnter)
     //   textPlaceholder += platformAwareKeystrokes('\n\n⭳ Tip: Alt + Enter to just append the message');
     else if (explainCtrlEnter)
-      textPlaceholder += platformAwareKeystrokes('\n\n⫷ Tip: Ctrl + Enter to beam');
+      textPlaceholder += platformAwareKeystrokes('\n\n⫷ Tip: Ctrl + Enter for council');
   }
 
   const stableGridSx: SxProps = React.useMemo(() => ({
