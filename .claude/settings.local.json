@@ -60,7 +60,10 @@
       "Bash(src/common/stores/store-ui.ts )",
       "Bash(src/common/util/idUtils.ts )",
       "Bash(src/modules/analysis/scatter/AnalysisScatterDropdown.tsx )",
-      "Bash(src/modules/analysis/scatter/analysis.scatter.ts)"
+      "Bash(src/modules/analysis/scatter/analysis.scatter.ts)",
+      "Bash(xargs ls:*)",
+      "Bash(git checkout:*)",
+      "Bash(git restore:*)"
     ],
     "deny": [
       "Read(node_modules)",
