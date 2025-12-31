@@ -10,7 +10,8 @@ import TerminalOutlinedIcon from '@mui/icons-material/TerminalOutlined';
 
 import { checkDivider, checkVisibileIcon, NavItemApp, navItems } from '~/common/app.nav';
 import { themeZIndexDesktopNav } from '~/common/app.theme';
-import { useHasLLMs } from '~/common/stores/llms/llms.hooks';
+// [TradeCouncil] Unused - platform provides models
+// import { useHasLLMs } from '~/common/stores/llms/llms.hooks';
 
 import { DesktopNavGroupBox, DesktopNavIcon, navItemClasses } from './DesktopNavIcon';
 import { InvertedBar, InvertedBarCornerItem } from '../InvertedBar';
@@ -42,8 +43,8 @@ export function DesktopNav(props: { component: React.ElementType, currentApp?: N
   const { peekDrawerEnter, peekDrawerLeave } = optimaActions();
   const { isVisible: isScratchClipVisible, toggleVisibility: toggleScratchClipVisibility } = useScratchClipVisibility();
 
-  // derived state
-  const noLLMs = !useHasLLMs();
+  // [TradeCouncil] noLLMs detection disabled - platform provides models
+  // const noLLMs = !useHasLLMs();
 
 
   // show/hide the pane when clicking on the logo
@@ -119,6 +120,9 @@ export function DesktopNav(props: { component: React.ElementType, currentApp?: N
   const navModalItems = React.useMemo(() => {
     return navItems.modals.map(item => {
 
+      // [TradeCouncil] Always hide models configuration - platform provides API keys
+      if (item.overlayId === 'models') return null;
+
       // map the overlayId to the corresponding state and action
       const stateActionMap: { [key: string]: { isActive: boolean, showModal: (event: React.MouseEvent) => void } } = {
         settings: { isActive: showPreferences, showModal: () => optimaOpenPreferences() },
@@ -127,25 +131,19 @@ export function DesktopNav(props: { component: React.ElementType, currentApp?: N
       };
       const { isActive, showModal } = stateActionMap[item.overlayId] ?? stateActionMap[0];
 
-      // attract the attention to the models configuration when no LLMs are available
-      const isAttractive = noLLMs && item.overlayId === 'models';
-
-      // skip the models configuration, unless it is required
-      if (item.overlayId === 'models' && !isAttractive) return null;
-
       return (
-        <Tooltip key={'n-m-' + item.overlayId} title={isAttractive ? 'Add Language Models - REQUIRED' : item.name}>
+        <Tooltip key={'n-m-' + item.overlayId} title={item.name}>
           <DesktopNavIcon
             variant={isActive ? 'soft' : undefined}
             onClick={showModal}
-            className={`${navItemClasses.typeLinkOrModal} ${isActive ? navItemClasses.active : ''} ${isAttractive ? navItemClasses.attractive : ''}`}
+            className={`${navItemClasses.typeLinkOrModal} ${isActive ? navItemClasses.active : ''}`}
           >
             {(isActive && item.iconActive) ? <item.iconActive /> : <item.icon />}
           </DesktopNavIcon>
         </Tooltip>
       );
     }).filter(component => !!component);
-  }, [noLLMs, showModels, showPreferences]);
+  }, [showModels, showPreferences]);
 
 
   return (

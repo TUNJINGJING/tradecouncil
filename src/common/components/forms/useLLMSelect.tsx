@@ -287,7 +287,8 @@ export function useLLMSelect(
         disabled={disabled}
         onChange={onSelectChange}
         listboxOpen={controlledOpen}
-        onListboxOpenChange={hasNoModels ? optimaOpenModels : setControlledOpen}
+        // [TradeCouncil] Don't auto-open models modal - platform provides API keys
+        onListboxOpenChange={setControlledOpen}
         placeholder={hasNoModels ? LLM_TEXT_CONFIGURE : placeholder}
         slotProps={_slotProps}
         endDecorator={autoRefreshDomain ?
@@ -303,15 +304,15 @@ export function useLLMSelect(
         {/* Model Options */}
         {optionsArray}
 
-        {/* Models Modal Dialog Option */}
-        {appendConfigureModels && !optimizeToSingleVisibleId && !hasNoModels && !showNoOptions && <ListDivider key='cm-sep' sx={_styles.listConfSep} />}
-        {appendConfigureModels && !optimizeToSingleVisibleId && !hasNoModels && (
-          <Option key='cm-option' variant='soft' value={LLM_SPECIAL_CONFIGURE_ID} sx={_styles.listConfigure}>
-            <ListItemDecorator><BuildCircleIcon color='success' /></ListItemDecorator>
-            Models
-            <ArrowForwardRoundedIcon sx={{ ml: 'auto', fontSize: 'xl' }} />
-          </Option>
-        )}
+        {/* [TradeCouncil] Models Modal Dialog Option - hidden, platform provides API keys */}
+        {/*{appendConfigureModels && !optimizeToSingleVisibleId && !hasNoModels && !showNoOptions && <ListDivider key='cm-sep' sx={_styles.listConfSep} />}*/}
+        {/*{appendConfigureModels && !optimizeToSingleVisibleId && !hasNoModels && (*/}
+        {/*  <Option key='cm-option' variant='soft' value={LLM_SPECIAL_CONFIGURE_ID} sx={_styles.listConfigure}>*/}
+        {/*    <ListItemDecorator><BuildCircleIcon color='success' /></ListItemDecorator>*/}
+        {/*    Models*/}
+        {/*    <ArrowForwardRoundedIcon sx={{ ml: 'auto', fontSize: 'xl' }} />*/}
+        {/*  </Option>*/}
+        {/*)}*/}
 
         {/* Star Filter Toggle - shown at the top of the list only if visible */}
         {showStarFilter && hasStarred && !optimizeToSingleVisibleId && (

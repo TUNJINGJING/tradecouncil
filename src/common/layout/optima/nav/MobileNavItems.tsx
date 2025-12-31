@@ -135,16 +135,8 @@ export function MobileNavItems(props: { currentApp?: NavItemApp }) {
           News
         </Button>
 
-        {/* HARDCODED: Models */}
-        <Button
-          size='sm'
-          color='neutral'
-          variant='plain'
-          onClick={optimaOpenModels}
-          sx={_styles.button}
-        >
-          Models
-        </Button>
+        {/* [TradeCouncil] Models button hidden - platform provides API keys */}
+        {/* <Button size='sm' color='neutral' variant='plain' onClick={optimaOpenModels} sx={_styles.button}>Models</Button> */}
 
         {/* HARDCODED: Discord */}
         <BringTheLove

@@ -78,11 +78,12 @@ export function AppChatSettingsUI() {
 
   return <>
 
-    <FormControl orientation='horizontal' sx={{ justifyContent: 'space-between', alignItems: 'center' }}>
-      <FormLabelStart title='AI Models'
-                      description='Configure' />
-      <ModelsSetupButton isMissingModels={isMissingModels} />
-    </FormControl>
+    {/* [TradeCouncil] AI Models configuration hidden - platform provides API keys */}
+    {/*<FormControl orientation='horizontal' sx={{ justifyContent: 'space-between', alignItems: 'center' }}>*/}
+    {/*  <FormLabelStart title='AI Models'*/}
+    {/*                  description='Configure' />*/}
+    {/*  <ModelsSetupButton isMissingModels={isMissingModels} />*/}
+    {/*</FormControl>*/}
 
     <FormControl orientation='horizontal' sx={{ justifyContent: 'space-between' }}>
       <FormLabelStart title='Enter sends ⏎'

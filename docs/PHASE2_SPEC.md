@@ -1,8 +1,8 @@
 # TradeCouncil Phase 2 Technical Specification
 
-**Version:** 1.0
-**Date:** 2025-12-30
-**Status:** Ready for Implementation
+**Version:** 1.1
+**Date:** 2025-12-31
+**Status:** In Progress
 
 ---
 
@@ -10,15 +10,33 @@
 
 **Objective:** Implement user authentication, subscription system, and usage quota management for TradeCouncil.
 
+**Core Product Positioning:**
+- TradeCouncil is a **platform-provided API aggregator** (套壳工具)
+- Users **DO NOT** need to provide their own API keys
+- Platform provides all API keys, users only select models and pay subscription
+- Value proposition: One subscription → Access to all major AI models
+
 **Approach:** Incremental rollout
-- **Phase 2.0:** Auth + Supabase + All features unlocked (No paywall)
-- **Phase 2.1:** Add paywall + Usage limits + Stripe integration
+- **Phase 2.0:** Auth + Supabase ✅ COMPLETED
+- **Phase 2.1:** Pricing page + Stripe (placeholder) + Disable API setup UI
+- **Phase 2.2:** Feature restrictions by tier
+- **Phase 2.3:** Platform API routing (server-side keys)
 
 **Tech Stack:**
 - **Database:** Supabase (PostgreSQL)
-- **Auth:** NextAuth.js v4 + Google OAuth
-- **Payment:** Stripe (deferred to Phase 2.1)
+- **Auth:** NextAuth.js v4 + Google OAuth ✅ COMPLETED
+- **Payment:** Stripe (placeholder, waiting for account)
 - **Storage:** Local (IndexedDB/localStorage) - No cloud sync
+
+---
+
+## ✅ Phase 2.0 Completed (2025-12-31)
+
+- [x] Supabase project setup
+- [x] NextAuth.js with Google OAuth
+- [x] User data persistence in Supabase
+- [x] Auth UI components (LoginButton, UserMenu, AuthStatus)
+- [x] Integration into OptimaBar
 
 ---
 
@@ -28,755 +46,301 @@
 
 | Feature | OBSERVER ($0/mo) | TRADER ($39/mo) | ARCHITECT ($99/mo) |
 |---------|------------------|-----------------|-------------------|
-| **Core Positioning** | Trial & Education | Daily Analysis | Professional Research |
-| **Available Models** | Free models (Gemini 2.0 Flash, Llama 3.3 70B) unlimited + 3 premium trials/month | GPT-4o, Claude 3.5, DeepSeek, Gemini Pro unlimited | All top models (Claude Opus, GPT-5, o1) unlimited |
-| **Analysis Quota** | 3 analyses/day (free models) + 3 premium/month | 500 credits/month | 1500 credits/month |
-| **Council (Multi-AI)** | ❌ 1 model only (3 uses/day with free models) | ✅ 2-3 models concurrent | ✅ 3-5 models concurrent |
-| **Fusion** | ❌ Disabled | ✅ Fuse only | ✅ All 4 fusion types |
-| **Strategy Library** | ❌ None (generic prompts) | ✅ 8 presets (read-only) | ✅ 8 presets + Custom creator |
-| **Vision (Chart Analysis)** | ✅ Basic (Gemini Vision free) | ✅ Advanced (GPT-4o + Claude Vision) | ✅ Multi-model validation (3-5 models) |
+| **Core Positioning** | Trial & Taste | Daily Analysis | Expert Consensus & Deep Strategy |
+| **Available Models** | Free models only (Gemini 2.0 Flash, Llama 3.3 70B via OpenRouter) + 3 premium trials/month | Mainstream models (GPT-4o, Claude 3.5, DeepSeek, Gemini Pro) unlimited | All top models (Claude Opus, o1, GPT-5) unlimited + priority access to new models |
+| **Analysis Quota** | 3/day (free models) + 3/month (premium trial) | 500 credits/month | 1500 credits/month (rollover 1 month, max 3000) |
+| **Council (Multi-AI)** | ✅ 3 uses/day, 2 free models only | ✅ 2-3 models concurrent | ✅ 3-5 models concurrent |
+| **Fusion** | ✅ Enabled (free models only) | ✅ All 4 fusion types | ✅ All 4 fusion types |
+| **Strategy Library** | ❌ Disabled | ✅ 8 presets (read-only) | ✅ 8 presets + Custom creator (max 50) |
+| **Vision (Chart)** | ✅ Basic (Gemini Vision free) | ✅ Advanced (GPT-4o + Claude Vision) | ✅ Multi-model validation |
 | **Export** | Text copy only | Markdown, JSON | Markdown, JSON, Share links |
 | **History** | 7 days, max 10 chats | 90 days, unlimited | Permanent, unlimited |
-| **Response Priority** | Standard queue | Standard | Priority queue |
-| **Support** | Community (Discord) | Email (48h) | Priority email (12h) + 1:1 consultation/quarter |
-| **Annual Discount** | - | $390/year (save $78) | $990/year (save $198) |
+| **API Key Setup** | ❌ Hidden | ❌ Hidden (use platform keys) | ⚠️ Optional (can add own keys for unlimited use without credits) |
+| **Annual Price** | - | $390/year (10 months) | $990/year (10 months) |
 
-### Credit Consumption Model
+### Add-on Credits (Phase 2.4)
 
-```typescript
-const MODEL_CREDIT_COST = {
-  // Free models (OpenRouter free tier)
-  'gemini-2.0-flash-free': 0,
-  'llama-3.3-70b-free': 0,
-  'qwen-2.5-72b-free': 0,
+For TRADER and ARCHITECT users who exhaust monthly credits:
 
-  // Mainstream models
-  'gpt-4o': 1,
-  'claude-3.5-sonnet': 1,
-  'gemini-2.0-flash': 0.5,
-  'deepseek-r1': 0.5,
+| Package | Price | Credits | Per Credit |
+|---------|-------|---------|-----------|
+| Small | $19 | 200 | $0.095 |
+| Medium | $49 | 600 | $0.082 (14% off) |
+| Large | $89 | 1200 | $0.074 (22% off) |
 
-  // Premium models
-  'claude-4.5-opus': 3,
-  'o1': 3,
-  'gpt-5': 4,
-};
-
-// Example: TRADER with 500 credits
-// - 500 GPT-4o analyses, OR
-// - 1000 Gemini Flash analyses, OR
-// - 166 Claude Opus analyses
-```
+**Add-on credits never expire** and are consumed before subscription credits.
 
 ---
 
-## 🏗️ Architecture Overview
+## 🔧 API Strategy (Key Decision)
 
-### System Components
+### Platform-Provided API Keys
+
+**Decision:** Platform provides ALL API keys. Users do NOT configure any API keys.
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│                        Frontend (Next.js)                    │
-│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐      │
-│  │   Chat App   │  │ Analysis App │  │ Strategy App │      │
-│  └──────────────┘  └──────────────┘  └──────────────┘      │
-│                                                               │
-│  ┌──────────────────────────────────────────────────────┐   │
-│  │         User State (Zustand + Session)               │   │
-│  └──────────────────────────────────────────────────────┘   │
-└─────────────────────────────────────────────────────────────┘
-                            ↓ tRPC
-┌─────────────────────────────────────────────────────────────┐
-│                    Backend (tRPC Routers)                    │
-│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐      │
-│  │  Auth Router │  │ User Router  │  │ Quota Router │      │
-│  └──────────────┘  └──────────────┘  └──────────────┘      │
-│                                                               │
-│  ┌──────────────────────────────────────────────────────┐   │
-│  │              AIX (AI Communication)                  │   │
-│  │         + Quota Check Middleware                     │   │
-│  └──────────────────────────────────────────────────────┘   │
-└─────────────────────────────────────────────────────────────┘
-                            ↓
-┌─────────────────────────────────────────────────────────────┐
-│                   Supabase (PostgreSQL)                      │
-│  • users                                                     │
-│  • subscriptions                                             │
-│  • analysis_quota                                            │
-│  • analysis_history                                          │
+│  User Request Flow                                           │
+│                                                              │
+│  User selects model → Request to Server → Server uses       │
+│  platform API key → Response to User → Deduct credits       │
 └─────────────────────────────────────────────────────────────┘
 ```
 
----
+### Platform API Keys Required (Vercel Environment Variables)
 
-## 📊 Database Schema (Supabase)
+```bash
+# OpenRouter (for free models - Gemini Flash, Llama, Qwen)
+OPENROUTER_API_KEY=sk-or-xxx
 
-### 1. users
+# OpenAI (GPT-4o, o1)
+OPENAI_API_KEY=sk-xxx
 
-```sql
-CREATE TABLE users (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  email TEXT NOT NULL UNIQUE,
-  name TEXT,
-  avatar_url TEXT,
-  provider TEXT NOT NULL,           -- 'google', 'github', etc.
-  provider_id TEXT NOT NULL,        -- Provider's user ID
-  tier TEXT NOT NULL DEFAULT 'OBSERVER',  -- 'OBSERVER', 'TRADER', 'ARCHITECT'
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-);
+# Anthropic (Claude 3.5, Claude Opus)
+ANTHROPIC_API_KEY=sk-ant-xxx
 
-CREATE INDEX idx_users_email ON users(email);
-CREATE INDEX idx_users_provider_id ON users(provider, provider_id);
+# Google AI (Gemini Pro - direct API, not via OpenRouter)
+GOOGLE_AI_API_KEY=xxx
+
+# DeepSeek
+DEEPSEEK_API_KEY=xxx
+
+# Optional: Other providers as needed
 ```
 
-### 2. subscriptions
+### Model Availability by Tier
 
-```sql
-CREATE TABLE subscriptions (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-  tier TEXT NOT NULL,                -- 'TRADER', 'ARCHITECT'
-  status TEXT NOT NULL DEFAULT 'active',  -- 'active', 'cancelled', 'past_due'
-  interval TEXT NOT NULL,            -- 'month', 'year'
-  current_period_start TIMESTAMP WITH TIME ZONE NOT NULL,
-  current_period_end TIMESTAMP WITH TIME ZONE NOT NULL,
-  cancel_at_period_end BOOLEAN DEFAULT FALSE,
+| Tier | Available Models |
+|------|-----------------|
+| **OBSERVER** | Gemini 2.0 Flash (free), Llama 3.3 70B (free), Qwen 2.5 72B (free) |
+| **TRADER** | All OBSERVER + GPT-4o, Claude 3.5 Sonnet, Gemini 2.0 Pro, DeepSeek R1 |
+| **ARCHITECT** | All TRADER + Claude 4.5 Opus, o1, o3, GPT-5 (when available), all new models |
 
-  -- Stripe fields (for Phase 2.1)
-  stripe_customer_id TEXT,
-  stripe_subscription_id TEXT,
-  stripe_price_id TEXT,
+### UI Changes Required
 
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-);
-
-CREATE INDEX idx_subscriptions_user_id ON subscriptions(user_id);
-CREATE INDEX idx_subscriptions_status ON subscriptions(status);
-```
-
-### 3. analysis_quota
-
-```sql
-CREATE TABLE analysis_quota (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-
-  -- Free model usage (daily reset)
-  free_daily_count INTEGER NOT NULL DEFAULT 0,
-  free_daily_reset_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW() + INTERVAL '1 day',
-
-  -- Premium trial usage (monthly reset for OBSERVER)
-  premium_trial_count INTEGER NOT NULL DEFAULT 0,
-  premium_trial_reset_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT DATE_TRUNC('month', NOW() + INTERVAL '1 month'),
-
-  -- Paid tier credits (monthly reset)
-  credits_used INTEGER NOT NULL DEFAULT 0,
-  credits_allowance INTEGER NOT NULL DEFAULT 0,  -- Based on tier
-  credits_reset_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT DATE_TRUNC('month', NOW() + INTERVAL '1 month'),
-
-  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-);
-
-CREATE UNIQUE INDEX idx_quota_user_id ON analysis_quota(user_id);
-```
-
-### 4. analysis_history
-
-```sql
-CREATE TABLE analysis_history (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-
-  -- Analysis metadata
-  analysis_type TEXT NOT NULL,       -- 'chat', 'council', 'fusion'
-  models_used TEXT[] NOT NULL,       -- ['gpt-4o', 'claude-3.5']
-  model_count INTEGER NOT NULL,      -- Number of models in council
-
-  -- Input/output
-  input_text TEXT,
-  input_attachments JSONB,           -- {type: 'image', url: '...'}
-  output_data JSONB,                 -- Full analysis result
-
-  -- Cost tracking
-  credits_cost DECIMAL(10, 2) NOT NULL,
-  status TEXT NOT NULL DEFAULT 'completed',  -- 'completed', 'failed', 'aborted'
-
-  -- Timing
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-  completed_at TIMESTAMP WITH TIME ZONE
-);
-
-CREATE INDEX idx_history_user_id ON analysis_history(user_id);
-CREATE INDEX idx_history_created_at ON analysis_history(created_at DESC);
-```
-
-### 5. payment_history (for Phase 2.1)
-
-```sql
-CREATE TABLE payment_history (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-
-  amount DECIMAL(10, 2) NOT NULL,
-  currency TEXT NOT NULL DEFAULT 'USD',
-  status TEXT NOT NULL,              -- 'success', 'failed', 'pending'
-
-  stripe_payment_intent_id TEXT,
-  stripe_invoice_id TEXT,
-
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-);
-
-CREATE INDEX idx_payment_user_id ON payment_history(user_id);
-```
+1. **Disable Welcome Modal** - No more "Setup AI Models" prompt
+2. **Hide API Settings** - Remove from Settings/Preferences for all users
+3. **Model Selector** - Show only tier-appropriate models (no API key input)
+4. **Admin Panel (Phase 3)** - For platform operator to manage models
 
 ---
 
-## 🔐 Authentication Flow
-
-### NextAuth.js Configuration
-
-**Location:** `/src/app/api/auth/[...nextauth]/route.ts` (new file)
+## 📊 Credit Consumption Model
 
 ```typescript
-import NextAuth, { NextAuthOptions } from 'next-auth';
-import GoogleProvider from 'next-auth/providers/google';
-import { createClient } from '@supabase/supabase-js';
-
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-);
-
-export const authOptions: NextAuthOptions = {
-  providers: [
-    GoogleProvider({
-      clientId: process.env.GOOGLE_CLIENT_ID!,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
-    }),
-  ],
-
-  callbacks: {
-    async signIn({ user, account, profile }) {
-      if (!account || !user.email) return false;
-
-      // Upsert user in Supabase
-      const { data, error } = await supabase
-        .from('users')
-        .upsert({
-          email: user.email,
-          name: user.name,
-          avatar_url: user.image,
-          provider: account.provider,
-          provider_id: account.providerAccountId,
-        }, {
-          onConflict: 'email',
-        })
-        .select()
-        .single();
-
-      if (error) {
-        console.error('Failed to create user:', error);
-        return false;
-      }
-
-      // Initialize quota on first signup
-      const { error: quotaError } = await supabase
-        .from('analysis_quota')
-        .upsert({
-          user_id: data.id,
-          credits_allowance: 0, // OBSERVER tier
-        }, {
-          onConflict: 'user_id',
-          ignoreDuplicates: true,
-        });
-
-      return true;
-    },
-
-    async jwt({ token, user, account }) {
-      if (account && user) {
-        // Fetch user data from Supabase
-        const { data } = await supabase
-          .from('users')
-          .select('id, tier')
-          .eq('email', user.email)
-          .single();
-
-        if (data) {
-          token.userId = data.id;
-          token.tier = data.tier;
-        }
-      }
-      return token;
-    },
-
-    async session({ session, token }) {
-      if (session.user) {
-        session.user.id = token.userId as string;
-        session.user.tier = token.tier as string;
-      }
-      return session;
-    },
-  },
-
-  pages: {
-    signIn: '/auth/signin',
-    error: '/auth/error',
-  },
-};
-
-const handler = NextAuth(authOptions);
-export { handler as GET, handler as POST };
-```
-
-### User State Integration
-
-**Location:** `/src/common/stores/store-auth.ts` (new file)
-
-```typescript
-import { create } from 'zustand';
-import { useSession } from 'next-auth/react';
-
-interface AuthState {
-  user: {
-    id: string;
-    email: string;
-    name: string | null;
-    tier: 'OBSERVER' | 'TRADER' | 'ARCHITECT';
-    avatarUrl: string | null;
-  } | null;
-  isAuthenticated: boolean;
-  isLoading: boolean;
-}
-
-export const useAuthStore = create<AuthState>((set) => ({
-  user: null,
-  isAuthenticated: false,
-  isLoading: true,
-}));
-
-// Hook to sync NextAuth session with Zustand
-export function useAuthSync() {
-  const { data: session, status } = useSession();
-  const setAuth = useAuthStore((state) => state);
-
-  React.useEffect(() => {
-    if (status === 'loading') {
-      useAuthStore.setState({ isLoading: true });
-    } else if (status === 'authenticated' && session?.user) {
-      useAuthStore.setState({
-        user: {
-          id: session.user.id,
-          email: session.user.email!,
-          name: session.user.name,
-          tier: session.user.tier,
-          avatarUrl: session.user.image,
-        },
-        isAuthenticated: true,
-        isLoading: false,
-      });
-    } else {
-      useAuthStore.setState({
-        user: null,
-        isAuthenticated: false,
-        isLoading: false,
-      });
-    }
-  }, [session, status]);
-}
-```
-
----
-
-## 🔢 Quota Management System
-
-### Quota Check Middleware
-
-**Location:** `/src/server/api/middleware/checkQuota.ts` (new file)
-
-```typescript
-import { TRPCError } from '@trpc/server';
-import { createClient } from '@supabase/supabase-js';
-
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-);
-
-export interface QuotaCheckOptions {
-  modelId: string;
-  modelCount: number; // For council analyses
-}
-
 const MODEL_CREDIT_COST: Record<string, number> = {
-  // Free models
+  // Free models (via OpenRouter free tier) - 0 credits
   'openrouter/google/gemini-2.0-flash-exp:free': 0,
   'openrouter/meta-llama/llama-3.3-70b-instruct:free': 0,
+  'openrouter/qwen/qwen-2.5-72b-instruct:free': 0,
 
-  // Mainstream
+  // Mainstream models - 1 credit
   'openai/gpt-4o': 1,
   'anthropic/claude-3.5-sonnet': 1,
-  'google/gemini-2.0-flash': 0.5,
-  'deepseek/r1': 0.5,
+  'google/gemini-2.0-pro': 1,
+  'deepseek/deepseek-r1': 0.5,
 
-  // Premium
+  // Premium models - 2-3 credits
   'anthropic/claude-4.5-opus': 3,
   'openai/o1': 3,
+  'openai/o3': 3,
 };
 
-export async function checkQuota(
-  userId: string,
-  options: QuotaCheckOptions
-): Promise<{ allowed: boolean; reason?: string }> {
-
-  // Get user tier and quota
-  const { data: user } = await supabase
-    .from('users')
-    .select('tier')
-    .eq('id', userId)
-    .single();
-
-  if (!user) throw new TRPCError({ code: 'UNAUTHORIZED' });
-
-  const { data: quota } = await supabase
-    .from('analysis_quota')
-    .select('*')
-    .eq('user_id', userId)
-    .single();
-
-  if (!quota) throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR' });
-
-  const creditCost = MODEL_CREDIT_COST[options.modelId] || 1;
-  const totalCost = creditCost * options.modelCount;
-
-  // Check based on tier
-  if (user.tier === 'OBSERVER') {
-    // Check free model daily limit
-    if (creditCost === 0) {
-      if (quota.free_daily_count >= 3) {
-        return {
-          allowed: false,
-          reason: 'Daily free analysis limit reached (3/day). Upgrade to TRADER for unlimited.'
-        };
-      }
-    } else {
-      // Check premium trial limit
-      if (quota.premium_trial_count >= 3) {
-        return {
-          allowed: false,
-          reason: 'Monthly premium trial exhausted (3/month). Upgrade to TRADER for unlimited access.'
-        };
-      }
-    }
-  } else {
-    // Paid tier: check credits
-    const remaining = quota.credits_allowance - quota.credits_used;
-    if (remaining < totalCost) {
-      return {
-        allowed: false,
-        reason: `Insufficient credits. Need ${totalCost}, have ${remaining}. Upgrade to ARCHITECT or wait for monthly reset.`
-      };
-    }
-  }
-
-  return { allowed: true };
-}
-
-export async function deductQuota(
-  userId: string,
-  options: QuotaCheckOptions
-): Promise<void> {
-  const creditCost = MODEL_CREDIT_COST[options.modelId] || 1;
-  const totalCost = creditCost * options.modelCount;
-
-  const { data: user } = await supabase
-    .from('users')
-    .select('tier')
-    .eq('id', userId)
-    .single();
-
-  if (user?.tier === 'OBSERVER') {
-    if (creditCost === 0) {
-      // Increment free daily count
-      await supabase.rpc('increment_free_daily', { user_id: userId });
-    } else {
-      // Increment premium trial count
-      await supabase.rpc('increment_premium_trial', { user_id: userId });
-    }
-  } else {
-    // Deduct credits
-    await supabase.rpc('deduct_credits', {
-      user_id: userId,
-      amount: totalCost
-    });
-  }
-}
-
-// Supabase RPC functions (to be created in Supabase dashboard)
-/*
-CREATE OR REPLACE FUNCTION increment_free_daily(user_id UUID)
-RETURNS void AS $$
-BEGIN
-  UPDATE analysis_quota
-  SET free_daily_count = free_daily_count + 1,
-      updated_at = NOW()
-  WHERE analysis_quota.user_id = increment_free_daily.user_id;
-END;
-$$ LANGUAGE plpgsql;
-
-CREATE OR REPLACE FUNCTION increment_premium_trial(user_id UUID)
-RETURNS void AS $$
-BEGIN
-  UPDATE analysis_quota
-  SET premium_trial_count = premium_trial_count + 1,
-      updated_at = NOW()
-  WHERE analysis_quota.user_id = increment_premium_trial.user_id;
-END;
-$$ LANGUAGE plpgsql;
-
-CREATE OR REPLACE FUNCTION deduct_credits(user_id UUID, amount DECIMAL)
-RETURNS void AS $$
-BEGIN
-  UPDATE analysis_quota
-  SET credits_used = credits_used + amount,
-      updated_at = NOW()
-  WHERE analysis_quota.user_id = deduct_credits.user_id;
-END;
-$$ LANGUAGE plpgsql;
-*/
+// Credit consumption priority:
+// 1. Add-on credits (never expire)
+// 2. Subscription credits (monthly reset)
 ```
 
 ---
 
-## 🎨 UI Components
+## 🚀 Implementation Phases
 
-### 1. Login Button
+### Phase 2.1: Pricing + Stripe + UI Cleanup (Current)
 
-**Location:** `/src/components/auth/LoginButton.tsx` (new file)
+**Tasks:**
+- [x] Disable Welcome Modal auto-popup
+- [x] Hide "AI Models" from Settings (Desktop Nav, Mobile Nav, LLM Dropdown, Settings UI, Keyboard shortcuts)
+- [x] Create `/pricing` page with 3 tier cards
+- [x] Stripe integration (placeholder)
+  - [x] `/api/checkout` - Create Checkout Session (placeholder)
+  - [x] `/api/webhook/stripe` - Handle payment events (placeholder)
+  - [ ] Environment variables placeholder
+- [ ] Update user tier after payment (placeholder logic)
 
-```tsx
-import { signIn } from 'next-auth/react';
-import { Button } from '@mui/joy';
+**Files to modify:**
+- `src/common/layout/optima/Modals.tsx` - Disable auto-open
+- `src/apps/settings-modal/SettingsModal.tsx` - Hide AI Models tab
+- `pages/pricing.tsx` - New pricing page
+- `app/api/checkout/route.ts` - Stripe checkout
+- `app/api/webhook/stripe/route.ts` - Stripe webhook
 
-export function LoginButton() {
-  return (
-    <Button
-      onClick={() => signIn('google', { callbackUrl: '/chat' })}
-      sx={{
-        bgcolor: '#fff',
-        color: '#000',
-        borderRadius: '50px',
-        fontWeight: 700,
-        fontSize: '0.85rem',
-        px: 2.5,
-        py: 1,
-        '&:hover': {
-          bgcolor: '#00E676',
-          boxShadow: '0 0 15px #00E676',
-        },
-      }}
-    >
-      LOGIN
-    </Button>
-  );
-}
+### Phase 2.2: Feature Restrictions
+
+**Tasks:**
+- [ ] Council concurrent model limit by tier
+- [ ] Fusion method availability by tier
+- [ ] Strategy library access by tier
+- [ ] Model selector filtering by tier
+- [ ] Upgrade prompt UI ("Upgrade to unlock...")
+
+**Files to modify:**
+- `src/modules/analysis/analysis.config.ts` - Council limits
+- `src/modules/analysis/gather/` - Fusion restrictions
+- `src/apps/strategies/` - Strategy access control
+- Model selector components - Filter by tier
+
+### Phase 2.3: Platform API Routing
+
+**Tasks:**
+- [ ] Server-side API key management
+- [ ] Route requests through platform keys
+- [ ] Credit deduction on API calls
+- [ ] Usage tracking and logging
+
+**Architecture:**
+```
+User → tRPC → Check tier/credits → Use platform API key → AI Provider
+                                         ↓
+                              Deduct credits from user account
 ```
 
-### 2. User Menu
+### Phase 2.4: Add-on Credits + Dashboard
 
-**Location:** `/src/components/auth/UserMenu.tsx` (new file)
+**Tasks:**
+- [ ] Add-on credit purchase flow
+- [ ] User dashboard (`/dashboard`)
+- [ ] Credit balance display
+- [ ] Usage history
 
-```tsx
-import { signOut } from 'next-auth/react';
-import { Avatar, Dropdown, Menu, MenuButton, MenuItem } from '@mui/joy';
-import { useAuthStore } from '~/common/stores/store-auth';
+### Phase 3: Admin Panel (Future)
 
-export function UserMenu() {
-  const user = useAuthStore((state) => state.user);
+**Tasks:**
+- [ ] `/admin` route (protected)
+- [ ] Model configuration UI
+- [ ] User management
+- [ ] Usage analytics
+- [ ] Revenue dashboard
 
-  if (!user) return null;
+---
 
-  return (
-    <Dropdown>
-      <MenuButton
-        variant="plain"
-        sx={{ borderRadius: '50%', minWidth: 40, minHeight: 40 }}
-      >
-        <Avatar src={user.avatarUrl || undefined} alt={user.name || user.email}>
-          {user.name?.[0] || user.email[0]}
-        </Avatar>
-      </MenuButton>
-      <Menu>
-        <MenuItem disabled>
-          <div>
-            <div style={{ fontWeight: 600 }}>{user.name || user.email}</div>
-            <div style={{ fontSize: '0.75rem', color: '#666' }}>
-              {user.tier} Tier
-            </div>
-          </div>
-        </MenuItem>
-        <MenuItem onClick={() => signOut()}>Sign Out</MenuItem>
-      </Menu>
-    </Dropdown>
-  );
-}
+## 📁 New Files Structure
+
+```
+/app/api/
+├── auth/[...nextauth]/route.ts  ✅ Created
+├── checkout/route.ts            ✅ Created (placeholder)
+└── webhook/stripe/route.ts      ✅ Created (placeholder)
+
+/pages/
+├── pricing.tsx                  ✅ Created
+└── dashboard.tsx                ← Phase 2.4
+
+/src/apps/
+└── pricing/
+    └── PricingPage.tsx          ✅ Created
+
+/src/server/
+├── auth/auth.config.ts          ✅ Created
+├── supabase/client.ts           ✅ Created
+├── stripe/                      ← Phase 2.1 (when Stripe configured)
+│   ├── stripe.config.ts
+│   └── stripe.service.ts
+└── quota/                       ← Phase 2.2
+    └── quota.service.ts
+
+/src/common/components/
+├── auth/                        ✅ Created
+│   ├── AuthLoginButton.tsx
+│   ├── AuthUserMenu.tsx
+│   └── AuthStatus.tsx
+└── pricing/                     (merged into /src/apps/pricing/)
 ```
 
 ---
 
-## 🚀 Implementation Plan
+## 🔑 Environment Variables
 
-### Phase 2.0: Foundation (Week 1-2)
-
-**Branch:** `phase-2.0-auth-foundation`
-
-#### Step 1: Environment Setup
-- [ ] Create Supabase project
-- [ ] Configure Google OAuth app
-- [ ] Set up environment variables
-
-#### Step 2: Database
-- [ ] Create Supabase tables (users, subscriptions, analysis_quota, analysis_history)
-- [ ] Create RPC functions for quota management
-- [ ] Set up Row Level Security (RLS) policies
-
-#### Step 3: NextAuth Integration
-- [ ] Install dependencies (`next-auth`, `@supabase/supabase-js`)
-- [ ] Create `/src/app/api/auth/[...nextauth]/route.ts`
-- [ ] Create auth store (`/src/common/stores/store-auth.ts`)
-- [ ] Add SessionProvider to root layout
-
-#### Step 4: UI Components
-- [ ] Create LoginButton component
-- [ ] Create UserMenu component
-- [ ] Update navbar to include auth UI
-- [ ] Create simple sign-in page
-
-#### Step 5: Integration Points
-- [ ] Add `useAuthSync()` hook to root layout
-- [ ] Verify user state flows to Zustand
-- [ ] Test login/logout flow
-- [ ] Verify user creation in Supabase
-
-**Deliverable:** Working login/logout, user data in Supabase, all features still unlocked
-
----
-
-### Phase 2.1: Paywall (Week 3-4) - DEFERRED
-
-This will be implemented after Phase 2.0 is tested and verified.
-
-- [ ] Add quota check middleware to AIX calls
-- [ ] Implement tier-based feature gating
-- [ ] Add usage dashboard
-- [ ] Stripe integration
-- [ ] Pricing page
-
----
-
-## 📝 Environment Variables
-
-Create `/Users/lr/Documents/tradecouncil/.env.local`:
+### Current (Phase 2.0)
 
 ```bash
 # Supabase
-NEXT_PUBLIC_SUPABASE_URL="https://xxxxx.supabase.co"
-NEXT_PUBLIC_SUPABASE_ANON_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
-SUPABASE_SERVICE_ROLE_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+NEXT_PUBLIC_SUPABASE_URL=https://qwtcispyxfnncxemmvig.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=xxx
+SUPABASE_SERVICE_ROLE_KEY=xxx
 
 # NextAuth
-NEXTAUTH_URL="http://localhost:3000"
-NEXTAUTH_SECRET="generate_with_openssl_rand_base64_32"
+NEXTAUTH_URL=https://tradecouncil.vercel.app
+NEXTAUTH_SECRET=xxx
 
 # Google OAuth
-GOOGLE_CLIENT_ID="xxxxx.apps.googleusercontent.com"
-GOOGLE_CLIENT_SECRET="GOCSPX-xxxxx"
-
-# Existing AI APIs (keep these)
-OPENAI_API_KEY="sk-..."
-ANTHROPIC_API_KEY="sk-ant-..."
-GOOGLE_AI_API_KEY="..."
+GOOGLE_CLIENT_ID=xxx
+GOOGLE_CLIENT_SECRET=xxx
 ```
 
----
-
-## ✅ Testing Checklist (Phase 2.0)
-
-### Authentication Flow
-- [ ] Click "LOGIN" button
-- [ ] Redirected to Google OAuth consent screen
-- [ ] After consent, redirected back to `/chat`
-- [ ] User avatar appears in navbar
-- [ ] User data visible in Supabase `users` table
-- [ ] Quota record created in `analysis_quota` table
-
-### User State Management
-- [ ] `useAuthStore` contains user data
-- [ ] User ID accessible in components
-- [ ] User tier visible in UI
-- [ ] Session persists on page refresh
-
-### Sign Out
-- [ ] Click "Sign Out" in user menu
-- [ ] User avatar disappears
-- [ ] `useAuthStore` resets to null
-- [ ] Redirected to landing page
-
-### Edge Cases
-- [ ] First-time user: Account created automatically
-- [ ] Returning user: Existing account loaded
-- [ ] Invalid OAuth: Error page displayed
-- [ ] Session expiry: User prompted to re-login
-
----
-
-## 📚 Reference Files to Copy
-
-From `birthdaycardgenerator-1`:
-- ✅ `/src/app/api/auth/[...nextauth]/route.ts` - Auth config
-- ✅ `/src/backend/config/db.ts` - Supabase client setup
-- ✅ `/src/providers/session.tsx` - SessionProvider wrapper
-- ✅ `/src/components/button/login-button.tsx` - Login UI
-- ✅ `/src/components/button/user-button.tsx` - User menu
-
----
-
-## 🔄 Git Workflow
+### Phase 2.1 (Add these)
 
 ```bash
-# Create feature branch
-git checkout -b phase-2.0-auth-foundation
+# Stripe (placeholder until account ready)
+STRIPE_SECRET_KEY=sk_test_xxx
+STRIPE_PUBLISHABLE_KEY=pk_test_xxx
+STRIPE_WEBHOOK_SECRET=whsec_xxx
 
-# Incremental commits
-git add .
-git commit -m "feat: add Supabase database schema"
-git push origin phase-2.0-auth-foundation
+# Stripe Price IDs (create in Stripe Dashboard)
+STRIPE_PRICE_TRADER_MONTHLY=price_xxx
+STRIPE_PRICE_TRADER_YEARLY=price_xxx
+STRIPE_PRICE_ARCHITECT_MONTHLY=price_xxx
+STRIPE_PRICE_ARCHITECT_YEARLY=price_xxx
+```
 
-git commit -m "feat: integrate NextAuth.js with Google OAuth"
-git push origin phase-2.0-auth-foundation
+### Phase 2.3 (Platform API Keys)
 
-git commit -m "feat: add authentication UI components"
-git push origin phase-2.0-auth-foundation
-
-# User tests each commit
-# After approval, merge to main
-git checkout main
-git merge phase-2.0-auth-foundation
-git push origin main
+```bash
+# Platform API Keys (for server-side use only)
+OPENROUTER_API_KEY=sk-or-xxx
+OPENAI_API_KEY=sk-xxx
+ANTHROPIC_API_KEY=sk-ant-xxx
+GOOGLE_AI_API_KEY=xxx
+DEEPSEEK_API_KEY=xxx
 ```
 
 ---
 
-## 📞 Next Steps
+## 📝 Key Decisions Log
 
-1. **Review this spec** - Confirm all decisions are correct
-2. **Create Supabase project** - User provides credentials
-3. **Create Google OAuth app** - User provides client ID/secret
-4. **Start implementation** - Begin with Step 1 (Environment Setup)
-5. **Incremental testing** - User tests each feature as it's built
+| Date | Decision | Rationale |
+|------|----------|-----------|
+| 2025-12-31 | Platform provides all API keys | Core product value - users don't need to manage APIs |
+| 2025-12-31 | OBSERVER gets Council (3/day, free models) | Lower barrier, let users experience core feature |
+| 2025-12-31 | OBSERVER gets Fusion (free models) | Same as above |
+| 2025-12-31 | OBSERVER: Strategy library disabled | Premium feature to drive upgrades |
+| 2025-12-31 | No one-time purchase option | Subscription-only model |
+| 2025-12-31 | Annual = 10 months price | Standard 2-month discount |
+| 2025-12-31 | Add-on credits never expire | User-friendly, encourages purchases |
+| 2025-12-31 | ARCHITECT can optionally add own keys | Power user feature, unlimited without credits |
+
+---
+
+## ✅ Testing Checklist
+
+### Phase 2.0 ✅
+- [x] Google OAuth login
+- [x] User created in Supabase
+- [x] Logout works
+- [x] Session persists
+
+### Phase 2.1
+- [ ] Welcome Modal does NOT auto-popup
+- [ ] AI Models hidden from Settings
+- [ ] Pricing page renders correctly
+- [ ] Stripe checkout redirects (with test keys)
+- [ ] Webhook receives events (test mode)
+
+### Phase 2.2
+- [ ] OBSERVER: Council limited to 3/day
+- [ ] OBSERVER: Only free models visible
+- [ ] OBSERVER: Strategy library hidden
+- [ ] TRADER: 2-3 model Council works
+- [ ] ARCHITECT: 3-5 model Council works
 
 ---
 

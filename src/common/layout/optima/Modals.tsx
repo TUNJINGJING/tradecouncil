@@ -2,11 +2,6 @@ import * as React from 'react';
 
 import { optimaActions, optimaOpenPreferences, useOptimaModals } from './useOptima';
 
-// auto-open models trigger
-import { optimaOpenModels } from '~/common/layout/optima/useOptima';
-import { runWhenIdle } from '~/common/util/pwaUtils';
-import { useModelsZeroState } from '~/common/stores/llms/hooks/useModelsZeroState';
-
 // Modals
 import { AixDebuggerDialog } from '~/modules/aix/client/debugger/AixDebuggerDialog';
 import { LogViewerDialog } from '~/common/logger/viewer/LoggerViewerDialog';
@@ -26,13 +21,14 @@ export function Modals(props: { suspendAutoModelsSetup?: boolean }) {
   const { closeAIXDebugger, closeKeyboardShortcuts, closeLogger, closePreferences, openKeyboardShortcuts } = optimaActions();
 
 
-  // [effect] Auto-open the configurator - anytime no service is selected
-  const hasNoServices = useModelsZeroState();
-  const autoOpenTrigger = hasNoServices && !props.suspendAutoModelsSetup;
-  React.useEffect(() => {
-    if (autoOpenTrigger)
-      return runWhenIdle(() => optimaOpenModels(), 2000);
-  }, [autoOpenTrigger]);
+  // [TradeCouncil] Disable auto-open models configurator
+  // Platform provides API keys, users don't need to configure
+  // const hasNoServices = useModelsZeroState();
+  // const autoOpenTrigger = hasNoServices && !props.suspendAutoModelsSetup;
+  // React.useEffect(() => {
+  //   if (autoOpenTrigger)
+  //     return runWhenIdle(() => optimaOpenModels(), 2000);
+  // }, [autoOpenTrigger]);
 
 
   return <>

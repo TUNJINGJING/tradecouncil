@@ -178,16 +178,14 @@ function LLMDropdown(props: {
     {/*  </ListItemButton>*/}
     {/*)}*/}
 
-    <ListItemButton key='menu-llms' onClick={optimaOpenModels} sx={{ backgroundColor: 'background.surface', py: 'calc(2 * var(--ListDivider-gap))' }}>
-      <ListItemDecorator>{!hasDropdownOptions ? '⚠️' : <BuildCircleIcon color='success' />}</ListItemDecorator>
-      <Box sx={{ flexGrow: 1, display: 'flex', justifyContent: 'space-between', gap: 1, alignItems: 'center' }}>
-        {!hasDropdownOptions ? 'Add Models' : 'Models'}
-        {/*<Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>*/}
-        {/*  <KeyStroke variant='outlined' size='sm' combo='Ctrl + Shift + M' sx={{ ml: 2, bgcolor: 'background.popup' }} />*/}
-        <ArrowForwardRoundedIcon sx={{ ml: 'auto', fontSize: 'xl' }} />
-        {/*</Box>*/}
-      </Box>
-    </ListItemButton>
+    {/* [TradeCouncil] Models configuration hidden - platform provides API keys */}
+    {/*<ListItemButton key='menu-llms' onClick={optimaOpenModels} sx={{ backgroundColor: 'background.surface', py: 'calc(2 * var(--ListDivider-gap))' }}>*/}
+    {/*  <ListItemDecorator>{!hasDropdownOptions ? '⚠️' : <BuildCircleIcon color='success' />}</ListItemDecorator>*/}
+    {/*  <Box sx={{ flexGrow: 1, display: 'flex', justifyContent: 'space-between', gap: 1, alignItems: 'center' }}>*/}
+    {/*    {!hasDropdownOptions ? 'Add Models' : 'Models'}*/}
+    {/*    <ArrowForwardRoundedIcon sx={{ ml: 'auto', fontSize: 'xl' }} />*/}
+    {/*  </Box>*/}
+    {/*</ListItemButton>*/}
 
   </>, [hasDropdownOptions]);
 

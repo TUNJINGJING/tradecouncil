@@ -71,7 +71,8 @@ export function OptimaLayout(props: { suspendAutoModelsSetup?: boolean, children
   useGlobalShortcuts('OptimaApp', React.useMemo(() => [
     // Preferences & Model dialogs
     { key: ',', ctrl: true, action: optimaOpenPreferences },
-    { key: 'm', ctrl: true, shift: true, action: optimaOpenModels },
+    // [TradeCouncil] Models shortcut disabled - platform provides API keys
+    // { key: 'm', ctrl: true, shift: true, action: optimaOpenModels },
     { key: 'g', ctrl: true, shift: true, action: optimaActions().openLogger },
     { key: 'a', ctrl: true, shift: true, action: optimaActions().toggleAIXDebugger },
     // Font Scale
