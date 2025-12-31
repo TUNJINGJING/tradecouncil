@@ -1,14 +1,16 @@
 import * as React from 'react';
 
 import type { SxProps } from '@mui/joy/styles/types';
-import { Box, Button } from '@mui/joy';
+import { Box, Button, Tooltip } from '@mui/joy';
 import AddCircleOutlineRoundedIcon from '@mui/icons-material/AddCircleOutlineRounded';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
+import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import TelegramIcon from '@mui/icons-material/Telegram';
 
 import type { AnalysisStoreApi } from '../store-analysis.hooks';
 import { AnalysisCard } from '../AnalysisCard';
-import { SCATTER_RAY_MAX, SCATTER_RAY_MIN } from '../analysis.config';
+import { SCATTER_RAY_MIN } from '../analysis.config';
+import { useTierPermissions } from '~/common/hooks/useTierPermissions';
 
 import { ExpertRay } from './ExpertAnalysis';
 
@@ -40,6 +42,11 @@ export function ExpertGrid(props: {
 
   const raysCount = props.rayIds.length;
 
+  // [TradeCouncil] Get tier-based Council limit
+  const { councilLimit, tier, getUpgradeMessage } = useTierPermissions();
+  const canAddMore = raysCount < councilLimit;
+  const isAtLimit = raysCount >= councilLimit;
+
   return (
     <Box sx={props.isMobile ? rayGridMobileSx : rayGridDesktopSx}>
 
@@ -57,17 +64,35 @@ export function ExpertGrid(props: {
         />
       ))}
 
-      {/* Add Ray */}
-      {(props.showRayAdd && raysCount < SCATTER_RAY_MAX) && (
+      {/* Add Ray - with tier limit check */}
+      {props.showRayAdd && (
         <AnalysisCard sx={{ mb: 'auto' }}>
-          <Button variant='plain' color='neutral' onClick={props.onIncreaseRayCount} sx={{
-            minHeight: 'calc(2 * var(--Card-padding) + 2rem - 0.5rem)',
-            marginBlock: 'calc(-1 * var(--Card-padding) + 0.25rem)',
-            marginInline: 'calc(-1 * var(--Card-padding) + 0.375rem)',
-            // justifyContent: 'end',
-          }}>
-            <AddCircleOutlineRoundedIcon />
-          </Button>
+          {canAddMore ? (
+            <Button variant='plain' color='neutral' onClick={props.onIncreaseRayCount} sx={{
+              minHeight: 'calc(2 * var(--Card-padding) + 2rem - 0.5rem)',
+              marginBlock: 'calc(-1 * var(--Card-padding) + 0.25rem)',
+              marginInline: 'calc(-1 * var(--Card-padding) + 0.375rem)',
+            }}>
+              <AddCircleOutlineRoundedIcon />
+            </Button>
+          ) : isAtLimit ? (
+            <Tooltip title={getUpgradeMessage(`more than ${councilLimit} concurrent models`)}>
+              <Button
+                variant='plain'
+                color='warning'
+                disabled
+                sx={{
+                  minHeight: 'calc(2 * var(--Card-padding) + 2rem - 0.5rem)',
+                  marginBlock: 'calc(-1 * var(--Card-padding) + 0.25rem)',
+                  marginInline: 'calc(-1 * var(--Card-padding) + 0.375rem)',
+                  opacity: 0.5,
+                }}
+              >
+                <LockOutlinedIcon sx={{ mr: 0.5 }} />
+                {tier} limit: {councilLimit}
+              </Button>
+            </Tooltip>
+          ) : null}
         </AnalysisCard>
       )}
 

@@ -1,15 +1,17 @@
 import * as React from 'react';
 
 import type { SxProps } from '@mui/joy/styles/types';
-import { Box, Button, ButtonGroup, FormControl, Typography } from '@mui/joy';
+import { Box, Button, ButtonGroup, FormControl, Tooltip, Typography } from '@mui/joy';
 import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
 import AutoAwesomeOutlinedIcon from '@mui/icons-material/AutoAwesomeOutlined';
+import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import PlayArrowRoundedIcon from '@mui/icons-material/PlayArrowRounded';
 import PlusOneRoundedIcon from '@mui/icons-material/PlusOneRounded';
 import StopRoundedIcon from '@mui/icons-material/StopRounded';
 
 import { FormLabelStart } from '~/common/components/forms/FormLabelStart';
 import { TooltipOutlined } from '~/common/components/TooltipOutlined';
+import { useTierPermissions } from '~/common/hooks/useTierPermissions';
 
 import type { AnalysisStoreApi } from '../store-analysis.hooks';
 import { ANALYSIS_BTN_SX, SCATTER_COLOR, SCATTER_RAY_PRESETS } from '../analysis.config';
@@ -74,6 +76,9 @@ export function AnalysisScatterPane(props: {
   onExplainerShow: () => any,
 }) {
 
+  // [TradeCouncil] Get tier-based Council limit
+  const { councilLimit, getUpgradeMessage } = useTierPermissions();
+
   const dropdownMemo = React.useMemo(() => (
     <AnalysisScatterDropdown
       analysisStore={props.analysisStore}
@@ -108,24 +113,37 @@ export function AnalysisScatterPane(props: {
         </Typography>
       </Box>
 
-      {/* Ray presets */}
+      {/* Ray presets - filtered by tier */}
       <FormControl sx={{ my: '-0.25rem' }}>
         <FormLabelStart title='Expert Count' sx={/*{ mb: '0.25rem' }*/ undefined} />
         <ButtonGroup variant='outlined'>
           {SCATTER_RAY_PRESETS.map((n) => {
             const isActive = n === props.rayCount;
-            return (
+            const isLocked = n > councilLimit;
+            return isLocked ? (
+              <Tooltip key={n} title={getUpgradeMessage(`${n} concurrent models`)}>
+                <Button
+                  color='neutral'
+                  size='sm'
+                  disabled
+                  sx={{
+                    backgroundColor: 'background.level1',
+                    opacity: 0.5,
+                    width: '3rem',
+                  }}
+                >
+                  <LockOutlinedIcon sx={{ fontSize: '0.9rem' }} />
+                </Button>
+              </Tooltip>
+            ) : (
               <Button
                 key={n}
-                // variant={isActive ? 'solid' : undefined}
                 color={isActive ? SCATTER_COLOR : 'neutral'}
-                // color='neutral'
                 size='sm'
                 onClick={() => props.setRayCount(n)}
                 sx={{
-                  // backgroundColor: isActive ? 'background.popup' : undefined,
                   backgroundColor: !isActive ? `${SCATTER_COLOR}.softBg` : 'background.popup',
-                  fontWeight: isActive ? 'xl' : 400, /* reset, from 600 */
+                  fontWeight: isActive ? 'xl' : 400,
                   width: '3rem',
                 }}
               >
@@ -133,7 +151,7 @@ export function AnalysisScatterPane(props: {
               </Button>
             );
           })}
-          {props.showRayAdd && (
+          {props.showRayAdd && props.rayCount < councilLimit && (
             <Button
               color='neutral'
               size='sm'
@@ -144,7 +162,6 @@ export function AnalysisScatterPane(props: {
                 width: '3rem',
               }}
             >
-              {/*{'+'}*/}
               <PlusOneRoundedIcon />
             </Button>
           )}
