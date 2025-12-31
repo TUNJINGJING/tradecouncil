@@ -14,6 +14,8 @@ import { Link } from '~/common/components/Link';
 import { checkVisibleNav, NavItemApp } from '~/common/app.nav';
 import { navigateToIndex, ROUTE_INDEX } from '~/common/app.routes';
 
+import { AuthStatus } from '~/common/components/auth';
+
 import { InvertedBar, InvertedBarCornerItem } from '../InvertedBar';
 import { PopupPanel } from '../panel/PopupPanel';
 import { optimaActions, optimaOpenDrawer, optimaOpenPanel, optimaTogglePanel, useOptimaPanelOpen } from '../useOptima';
@@ -117,7 +119,10 @@ export function OptimaBar(props: { component: React.ElementType, currentApp?: Na
       {/* Pluggable Toolbar Items */}
       <CenterItemsPortal currentApp={props.currentApp} />
 
-      {/* We used to have the Preview (lightbulb) menu here */}
+      {/* Auth Status: Login Button or User Menu */}
+      <InvertedBarCornerItem>
+        <AuthStatus size='sm' />
+      </InvertedBarCornerItem>
 
       {/* Panel Open: has content always on Mobile (the app menu) */}
       {panelHasContent && (

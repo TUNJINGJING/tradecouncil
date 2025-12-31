@@ -24,6 +24,7 @@ import { Is } from '~/common/util/pwaUtils';
 import { OverlaysInsert } from '~/common/layout/overlays/OverlaysInsert';
 import { ProviderBackendCapabilities } from '~/common/providers/ProviderBackendCapabilities';
 import { ProviderBootstrapLogic } from '~/common/providers/ProviderBootstrapLogic';
+import { ProviderNextAuth } from '~/common/providers/ProviderNextAuth';
 import { ProviderSingleTab } from '~/common/providers/ProviderSingleTab';
 import { ProviderTheming } from '~/common/providers/ProviderTheming';
 import { SnackbarInsert } from '~/common/components/snackbar/SnackbarInsert';
@@ -45,20 +46,22 @@ const Big_AGI_App = ({ Component, emotionCache, pageProps }: MyAppProps) => {
       <meta name='viewport' content='minimum-scale=1, initial-scale=1, width=device-width, shrink-to-fit=no' />
     </Head>
 
-    <ProviderTheming emotionCache={emotionCache}>
-      <ProviderSingleTab>
-        <ProviderBackendCapabilities>
-          {/* ^ Backend capabilities & SSR boundary */}
-          <ErrorBoundary outer>
-            <ProviderBootstrapLogic>
+    <ProviderNextAuth>
+      <ProviderTheming emotionCache={emotionCache}>
+        <ProviderSingleTab>
+          <ProviderBackendCapabilities>
+            {/* ^ Backend capabilities & SSR boundary */}
+            <ErrorBoundary outer>
+              <ProviderBootstrapLogic>
               <SnackbarInsert />
               {getLayout(<Component {...pageProps} />)}
               <OverlaysInsert />
             </ProviderBootstrapLogic>
-          </ErrorBoundary>
-        </ProviderBackendCapabilities>
-      </ProviderSingleTab>
-    </ProviderTheming>
+            </ErrorBoundary>
+          </ProviderBackendCapabilities>
+        </ProviderSingleTab>
+      </ProviderTheming>
+    </ProviderNextAuth>
 
     {hasGoogleAnalytics && <OptionalGoogleAnalytics />}
     {hasPostHogAnalytics && <OptionalPostHogAnalytics />}
