@@ -7,6 +7,7 @@ import type { ModelVendorId } from '~/modules/llms/vendors/vendors.registry';
 import type { DModelParameterId, DModelParameterSpec, DModelParameterValues } from './llms.parameters';
 import type { DModelPricing } from './llms.pricing';
 import type { DModelsServiceId } from './llms.service.types';
+import { isTradeCouncilModel } from './llms.tradecouncil';
 
 
 /**
@@ -83,6 +84,10 @@ export function isLLMHidden(llm: DLLM): boolean {
 }
 
 export function isLLMVisible(llm: DLLM): boolean {
+  // [TradeCouncil] Only show curated models
+  if (!isTradeCouncilModel(llm.id)) {
+    return false;
+  }
   return !(llm.userHidden ?? llm.hidden ?? false);
 }
 
