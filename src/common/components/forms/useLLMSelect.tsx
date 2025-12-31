@@ -1,10 +1,11 @@
 import * as React from 'react';
 
 import type { SxProps } from '@mui/joy/styles/types';
-import { Box, Chip, ColorPaletteProp, FormControl, IconButton, ListDivider, ListItem, ListItemButton, ListItemDecorator, Option, Select, SelectSlotsAndSlotProps, SvgIconProps, VariantProp, optionClasses } from '@mui/joy';
+import { Box, Chip, ColorPaletteProp, FormControl, IconButton, ListDivider, ListItem, ListItemButton, ListItemDecorator, Option, Select, SelectSlotsAndSlotProps, SvgIconProps, Tooltip, VariantProp, optionClasses } from '@mui/joy';
 import ArrowForwardRoundedIcon from '@mui/icons-material/ArrowForwardRounded';
 import AutoModeIcon from '@mui/icons-material/AutoMode';
 import BuildCircleIcon from '@mui/icons-material/BuildCircle';
+import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 
 import type { IModelVendor } from '~/modules/llms/vendors/IModelVendor';
 import { findModelVendor } from '~/modules/llms/vendors/vendors.registry';
@@ -19,6 +20,7 @@ import { getChatLLMId, llmsStoreActions } from '~/common/stores/llms/store-llms'
 import { optimaActions, optimaOpenModels } from '~/common/layout/optima/useOptima';
 import { useUIPreferencesStore } from '~/common/stores/store-ui';
 import { useVisibleLLMs } from '~/common/stores/llms/llms.hooks';
+import { useTierPermissions } from '~/common/hooks/useTierPermissions';
 
 import { FormLabelStart } from './FormLabelStart';
 
@@ -168,6 +170,9 @@ export function useLLMSelect(
   // const modelsStarredOnTop = useUIPreferencesStore(state => state.modelsStarredOnTop); // unsupported, this creates some issues with groups I believe
   const { llms: _filteredLLMs, hasStarred } = useVisibleLLMs(llmId, starredOnly, false);
 
+  // [TradeCouncil] Tier-based model access
+  const { canAccessModel, getUpgradeMessage } = useTierPermissions();
+
   // derived state
   const noIcons = false; //smaller;
   const llm = !llmId ? null : _filteredLLMs.find(llm => llm.id === llmId) ?? null;
@@ -196,6 +201,10 @@ export function useLLMSelect(
       if (addSeparator && !optimizeToSingleVisibleId)
         acc.push(<Box key={'llm-sep-' + llm.id} sx={_styles.listVendor}>{vendor?.name}</Box>);
 
+      // [TradeCouncil] Check tier access for this model
+      const hasAccess = canAccessModel(llm.id);
+      const upgradeMessage = !hasAccess ? getUpgradeMessage(llm.label) : '';
+
       let features = '';
       const isNotSymlink = !llm.label.startsWith('🔗');
       const seemsFree = !!getLLMPricing(llm)?.chat?._isFree;
@@ -212,9 +221,30 @@ export function useLLMSelect(
           features += '🖼️ '; // can draw images
       }
 
-      const showModelOptions = llm.id === llmId && !optimizeToSingleVisibleId;
+      const showModelOptions = llm.id === llmId && !optimizeToSingleVisibleId && hasAccess;
 
-      // the option component
+      // [TradeCouncil] Locked model option - show with lock icon and disabled
+      if (!hasAccess) {
+        acc.push(
+          <Tooltip key={llm.id} title={upgradeMessage} placement='right'>
+            <Option
+              value={llm.id}
+              disabled
+              label={llm.label}
+              sx={{ opacity: 0.6 }}
+            >
+              <ListItemDecorator>
+                <LockOutlinedIcon sx={{ fontSize: 'md', color: 'warning.400' }} />
+              </ListItemDecorator>
+              <div className='agi-ellipsize' style={{ textDecoration: 'line-through', opacity: 0.7 }}>{llm.label}</div>
+              <Chip size='sm' color='warning' variant='soft' sx={_styles.chips}>Upgrade</Chip>
+            </Option>
+          </Tooltip>,
+        );
+        return acc;
+      }
+
+      // the option component (accessible models)
       acc.push(
         <Option
           key={llm.id}
@@ -260,7 +290,7 @@ export function useLLMSelect(
 
       return acc;
     }, [] as React.JSX.Element[]);
-  }, [_filteredLLMs, llmId, noIcons, optimizeToSingleVisibleId, starredOnly]);
+  }, [_filteredLLMs, canAccessModel, getUpgradeMessage, llmId, noIcons, optimizeToSingleVisibleId, starredOnly]);
 
 
   const onSelectChange = React.useCallback((_event: unknown, value: DLLMId | null) => {
