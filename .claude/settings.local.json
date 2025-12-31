@@ -62,7 +62,8 @@
       "Bash(src/modules/analysis/scatter/AnalysisScatterDropdown.tsx )",
       "Bash(src/modules/analysis/scatter/analysis.scatter.ts)",
       "Bash(xargs ls:*)",
-      "Bash(git checkout:*)"
+      "Bash(git checkout:*)",
+      "Bash(git restore:*)"
     ],
     "deny": [
       "Read(node_modules)",
