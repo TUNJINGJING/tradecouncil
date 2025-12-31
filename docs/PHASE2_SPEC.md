@@ -174,20 +174,22 @@ const MODEL_CREDIT_COST: Record<string, number> = {
 - `app/api/checkout/route.ts` - Stripe checkout
 - `app/api/webhook/stripe/route.ts` - Stripe webhook
 
-### Phase 2.2: Feature Restrictions
+### Phase 2.2: Feature Restrictions ✅ COMPLETED
 
 **Tasks:**
-- [ ] Council concurrent model limit by tier
-- [ ] Fusion method availability by tier
-- [ ] Strategy library access by tier
-- [ ] Model selector filtering by tier
-- [ ] Upgrade prompt UI ("Upgrade to unlock...")
+- [x] Council concurrent model limit by tier
+- [x] Fusion method availability by tier
+- [x] Strategy library access by tier
+- [x] Model selector filtering by tier
+- [x] Upgrade prompt UI ("Upgrade to unlock...")
 
-**Files to modify:**
-- `src/modules/analysis/analysis.config.ts` - Council limits
-- `src/modules/analysis/gather/` - Fusion restrictions
-- `src/apps/strategies/` - Strategy access control
-- Model selector components - Filter by tier
+**Files modified:**
+- `src/common/hooks/useTierPermissions.ts` - Tier permission system (NEW)
+- `src/modules/analysis/scatter/ExpertGrid.tsx` - Council limits
+- `src/modules/analysis/scatter/AnalysisScatterPane.tsx` - Expert count display
+- `src/modules/analysis/gather/AnalysisGatherPane.tsx` - Fusion restrictions
+- `src/apps/strategies/AppStrategies.tsx` - Strategy access control
+- `src/common/components/forms/useLLMSelect.tsx` - Model tier filtering
 
 ### Phase 2.3: Platform API Routing
 
@@ -335,12 +337,17 @@ DEEPSEEK_API_KEY=xxx
 - [ ] Stripe checkout redirects (with test keys)
 - [ ] Webhook receives events (test mode)
 
-### Phase 2.2
-- [ ] OBSERVER: Council limited to 3/day
-- [ ] OBSERVER: Only free models visible
-- [ ] OBSERVER: Strategy library hidden
-- [ ] TRADER: 2-3 model Council works
-- [ ] ARCHITECT: 3-5 model Council works
+### Phase 2.2 ✅
+- [x] OBSERVER: Council limited to 2 models
+- [x] OBSERVER: Only free models visible (others locked with upgrade prompt)
+- [x] OBSERVER: Strategy library shows upgrade prompt
+- [x] OBSERVER: Only basic Fusion type available
+- [x] TRADER: 3 model Council works
+- [x] TRADER: Mainstream models accessible
+- [x] TRADER: All fusion types except Custom
+- [x] ARCHITECT: 5 model Council works
+- [x] ARCHITECT: All models accessible
+- [x] ARCHITECT: Custom strategies available
 
 ---
 

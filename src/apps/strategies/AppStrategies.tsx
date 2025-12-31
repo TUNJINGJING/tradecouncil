@@ -1,9 +1,11 @@
 import * as React from 'react';
 
-import { Box, Card, CardContent, Chip, Container, Grid, ListDivider, Tab, tabClasses, TabList, TabPanel, Tabs, Typography } from '@mui/joy';
+import { Box, Button, Card, CardContent, Chip, Container, Grid, ListDivider, Tab, tabClasses, TabList, TabPanel, Tabs, Typography } from '@mui/joy';
+import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 
 import { OptimaDrawerIn } from '~/common/layout/optima/portals/OptimaPortalsIn';
 import { StrategyCategory, StrategyData, StrategyPresetId, TradingStrategyPresets } from '../../data-strategies';
+import { useTierPermissions } from '~/common/hooks/useTierPermissions';
 
 import { Creator } from './creator/Creator';
 import { CreatorDrawer } from './creator/CreatorDrawer';
@@ -102,6 +104,11 @@ function PresetStrategiesGrid(props: {
 
 export function AppStrategies() {
 
+  // [TradeCouncil] Tier-based Strategy access
+  const { hasFeature, getUpgradeMessage } = useTierPermissions();
+  const hasStrategyLibrary = hasFeature('strategyLibrary');
+  const hasCustomStrategies = hasFeature('customStrategies');
+
   // state
   const [selectedSimpleStrategyId, setSelectedSimpleStrategyId] = React.useState<string | null>(null);
   const [selectedPresetId, setSelectedPresetId] = React.useState<StrategyPresetId | null>(null);
@@ -114,6 +121,41 @@ export function AppStrategies() {
   }, []);
 
   const selectedPreset = selectedPresetId ? TradingStrategyPresets[selectedPresetId] : null;
+
+  // [TradeCouncil] OBSERVER - show upgrade prompt
+  if (!hasStrategyLibrary) {
+    return (
+      <Box sx={{
+        flexGrow: 1,
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        p: { xs: 3, md: 6 },
+        textAlign: 'center',
+      }}>
+        <LockOutlinedIcon sx={{ fontSize: 64, color: 'warning.400', mb: 2 }} />
+        <Typography level='h3' sx={{ mb: 1 }}>
+          Strategy Library
+        </Typography>
+        <Typography level='body-lg' sx={{ color: 'text.secondary', mb: 3, maxWidth: 400 }}>
+          Access 8 preset trading strategies designed by professional traders.
+        </Typography>
+        <Typography level='body-sm' sx={{ color: 'warning.500', mb: 2 }}>
+          {getUpgradeMessage('Strategy Library')}
+        </Typography>
+        <Button
+          variant='solid'
+          color='warning'
+          size='lg'
+          component='a'
+          href='/pricing'
+        >
+          View Pricing
+        </Button>
+      </Box>
+    );
+  }
 
   return <>
 
@@ -156,7 +198,14 @@ export function AppStrategies() {
             }}
           >
             <Tab value='presets'>Preset Strategies (8)</Tab>
-            <Tab value='create'>Create Custom</Tab>
+            {hasCustomStrategies ? (
+              <Tab value='create'>Create Custom</Tab>
+            ) : (
+              <Tab value='create' disabled sx={{ opacity: 0.5 }}>
+                <LockOutlinedIcon sx={{ fontSize: 'sm', mr: 0.5 }} />
+                Create Custom
+              </Tab>
+            )}
           </TabList>
 
           {/* Preset Strategies Panel */}
@@ -220,11 +269,26 @@ export function AppStrategies() {
 
           {/* Create Custom Panel */}
           <TabPanel value='create' sx={{ p: 0, pt: 3 }}>
-            <ListDivider sx={{ my: 2 }} />
-
-            {!!selectedSimpleStrategyId && <Viewer selectedSimplePersonaId={selectedSimpleStrategyId} />}
-
-            <Creator display={!selectedSimpleStrategyId} />
+            {!hasCustomStrategies ? (
+              <Box sx={{ textAlign: 'center', py: 4 }}>
+                <LockOutlinedIcon sx={{ fontSize: 48, color: 'warning.400', mb: 2 }} />
+                <Typography level='title-lg' sx={{ mb: 1 }}>
+                  Custom Strategies
+                </Typography>
+                <Typography level='body-md' sx={{ color: 'text.secondary', mb: 2 }}>
+                  Create and save your own custom trading strategies.
+                </Typography>
+                <Typography level='body-sm' sx={{ color: 'warning.500' }}>
+                  {getUpgradeMessage('custom strategies')}
+                </Typography>
+              </Box>
+            ) : (
+              <>
+                <ListDivider sx={{ my: 2 }} />
+                {!!selectedSimpleStrategyId && <Viewer selectedSimplePersonaId={selectedSimpleStrategyId} />}
+                <Creator display={!selectedSimpleStrategyId} />
+              </>
+            )}
           </TabPanel>
         </Tabs>
 

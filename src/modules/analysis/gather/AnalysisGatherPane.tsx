@@ -2,16 +2,18 @@ import * as React from 'react';
 import { useShallow } from 'zustand/react/shallow';
 
 import type { ColorPaletteProp, SxProps } from '@mui/joy/styles/types';
-import { Box, Button, ButtonGroup, FormControl, Typography } from '@mui/joy';
+import { Box, Button, ButtonGroup, FormControl, Tooltip, Typography } from '@mui/joy';
 import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
 import AutoAwesomeOutlinedIcon from '@mui/icons-material/AutoAwesomeOutlined';
+import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 
 import { LLM_IF_OAI_Reasoning } from '~/common/stores/llms/llms.types';
 import { animationColorBeamGather } from '~/common/util/animUtils';
 import { useLLMSelect } from '~/common/components/forms/useLLMSelect';
+import { useTierPermissions } from '~/common/hooks/useTierPermissions';
 
 import { AnalysisStoreApi, useAnalysisStore } from '../store-analysis.hooks';
-import { FFactoryId, FUSION_FACTORIES } from './instructions/analysis.gather.factories';
+import { CUSTOM_FACTORY_ID, FFactoryId, FUSION_FACTORIES } from './instructions/analysis.gather.factories';
 import { ANALYSIS_SHOW_REASONING_ICON, GATHER_COLOR } from '../analysis.config';
 import { analysisPaneSx } from '../AnalysisCard';
 import { useModuleAnalysisStore } from '../store-module-analysis';
@@ -63,6 +65,10 @@ export function AnalysisGatherPane(props: {
   raysReady: number,
 }) {
 
+  // [TradeCouncil] Tier-based Fusion type restrictions
+  const { hasFeature, getUpgradeMessage } = useTierPermissions();
+  const hasFullFusion = hasFeature('fullFusion');
+  const hasCustomFusion = hasFeature('customFusion');
 
   // external state
   // const { setStickToBottom } = useScrollToBottom();
@@ -127,7 +133,7 @@ export function AnalysisGatherPane(props: {
         </Typography>
       </Box>
 
-      {/* Method */}
+      {/* Method - with tier-based restrictions */}
       <FormControl sx={{ my: '-0.25rem' }}>
         {/*{!props.isMobile && <FormLabelStart title='Method' />}*/}
         <ButtonGroup
@@ -140,6 +146,30 @@ export function AnalysisGatherPane(props: {
             const { factoryId, shortLabel } = factory;
             const isActive = factoryId === currentFactoryId;
             const buttonColor: ColorPaletteProp = isActive ? GATHER_COLOR : 'neutral';
+
+            // [TradeCouncil] Check tier access for this fusion type
+            const isCustom = factoryId === CUSTOM_FACTORY_ID;
+            const isAdvanced = factoryId !== 'fuse'; // guided, eval, custom are advanced
+            const isLocked = isCustom ? !hasCustomFusion : (isAdvanced && !hasFullFusion);
+
+            if (isLocked) {
+              return (
+                <Tooltip key={'factory-' + factoryId} title={getUpgradeMessage(shortLabel + ' fusion')} placement='top'>
+                  <Button
+                    color='neutral'
+                    disabled
+                    sx={{
+                      backgroundColor: 'background.level1',
+                      opacity: 0.5,
+                    }}
+                  >
+                    <LockOutlinedIcon sx={{ fontSize: 'sm', mr: 0.5 }} />
+                    {shortLabel}
+                  </Button>
+                </Tooltip>
+              );
+            }
+
             return (
               <Button
                 key={'factory-' + factoryId}
