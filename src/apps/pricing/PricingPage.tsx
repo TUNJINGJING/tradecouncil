@@ -246,6 +246,173 @@ function PricingCard({ plan, isYearly, onSelect, isLoading }: {
   );
 }
 
+// Feature comparison data
+const featureCategories = [
+  {
+    category: 'AI Models',
+    features: [
+      { name: 'Free Models', observer: 'Gemini Flash, Llama 3.3, Qwen 2.5', trader: true, architect: true },
+      { name: 'Mainstream Models', observer: false, trader: 'GPT-4o, Claude 3.5, Gemini Pro, DeepSeek', architect: true },
+      { name: 'Premium Models', observer: '3 trials/month', trader: false, architect: 'Claude Opus, o1, o3, GPT-5' },
+      { name: 'New Model Priority', observer: false, trader: false, architect: true },
+    ],
+  },
+  {
+    category: 'Analysis Features',
+    features: [
+      { name: 'Daily Analysis Quota', observer: '3/day (free models)', trader: '500 credits/month', architect: '1500 credits/month' },
+      { name: 'Credit Rollover', observer: false, trader: false, architect: '1 month (max 3000)' },
+      { name: 'Council (Multi-AI)', observer: '3/day, 2 models', trader: '2-3 models concurrent', architect: '3-5 models concurrent' },
+      { name: 'Fusion Analysis', observer: 'Free models only', trader: 'All 4 fusion types', architect: 'All 4 fusion types' },
+    ],
+  },
+  {
+    category: 'Strategy & Tools',
+    features: [
+      { name: 'Strategy Library', observer: false, trader: '8 presets (read-only)', architect: '8 presets + custom (max 50)' },
+      { name: 'Vision (Chart Analysis)', observer: 'Basic (Gemini)', trader: 'Advanced (GPT-4o + Claude)', architect: 'Multi-model validation' },
+      { name: 'Export Formats', observer: 'Text copy only', trader: 'Markdown, JSON', architect: 'Markdown, JSON, Share links' },
+    ],
+  },
+  {
+    category: 'Data & History',
+    features: [
+      { name: 'Chat History', observer: '7 days, max 10', trader: '90 days, unlimited', architect: 'Permanent, unlimited' },
+      { name: 'Custom API Keys', observer: false, trader: false, architect: 'Optional (unlimited use)' },
+    ],
+  },
+];
+
+function FeatureComparisonTable() {
+  return (
+    <Box sx={{
+      py: 8,
+      px: 3,
+      background: cssVars.bgDeep,
+      borderTop: '1px solid #222',
+    }}>
+      <Box sx={{ maxWidth: 1000, mx: 'auto' }}>
+        <Typography component="h2" sx={{
+          fontSize: { xs: '1.5rem', md: '2rem' },
+          fontWeight: 300,
+          mb: 1,
+          textAlign: 'center',
+        }}>
+          Complete Feature Comparison
+        </Typography>
+        <Typography sx={{ color: '#666', mb: 6, textAlign: 'center' }}>
+          See exactly what each tier includes
+        </Typography>
+
+        {/* Table Header */}
+        <Box sx={{
+          display: 'grid',
+          gridTemplateColumns: { xs: '1fr', md: '2fr 1fr 1fr 1fr' },
+          gap: 1,
+          mb: 2,
+          position: 'sticky',
+          top: 0,
+          background: cssVars.bgDeep,
+          py: 2,
+          zIndex: 10,
+        }}>
+          <Box sx={{ display: { xs: 'none', md: 'block' } }} />
+          {['OBSERVER', 'TRADER', 'ARCHITECT'].map((tier, idx) => (
+            <Box key={tier} sx={{
+              textAlign: 'center',
+              py: 1,
+              color: idx === 0 ? '#888' : idx === 1 ? cssVars.accent : '#FFC107',
+              fontWeight: 600,
+              letterSpacing: '2px',
+              fontSize: '0.8rem',
+            }}>
+              {tier}
+              <Typography sx={{ color: '#666', fontSize: '0.75rem', fontWeight: 400, mt: 0.5 }}>
+                {idx === 0 ? '$0/mo' : idx === 1 ? '$39/mo' : '$99/mo'}
+              </Typography>
+            </Box>
+          ))}
+        </Box>
+
+        {/* Feature Categories */}
+        {featureCategories.map((cat) => (
+          <Box key={cat.category} sx={{ mb: 4 }}>
+            {/* Category Header */}
+            <Typography sx={{
+              color: '#fff',
+              fontSize: '0.9rem',
+              fontWeight: 600,
+              py: 2,
+              px: 2,
+              background: '#1a1a1a',
+              borderLeft: `3px solid ${cssVars.accent}`,
+              mb: 1,
+            }}>
+              {cat.category}
+            </Typography>
+
+            {/* Features */}
+            {cat.features.map((feature, idx) => (
+              <Box key={feature.name} sx={{
+                display: 'grid',
+                gridTemplateColumns: { xs: '1fr', md: '2fr 1fr 1fr 1fr' },
+                gap: 1,
+                py: 2,
+                px: 2,
+                borderBottom: '1px solid #1a1a1a',
+                background: idx % 2 === 0 ? 'transparent' : 'rgba(255,255,255,0.02)',
+                '&:hover': { background: 'rgba(255,255,255,0.03)' },
+              }}>
+                {/* Feature Name */}
+                <Typography sx={{ color: '#999', fontSize: '0.85rem' }}>
+                  {feature.name}
+                </Typography>
+
+                {/* Values for each tier */}
+                {[feature.observer, feature.trader, feature.architect].map((value, tierIdx) => (
+                  <Box key={tierIdx} sx={{
+                    textAlign: 'center',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: { xs: 'flex-start', md: 'center' },
+                    gap: 1,
+                  }}>
+                    {/* Mobile tier label */}
+                    <Typography sx={{
+                      display: { xs: 'inline', md: 'none' },
+                      color: tierIdx === 0 ? '#888' : tierIdx === 1 ? cssVars.accent : '#FFC107',
+                      fontSize: '0.75rem',
+                      minWidth: 70,
+                    }}>
+                      {['OBSERVER:', 'TRADER:', 'ARCHITECT:'][tierIdx]}
+                    </Typography>
+
+                    {typeof value === 'boolean' ? (
+                      value ? (
+                        <CheckIcon sx={{ color: cssVars.accent, fontSize: '1.1rem' }} />
+                      ) : (
+                        <CloseIcon sx={{ color: '#333', fontSize: '1.1rem' }} />
+                      )
+                    ) : (
+                      <Typography sx={{
+                        color: '#ccc',
+                        fontSize: '0.8rem',
+                        fontFamily: '"Courier New", monospace',
+                      }}>
+                        {value}
+                      </Typography>
+                    )}
+                  </Box>
+                ))}
+              </Box>
+            ))}
+          </Box>
+        ))}
+      </Box>
+    </Box>
+  );
+}
+
 export function PricingPage() {
   const router = useRouter();
   const { data: session, status } = useSession();
@@ -448,6 +615,9 @@ export function PricingPage() {
           </Typography>
         </Box>
       </Box>
+
+      {/* Detailed Feature Comparison Table */}
+      <FeatureComparisonTable />
 
       {/* Footer */}
       <Box sx={{

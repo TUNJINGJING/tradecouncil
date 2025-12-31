@@ -85,7 +85,7 @@ function Navbar() {
           <Box
             key={item}
             component="a"
-            href={`#${item.toLowerCase()}`}
+            href={item === 'PRICING' ? '/pricing' : `#${item.toLowerCase()}`}
             sx={{
               color: '#888',
               fontSize: '0.9rem',
@@ -805,71 +805,69 @@ function PrivacySection() {
 function PricingSection() {
   const router = useRouter();
 
-  const plans = [
+  const tiers = [
     {
       name: 'OBSERVER',
       price: '$0',
-      features: [
-        { label: 'Analysis Limit', value: '3 / Day' },
-        { label: 'Models', value: 'GPT-4o Only' },
-        { label: 'Adversarial Mode', value: 'Disabled' },
-        { label: 'Speed', value: 'Standard' },
-      ],
-      buttonText: 'INITIATE',
-      isPro: false,
+      tagline: 'Trial & Taste',
+      highlight: 'Free models + 3 premium trials/mo',
+      accentColor: '#888',
+    },
+    {
+      name: 'TRADER',
+      price: '$39',
+      tagline: 'Daily Analysis',
+      highlight: '500 credits/mo, mainstream models',
+      accentColor: cssVars.accent,
+      isPopular: true,
     },
     {
       name: 'ARCHITECT',
-      price: '$29',
-      features: [
-        { label: 'Analysis Limit', value: 'Unlimited' },
-        { label: 'Models', value: 'All 5 Models' },
-        { label: 'Adversarial Mode', value: 'Enabled' },
-        { label: 'Speed', value: 'Turbo' },
-      ],
-      buttonText: 'SECURE ACCESS',
-      isPro: true,
+      price: '$99',
+      tagline: 'Expert Consensus',
+      highlight: '1500 credits/mo, all top models',
+      accentColor: '#FFC107',
     },
   ];
 
   return (
     <Box id="pricing" sx={{
-      padding: '150px 0',
+      padding: { xs: '80px 0', md: '150px 0' },
       background: '#080808',
       borderTop: '1px solid #222',
     }}>
-      <Box sx={{ textAlign: 'center', mb: '80px' }}>
-        <Typography component="h2" sx={{ fontSize: '3rem', mb: '10px', fontWeight: 200, color: '#fff' }}>
+      <Box sx={{ textAlign: 'center', mb: { xs: '40px', md: '80px' }, px: 2 }}>
+        <Typography component="h2" sx={{ fontSize: { xs: '2rem', md: '3rem' }, mb: '10px', fontWeight: 200, color: '#fff' }}>
           Access the Vault.
         </Typography>
-        <Typography sx={{ color: '#888' }}>Select your tier of intelligence.</Typography>
+        <Typography sx={{ color: '#888' }}>One subscription. All major AI models. No API keys needed.</Typography>
       </Box>
 
       <Box sx={{
         display: 'grid',
-        gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' },
-        gap: '40px',
-        width: '85%',
-        maxWidth: '1200px',
+        gridTemplateColumns: { xs: '1fr', md: 'repeat(3, 1fr)' },
+        gap: { xs: '20px', md: '30px' },
+        width: '90%',
+        maxWidth: '1000px',
         mx: 'auto',
+        mb: 6,
       }}>
-        {plans.map((plan) => (
+        {tiers.map((tier) => (
           <Box
-            key={plan.name}
+            key={tier.name}
             sx={{
-              background: plan.isPro
-                ? 'linear-gradient(180deg, rgba(0, 230, 118, 0.05) 0%, #111 40%)'
+              background: tier.isPopular
+                ? 'linear-gradient(180deg, rgba(0, 230, 118, 0.08) 0%, #111 40%)'
                 : '#111',
-              border: plan.isPro ? `1px solid ${cssVars.accent}` : '1px solid #333',
-              padding: '60px',
+              border: `1px solid ${tier.isPopular ? cssVars.accent : '#333'}`,
+              padding: { xs: '30px', md: '40px' },
               position: 'relative',
-              display: 'flex',
-              flexDirection: 'column',
-              justifyContent: 'space-between',
-              boxShadow: plan.isPro ? `0 0 50px rgba(0, 230, 118, 0.05)` : 'none',
+              textAlign: 'center',
+              transition: 'transform 0.2s',
+              '&:hover': { transform: 'translateY(-4px)' },
             }}
           >
-            {plan.isPro && (
+            {tier.isPopular && (
               <Box sx={{
                 position: 'absolute',
                 top: '-12px',
@@ -879,78 +877,49 @@ function PricingSection() {
                 color: cssVars.accent,
                 border: `1px solid ${cssVars.accent}`,
                 padding: '4px 12px',
-                fontSize: '12px',
+                fontSize: '11px',
                 letterSpacing: '2px',
               }}>
-                RECOMMENDED
+                POPULAR
               </Box>
             )}
 
-            <Box>
-              <Typography sx={{
-                color: plan.isPro ? cssVars.accent : '#888',
-                letterSpacing: '2px',
-                fontSize: '0.9rem',
-              }}>
-                {plan.name}
-              </Typography>
-
-              <Typography sx={{
-                fontSize: '4rem',
-                fontWeight: 800,
-                lineHeight: 1,
-                my: '30px',
-                color: '#fff',
-              }}>
-                {plan.price}<Box component="span" sx={{ fontSize: '1rem', fontWeight: 400 }}>/mo</Box>
-              </Typography>
-
-              <Box component="ul" sx={{ listStyle: 'none', mb: '40px', p: 0 }}>
-                {plan.features.map((feature) => (
-                  <Box
-                    key={feature.label}
-                    component="li"
-                    sx={{
-                      padding: '15px 0',
-                      borderBottom: '1px dashed #222',
-                      color: '#999',
-                      fontFamily: '"Courier New", monospace',
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                    }}
-                  >
-                    <span>{feature.label}</span>
-                    <Box component="strong" sx={{ color: '#fff' }}>{feature.value}</Box>
-                  </Box>
-                ))}
-              </Box>
-            </Box>
-
-            <Button
-              onClick={() => router.push('/chat')}
-              sx={{
-                display: 'block',
-                textAlign: 'center',
-                width: '100%',
-                padding: '20px',
-                textTransform: 'uppercase',
-                letterSpacing: '2px',
-                border: plan.isPro ? `1px solid ${cssVars.accent}` : '1px solid #444',
-                background: plan.isPro ? cssVars.accent : 'transparent',
-                color: plan.isPro ? '#000' : '#fff',
-                fontWeight: plan.isPro ? 'bold' : 'normal',
-                transition: '0.2s',
-                '&:hover': {
-                  background: '#fff',
-                  color: '#000',
-                  borderColor: '#fff',
-                },
-              }}
-            >
-              {plan.buttonText}
-            </Button>
+            <Typography sx={{ color: tier.accentColor, letterSpacing: '2px', fontSize: '0.8rem', fontWeight: 600 }}>
+              {tier.name}
+            </Typography>
+            <Typography sx={{ fontSize: { xs: '2.5rem', md: '3rem' }, fontWeight: 800, my: 2, color: '#fff' }}>
+              {tier.price}<Box component="span" sx={{ fontSize: '1rem', fontWeight: 400, color: '#666' }}>/mo</Box>
+            </Typography>
+            <Typography sx={{ color: '#666', fontSize: '0.85rem', mb: 1 }}>{tier.tagline}</Typography>
+            <Typography sx={{ color: '#999', fontSize: '0.8rem', fontFamily: '"Courier New", monospace' }}>
+              {tier.highlight}
+            </Typography>
           </Box>
         ))}
+      </Box>
+
+      <Box sx={{ textAlign: 'center' }}>
+        <Button
+          onClick={() => router.push('/pricing')}
+          sx={{
+            padding: '16px 48px',
+            textTransform: 'uppercase',
+            letterSpacing: '2px',
+            fontSize: '0.9rem',
+            border: `1px solid ${cssVars.accent}`,
+            background: cssVars.accent,
+            color: '#000',
+            fontWeight: 'bold',
+            transition: '0.2s',
+            '&:hover': {
+              background: '#fff',
+              color: '#000',
+              borderColor: '#fff',
+            },
+          }}
+        >
+          View Full Pricing &amp; Features
+        </Button>
       </Box>
     </Box>
   );
