@@ -66,8 +66,6 @@ export function AnalysisView(props: {
 
   // handlers
 
-  const handleRaySetCount = React.useCallback((n: number) => setRayCount(n), [setRayCount]);
-
   const handleRayIncreaseCount = React.useCallback(() => setRayCount(raysCount + 1), [setRayCount, raysCount]);
 
   const handleRaysOperation = React.useCallback((operation: 'copy' | 'use') => {
@@ -187,8 +185,6 @@ export function AnalysisView(props: {
         analysisStore={props.analysisStore}
         isMobile={props.isMobile}
         rayCount={raysCount}
-        setRayCount={handleRaySetCount}
-        showRayAdd={!cardAdd}
         startEnabled={inputReady}
         startBusy={isScattering}
         startRestart={!props.isMobile && raysReady >= 1 && raysReady < raysCount && !isScattering}

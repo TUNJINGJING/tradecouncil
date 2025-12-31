@@ -5,6 +5,10 @@ import { useSession } from 'next-auth/react';
 // Tier types
 export type UserTier = 'OBSERVER' | 'TRADER' | 'ARCHITECT' | 'ARCHITECT_PRO';
 
+// [DEV] Override tier for testing - set this to test different tiers
+// Set to null for production behavior (use actual user tier)
+const DEV_TIER_OVERRIDE: UserTier | null = null; // Change to 'TRADER' or 'ARCHITECT' to test
+
 // Tier hierarchy (higher number = more permissions)
 const TIER_LEVELS: Record<UserTier, number> = {
   OBSERVER: 0,
@@ -147,8 +151,9 @@ export function useTierPermissions(): TierPermissions {
   const isLoading = status === 'loading';
   const isAuthenticated = status === 'authenticated';
 
+  // [DEV] Use override if set, otherwise use actual user tier
   // Default to OBSERVER for unauthenticated users
-  const tier: UserTier = (session?.user?.tier as UserTier) || 'OBSERVER';
+  const tier: UserTier = DEV_TIER_OVERRIDE ?? (session?.user?.tier as UserTier) ?? 'OBSERVER';
   const tierLevel = TIER_LEVELS[tier];
 
   // Check if user has access to a feature
