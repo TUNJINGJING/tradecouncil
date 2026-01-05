@@ -2,6 +2,8 @@
  * TradeCouncil Curated Model List
  * Only these models are shown to users for a cleaner, more reliable experience.
  * All models via OpenRouter for unified billing.
+ *
+ * Uses partial matching with includes() - e.g. 'openai/gpt-4o' matches 'openai/gpt-4o-2024-08-06'
  */
 
 // Models to show (whitelist) - uses partial matching
@@ -21,24 +23,29 @@ export const TRADECOUNCIL_MODEL_WHITELIST = [
   // === PAID MODELS (OpenRouter) ===
   // DeepSeek
   'deepseek/deepseek-chat',            // DeepSeek V3 (paid, cheap)
-  'deepseek/deepseek-v3',              // DeepSeek V3.2
+  'deepseek/deepseek-v3',              // DeepSeek V3.x
 
   // Google
   'google/gemini-2.5-pro',             // Gemini 2.5 Pro
-  'google/gemini-2.5-flash',           // Gemini 2.5 Flash
+  'google/gemini-2.5-flash',           // Gemini 2.5 Flash (paid)
   'google/gemini-flash-lite',          // Gemini Flash Lite
 
-  // OpenAI
-  'openai/gpt-4o',                     // GPT-4o
-  'openai/gpt-4o-mini',                // GPT-4o Mini
-  'openai/o1',                         // o1
-  'openai/o3',                         // o3
+  // OpenAI (matches versioned IDs like gpt-4o-2024-08-06)
+  'openai/gpt-4o',                     // GPT-4o & variants
+  'openai/gpt-4.1',                    // GPT-4.1 series
+  'openai/o1',                         // o1 reasoning
+  'openai/o3',                         // o3 reasoning
+  'openai/o4-mini',                    // o4-mini
 
-  // Anthropic
+  // Anthropic (matches versioned IDs like claude-sonnet-4.5)
   'anthropic/claude-3.5-sonnet',       // Claude 3.5 Sonnet
   'anthropic/claude-3.5-haiku',        // Claude 3.5 Haiku
-  'anthropic/claude-sonnet-4',         // Claude Sonnet 4
-  'anthropic/claude-opus',             // Claude Opus
+  'anthropic/claude-sonnet-4',         // Claude Sonnet 4.x
+  'anthropic/claude-opus-4',           // Claude Opus 4.x
+  'anthropic/claude-haiku-4',          // Claude Haiku 4.x
+
+  // xAI
+  'x-ai/grok',                         // Grok models
 ] as const;
 
 // Models to always hide (blacklist) - uses partial matching
