@@ -3,41 +3,44 @@
  * Only these models are shown to users for a cleaner, more reliable experience.
  * All models via OpenRouter for unified billing.
  *
- * Uses partial matching with includes() - e.g. 'openai/gpt-4o' matches 'openai/gpt-4o-2024-08-06'
+ * IMPORTANT: OpenRouter has both FREE and PAID versions of some models:
+ * - FREE: 'deepseek/deepseek-r1-0528:free' (has :free suffix)
+ * - PAID: 'deepseek/deepseek-r1-0528' (no suffix)
+ *
+ * To avoid duplicates, we use specific patterns.
  */
 
-// Models to show (whitelist) - uses partial matching
-export const TRADECOUNCIL_MODEL_WHITELIST = [
-  // === FREE MODELS (OpenRouter) ===
-  'deepseek/deepseek-r1',              // DeepSeek R1 (free)
-  'deepseek/deepseek-chat:free',       // DeepSeek Chat (free)
+// FREE models - these have ':free' suffix in OpenRouter
+// We'll check for ':free' suffix to identify them
+export const TRADECOUNCIL_FREE_MODEL_PATTERNS = [
+  'deepseek/deepseek-r1',              // DeepSeek R1 (free via :free suffix)
+  'deepseek/deepseek-chat',            // DeepSeek Chat (free via :free suffix)
   'google/gemini-2.0-flash',           // Gemini 2.0 Flash (free)
-  'google/gemini-2.5-flash-preview',   // Gemini 2.5 Flash (free preview)
-  'google/gemma-3-27b',                // Gemma 3 27B (free)
+  'google/gemma-3',                    // Gemma 3 (free)
   'meta-llama/llama-3.3-70b',          // Llama 3.3 70B (free)
   'meta-llama/llama-3.1-405b',         // Llama 3.1 405B (free)
   'qwen/qwen-2.5-72b',                 // Qwen 2.5 72B (free)
   'qwen/qwen3',                        // Qwen 3 (free)
   'mistralai/mistral-small',           // Mistral Small (free)
+] as const;
 
-  // === PAID MODELS (OpenRouter) ===
-  // DeepSeek
-  'deepseek/deepseek-chat',            // DeepSeek V3 (paid, cheap)
+// PAID models - these do NOT have ':free' suffix
+export const TRADECOUNCIL_PAID_MODEL_PATTERNS = [
+  // DeepSeek (paid versions)
   'deepseek/deepseek-v3',              // DeepSeek V3.x
 
   // Google
   'google/gemini-2.5-pro',             // Gemini 2.5 Pro
   'google/gemini-2.5-flash',           // Gemini 2.5 Flash (paid)
-  'google/gemini-flash-lite',          // Gemini Flash Lite
 
-  // OpenAI (matches versioned IDs like gpt-4o-2024-08-06)
+  // OpenAI
   'openai/gpt-4o',                     // GPT-4o & variants
   'openai/gpt-4.1',                    // GPT-4.1 series
   'openai/o1',                         // o1 reasoning
   'openai/o3',                         // o3 reasoning
   'openai/o4-mini',                    // o4-mini
 
-  // Anthropic (matches versioned IDs like claude-sonnet-4.5)
+  // Anthropic
   'anthropic/claude-3.5-sonnet',       // Claude 3.5 Sonnet
   'anthropic/claude-3.5-haiku',        // Claude 3.5 Haiku
   'anthropic/claude-sonnet-4',         // Claude Sonnet 4.x
@@ -51,7 +54,7 @@ export const TRADECOUNCIL_MODEL_WHITELIST = [
 // Models to always hide (blacklist) - uses partial matching
 // CAUTION: Many paid models have ':beta' suffix - don't blacklist 'beta' alone!
 export const TRADECOUNCIL_MODEL_BLACKLIST = [
-  // Experimental/unstable (be specific to avoid blocking ':beta' models)
+  // Experimental/unstable
   'speciale',
   ':experimental',
   ':extended',
@@ -70,6 +73,12 @@ export const TRADECOUNCIL_MODEL_BLACKLIST = [
   'nano-banana',
   'nex-',
   'tng/',
+  // Distilled/small variants (keep main models only)
+  'distill',
+  'qwen3-4b',
+  'qwen3-8b',
+  'qwen3-14b',
+  'qwen3-30b',
 ] as const;
 
 /**
@@ -83,6 +92,28 @@ export function isTradeCouncilModel(modelId: string): boolean {
     return false;
   }
 
-  // Then check whitelist - only show these
-  return TRADECOUNCIL_MODEL_WHITELIST.some(allowed => id.includes(allowed.toLowerCase()));
+  const isFreeModel = id.includes(':free');
+
+  // For FREE models - check if it matches our free model patterns
+  if (isFreeModel) {
+    return TRADECOUNCIL_FREE_MODEL_PATTERNS.some(pattern =>
+      id.includes(pattern.toLowerCase())
+    );
+  }
+
+  // For PAID models - check patterns, but exclude if a free version should be shown instead
+  // (prevents showing paid version when free version exists)
+  const matchesFreePattern = TRADECOUNCIL_FREE_MODEL_PATTERNS.some(pattern =>
+    id.includes(pattern.toLowerCase())
+  );
+
+  // If this paid model matches a free pattern, hide it (user should use free version)
+  if (matchesFreePattern) {
+    return false;
+  }
+
+  // Check if it matches paid model patterns
+  return TRADECOUNCIL_PAID_MODEL_PATTERNS.some(pattern =>
+    id.includes(pattern.toLowerCase())
+  );
 }
