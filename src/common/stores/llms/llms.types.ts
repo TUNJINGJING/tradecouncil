@@ -84,11 +84,9 @@ export function isLLMHidden(llm: DLLM): boolean {
 }
 
 export function isLLMVisible(llm: DLLM): boolean {
-  // [TradeCouncil] Only show curated models
-  if (!isTradeCouncilModel(llm.id)) {
-    return false;
-  }
-  return !(llm.userHidden ?? llm.hidden ?? false);
+  // [TradeCouncil] Only show curated models - whitelist controls visibility
+  // Ignore userHidden/hidden flags since we control the model list via whitelist
+  return isTradeCouncilModel(llm.id);
 }
 
 /**
