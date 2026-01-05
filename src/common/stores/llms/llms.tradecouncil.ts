@@ -49,11 +49,11 @@ export const TRADECOUNCIL_MODEL_WHITELIST = [
 ] as const;
 
 // Models to always hide (blacklist) - uses partial matching
+// CAUTION: Many paid models have ':beta' suffix - don't blacklist 'beta' alone!
 export const TRADECOUNCIL_MODEL_BLACKLIST = [
-  // Experimental/unstable
+  // Experimental/unstable (be specific to avoid blocking ':beta' models)
   'speciale',
-  'exp:',
-  'beta',
+  ':experimental',
   ':extended',
   // Old versions
   'gpt-3.5',
