@@ -1,8 +1,8 @@
 # TradeCouncil Phase 2 Technical Specification
 
-**Version:** 1.1
-**Date:** 2025-12-31
-**Status:** In Progress
+**Version:** 1.2
+**Date:** 2026-01-06
+**Status:** In Progress (Phase 2.3)
 
 ---
 
@@ -18,15 +18,55 @@
 
 **Approach:** Incremental rollout
 - **Phase 2.0:** Auth + Supabase ✅ COMPLETED
-- **Phase 2.1:** Pricing page + Stripe (placeholder) + Disable API setup UI
-- **Phase 2.2:** Feature restrictions by tier
-- **Phase 2.3:** Platform API routing (server-side keys)
+- **Phase 2.1:** Pricing page + Stripe (placeholder) + Disable API setup UI ✅ COMPLETED
+- **Phase 2.2:** Feature restrictions by tier ✅ COMPLETED
+- **Phase 2.3:** Credit system + Usage tracking ← CURRENT
+- **Phase 2.4:** User dashboard + Add-on credits
 
 **Tech Stack:**
 - **Database:** Supabase (PostgreSQL)
 - **Auth:** NextAuth.js v4 + Google OAuth ✅ COMPLETED
 - **Payment:** Stripe (placeholder, waiting for account)
 - **Storage:** Local (IndexedDB/localStorage) - No cloud sync
+
+---
+
+## ⚙️ Development Principles (Mandatory)
+
+### SOLID 原则
+
+| 原则 | 要求 |
+|------|------|
+| SRP | 一个类/模块只负责一个功能领域 |
+| OCP | 对扩展开放，对修改封闭 |
+| LSP | 子类必须能替换父类 |
+| ISP | 接口小而专注 |
+| DIP | 依赖抽象而非具体实现 |
+
+### 其他原则
+
+| 原则 | 要求 |
+|------|------|
+| DRY | 不重复实现，先 Grep 检查 |
+| SoC | 关注点分离，各层各司其职 |
+| LoD | 最少知道，只与直接朋友通信 |
+| 组合优于继承 | 优先组合，避免继承层次过深 |
+| YAGNI | 只实现当前需要的功能 |
+
+### KISS 四问
+
+编码前必须回答：
+1. 这是真问题还是臆想的？
+2. 有更简单的方法吗？
+3. 会破坏什么吗？
+4. 真的需要这个功能吗？
+
+### 健壮性（关键路径适用）
+
+- **幂等性**: 写操作必须幂等
+- **限流**: 保护系统不被压垮
+- **熔断**: 快速失败，防止级联故障
+- **重试**: 指数退避，配合幂等
 
 ---
 
@@ -174,7 +214,7 @@ const MODEL_CREDIT_COST: Record<string, number> = {
 - `app/api/checkout/route.ts` - Stripe checkout
 - `app/api/webhook/stripe/route.ts` - Stripe webhook
 
-### Phase 2.2: Feature Restrictions ✅ COMPLETED
+### Phase 2.2: Feature Restrictions ✅ COMPLETED (2026-01-06)
 
 **Tasks:**
 - [x] Council concurrent model limit by tier
@@ -182,20 +222,53 @@ const MODEL_CREDIT_COST: Record<string, number> = {
 - [x] Strategy library access by tier
 - [x] Model selector filtering by tier
 - [x] Upgrade prompt UI ("Upgrade to unlock...")
+- [x] Model list cleanup (free/paid separation, no duplicates)
 
 **Files modified:**
 - `src/common/hooks/useTierPermissions.ts` - Tier permission system (NEW)
+- `src/common/stores/llms/llms.tradecouncil.ts` - Model whitelist/blacklist (NEW)
+- `src/common/stores/llms/llms.types.ts` - isLLMVisible() for TradeCouncil
 - `src/modules/analysis/scatter/ExpertGrid.tsx` - Council limits
 - `src/modules/analysis/scatter/AnalysisScatterPane.tsx` - Expert count display
 - `src/modules/analysis/gather/AnalysisGatherPane.tsx` - Fusion restrictions
 - `src/apps/strategies/AppStrategies.tsx` - Strategy access control
 - `src/common/components/forms/useLLMSelect.tsx` - Model tier filtering
 
-### Phase 2.3: Platform API Routing
+**Model List Logic:**
+- FREE models: Only show `:free` suffix versions (DeepSeek R1, Gemma 3, Llama, Qwen, Mistral)
+- PAID models: Show versions without `:free` suffix (GPT-4o, Claude, Gemini Pro)
+- Avoid duplicates: If free version exists, hide paid version of same model
+
+### Phase 2.3: Credit System + Usage Tracking ← CURRENT
 
 **Tasks:**
-- [ ] Server-side API key management
-- [ ] Route requests through platform keys
+- [ ] Create Supabase tables (user_credits, analysis_history)
+- [ ] Create `initialize_user_credits` RPC function
+- [ ] Create credit service (`src/server/credits/`)
+  - [ ] `checkCredits(userId, modelId)` - Check if user has enough credits
+  - [ ] `deductCredits(userId, modelId)` - Deduct credits after AI call
+  - [ ] `logUsage(userId, analysisData)` - Log usage to history
+- [ ] Integrate credit check into AI calls
+- [ ] Add credit display in UI (header/navbar)
+
+**Database Schema:**
+```sql
+-- user_credits: Track user credit balances
+-- analysis_history: Log all AI usage for billing/analytics
+-- See /docs/sql/phase2.3-credit-tables.sql
+```
+
+**Credit Flow:**
+```
+User sends request
+    ↓
+Check tier & credits (server middleware)
+    ↓
+FREE model? → Allow (no deduction)
+PAID model? → Check credits → Deduct → Call AI
+    ↓
+Log to analysis_history
+```
 - [ ] Credit deduction on API calls
 - [ ] Usage tracking and logging
 
