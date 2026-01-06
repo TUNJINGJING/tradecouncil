@@ -1,8 +1,8 @@
 # TradeCouncil Phase 2 Technical Specification
 
-**Version:** 1.2
+**Version:** 1.4
 **Date:** 2026-01-06
-**Status:** In Progress (Phase 2.3)
+**Status:** Completed (Phase 2.4)
 
 ---
 
@@ -20,8 +20,8 @@
 - **Phase 2.0:** Auth + Supabase ✅ COMPLETED
 - **Phase 2.1:** Pricing page + Stripe (placeholder) + Disable API setup UI ✅ COMPLETED
 - **Phase 2.2:** Feature restrictions by tier ✅ COMPLETED
-- **Phase 2.3:** Credit system + Usage tracking ← CURRENT
-- **Phase 2.4:** User dashboard + Add-on credits
+- **Phase 2.3:** Credit system + Usage tracking ✅ COMPLETED
+- **Phase 2.4:** User dashboard + Add-on credits ✅ COMPLETED
 
 **Tech Stack:**
 - **Database:** Supabase (PostgreSQL)
@@ -239,17 +239,34 @@ const MODEL_CREDIT_COST: Record<string, number> = {
 - PAID models: Show versions without `:free` suffix (GPT-4o, Claude, Gemini Pro)
 - Avoid duplicates: If free version exists, hide paid version of same model
 
-### Phase 2.3: Credit System + Usage Tracking ← CURRENT
+### Phase 2.3: Credit System + Usage Tracking ✅ COMPLETED (2026-01-06)
 
 **Tasks:**
-- [ ] Create Supabase tables (user_credits, analysis_history)
-- [ ] Create `initialize_user_credits` RPC function
-- [ ] Create credit service (`src/server/credits/`)
-  - [ ] `checkCredits(userId, modelId)` - Check if user has enough credits
-  - [ ] `deductCredits(userId, modelId)` - Deduct credits after AI call
-  - [ ] `logUsage(userId, analysisData)` - Log usage to history
-- [ ] Integrate credit check into AI calls
-- [ ] Add credit display in UI (header/navbar)
+- [x] Create Supabase tables (user_credits, analysis_history)
+- [x] Create `check_and_deduct_credits` RPC function (atomic operation)
+- [x] Create credit service (`src/server/credits/`)
+  - [x] `credits.types.ts` - Type definitions (CreditCheckResult, UserCreditBalance, etc.)
+  - [x] `credits.cost.ts` - Model credit cost mapping
+  - [x] `credits.service.ts` - Core service (checkAndDeductCredits, logAnalysis)
+  - [x] `index.ts` - Public API exports
+- [x] Integrate credit check into AI calls
+  - [x] Modified `trpc.server.ts` to extract userId/userTier from headers
+  - [x] Modified `aix.router.ts` to check/deduct credits before AI dispatch
+  - [x] Modified `trpc.client.ts` to send user headers with requests
+- [x] Credit deduction on API calls (atomic via Supabase RPC)
+- [x] Usage tracking and logging to analysis_history
+
+**Files Created:**
+- `docs/sql/phase2.3-credit-tables.sql` - SQL schema for Supabase
+- `src/server/credits/credits.types.ts` - Type definitions
+- `src/server/credits/credits.cost.ts` - Model credit costs
+- `src/server/credits/credits.service.ts` - Credit service
+- `src/server/credits/index.ts` - Public exports
+
+**Files Modified:**
+- `src/server/trpc/trpc.server.ts` - Added userId/userTier context
+- `src/modules/aix/server/api/aix.router.ts` - Credit check integration
+- `src/common/util/trpc.client.ts` - User headers for credit system
 
 **Database Schema:**
 ```sql
@@ -262,30 +279,55 @@ const MODEL_CREDIT_COST: Record<string, number> = {
 ```
 User sends request
     ↓
-Check tier & credits (server middleware)
+Client adds userId/userTier headers (from next-auth session)
+    ↓
+Server extracts context in tRPC
+    ↓
+aix.router checks credits via Supabase RPC
     ↓
 FREE model? → Allow (no deduction)
-PAID model? → Check credits → Deduct → Call AI
+PAID model? → Check credits → Deduct atomically → Call AI
     ↓
-Log to analysis_history
+Log to analysis_history (success or failure)
 ```
-- [ ] Credit deduction on API calls
-- [ ] Usage tracking and logging
 
 **Architecture:**
 ```
-User → tRPC → Check tier/credits → Use platform API key → AI Provider
+User → tRPC (headers) → aix.router → checkAndDeductCredits (RPC) → AI Provider
                                          ↓
-                              Deduct credits from user account
+                              Credits deducted atomically via Supabase RPC
+                              Usage logged to analysis_history
 ```
 
-### Phase 2.4: Add-on Credits + Dashboard
+### Phase 2.4: Add-on Credits + Dashboard ✅ COMPLETED (2026-01-06)
 
 **Tasks:**
-- [ ] Add-on credit purchase flow
-- [ ] User dashboard (`/dashboard`)
-- [ ] Credit balance display
-- [ ] Usage history
+- [x] Create credits tRPC router (`credits.router.ts`)
+  - [x] `getBalance` query - Fetch user credit balance
+  - [x] `getUsageHistory` query - Fetch paginated usage history
+- [x] User dashboard (`/dashboard`)
+  - [x] Credit balance display (subscription + addon)
+  - [x] Usage progress bar
+  - [x] Recent usage history table
+  - [x] Quick action buttons
+- [x] Credit display in user menu (AuthUserMenu)
+  - [x] Credit balance with progress bar
+  - [x] Dashboard link
+
+**Files Created:**
+- `src/server/credits/credits.router.ts` - tRPC router for credits
+- `src/apps/dashboard/DashboardPage.tsx` - Dashboard page component
+- `pages/dashboard.tsx` - Dashboard page route
+
+**Files Modified:**
+- `src/server/trpc/trpc.router-cloud.ts` - Added credits router
+- `src/common/components/auth/AuthUserMenu.tsx` - Added credit display and dashboard link
+
+**Note:** Add-on credit purchase flow requires Stripe integration (Phase 2.1 placeholder).
+When Stripe is configured, update:
+1. `/pricing` page add-on section with purchase buttons
+2. Create Stripe checkout flow for credit packages
+3. Webhook handler to add credits after purchase
 
 ### Phase 3: Admin Panel (Future)
 
@@ -306,27 +348,38 @@ User → tRPC → Check tier/credits → Use platform API key → AI Provider
 ├── checkout/route.ts            ✅ Created (placeholder)
 └── webhook/stripe/route.ts      ✅ Created (placeholder)
 
+/docs/sql/
+└── phase2.3-credit-tables.sql   ✅ Created (Phase 2.3)
+
 /pages/
 ├── pricing.tsx                  ✅ Created
-└── dashboard.tsx                ← Phase 2.4
+└── dashboard.tsx                ✅ Created (Phase 2.4)
 
 /src/apps/
-└── pricing/
-    └── PricingPage.tsx          ✅ Created
+├── pricing/
+│   └── PricingPage.tsx          ✅ Created
+└── dashboard/
+    └── DashboardPage.tsx        ✅ Created (Phase 2.4)
 
 /src/server/
 ├── auth/auth.config.ts          ✅ Created
 ├── supabase/client.ts           ✅ Created
-├── stripe/                      ← Phase 2.1 (when Stripe configured)
+├── credits/                     ✅ Created (Phase 2.3-2.4)
+│   ├── index.ts                 - Public API
+│   ├── credits.types.ts         - Type definitions
+│   ├── credits.cost.ts          - Model cost mapping
+│   ├── credits.service.ts       - Core service
+│   └── credits.router.ts        - tRPC router (Phase 2.4)
+├── stripe/                      ← Future (when Stripe configured)
 │   ├── stripe.config.ts
 │   └── stripe.service.ts
-└── quota/                       ← Phase 2.2
+└── quota/                       (deprecated, replaced by credits/)
     └── quota.service.ts
 
 /src/common/components/
 ├── auth/                        ✅ Created
 │   ├── AuthLoginButton.tsx
-│   ├── AuthUserMenu.tsx
+│   ├── AuthUserMenu.tsx         ✅ Modified (Phase 2.4 - credits)
 │   └── AuthStatus.tsx
 └── pricing/                     (merged into /src/apps/pricing/)
 ```
@@ -421,6 +474,23 @@ DEEPSEEK_API_KEY=xxx
 - [x] ARCHITECT: 5 model Council works
 - [x] ARCHITECT: All models accessible
 - [x] ARCHITECT: Custom strategies available
+
+### Phase 2.3 ✅
+- [x] Credit check prevents AI calls when insufficient credits
+- [x] Free models (`:free` suffix) bypass credit check
+- [x] Credits deducted atomically via Supabase RPC
+- [x] Usage logged to analysis_history table
+- [x] User headers sent with tRPC requests
+- [x] Error message shown when credits exhausted
+
+### Phase 2.4 ✅
+- [x] Dashboard page renders at `/dashboard`
+- [x] Credit balance displayed correctly
+- [x] Usage history shows recent analyses
+- [x] Credit display in user menu
+- [x] Dashboard link in user menu
+- [ ] Add-on credit purchase works (requires Stripe)
+- [ ] Credits persist after purchase (requires Stripe)
 
 ---
 

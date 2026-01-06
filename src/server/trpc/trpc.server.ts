@@ -27,13 +27,19 @@ export type ChatGenerateContentContext = Awaited<ReturnType<typeof createTRPCFet
  * These allow you to access things when processing a request, like the database, the session, etc.
  */
 export const createTRPCFetchContext = async ({ req }: FetchCreateContextFnOptions) => {
-  // const user = { name: req.headers.get('username') ?? 'anonymous' };
-  // return { req, resHeaders };
+  // [TradeCouncil] Extract user ID from custom header (set by client)
+  // This is a simple approach - for production, use proper session validation
+  const userId = req.headers?.get('x-tradecouncil-user-id') ?? null;
+  const userTier = req.headers?.get('x-tradecouncil-user-tier') ?? 'OBSERVER';
+
   return {
     // only used by Backend Analytics
     hostName: req.headers?.get('host') ?? 'localhost',
     // enables cancelling upstream requests when the downstream request is aborted
     reqSignal: req.signal,
+    // [TradeCouncil] User info for credit checking
+    userId,
+    userTier,
   };
 };
 

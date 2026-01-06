@@ -8,6 +8,7 @@
  */
 import { createTRPCClient, httpBatchStreamLink, httpLink, loggerLink } from '@trpc/client';
 import { createTRPCNext } from '@trpc/next';
+import { getSession } from 'next-auth/react';
 
 import type { AppRouterEdge } from '~/server/trpc/trpc.router-edge';
 import type { AppRouterCloud } from '~/server/trpc/trpc.router-cloud';
@@ -26,6 +27,22 @@ const enableLoggerLink = (opts: any) => {
     (opts.direction === 'down' && opts.result instanceof Error);
 };
 
+// [TradeCouncil] Get user headers for credit system
+async function getTradeCouncilHeaders(): Promise<Record<string, string>> {
+  try {
+    const session = await getSession();
+    if (session?.user) {
+      return {
+        'x-tradecouncil-user-id': (session.user as any).id || '',
+        'x-tradecouncil-user-tier': (session.user as any).tier || 'OBSERVER',
+      };
+    }
+  } catch (e) {
+    // Silently fail - headers are optional for credit checking
+  }
+  return {};
+}
+
 
 /// Edge APIs: async, query, and stream
 
@@ -36,6 +53,8 @@ export const apiAsync = createTRPCClient<AppRouterEdge>({
     httpLink({
       url: `${getBaseUrl()}/api/edge`,
       transformer: transformer,
+      // [TradeCouncil] Add user headers for credit system
+      headers: getTradeCouncilHeaders,
     }),
   ],
 });
@@ -56,12 +75,8 @@ export const apiQuery = createTRPCNext<AppRouterEdge>({
         httpLink({
           url: `${getBaseUrl()}/api/edge`,
           transformer: transformer,
-          // You can pass any HTTP headers you wish here
-          // async headers() {
-          //   return {
-          //     // authorization: getAuthCookie(),
-          //   };
-          // },
+          // [TradeCouncil] Add user headers for credit system
+          headers: getTradeCouncilHeaders,
         }),
       ],
     };
@@ -85,6 +100,8 @@ export const apiStream = createTRPCClient<AppRouterEdge>({
     httpBatchStreamLink({
       url: `${getBaseUrl()}/api/edge`,
       transformer: transformer,
+      // [TradeCouncil] Add user headers for credit system
+      headers: getTradeCouncilHeaders,
       /**
        * WORKAROUND:
        * Due to the fact that we are sending large payloads with images, and having a 1MB max payload size
