@@ -123,6 +123,8 @@ export const apiAsyncNode = createTRPCClient<AppRouterCloud>({
     httpLink({
       url: `${getBaseUrl()}/api/cloud`,
       transformer: transformer,
+      // [TradeCouncil] Add user headers for credit system
+      headers: getTradeCouncilHeaders,
     }),
   ],
 });
@@ -134,6 +136,8 @@ export const apiStreamNode = createTRPCClient<AppRouterCloud>({
     httpBatchStreamLink({
       url: `${getBaseUrl()}/api/cloud`,
       transformer: transformer,
+      // [TradeCouncil] Add user headers for credit system
+      headers: getTradeCouncilHeaders,
       maxItems: 1, // to not wait for the last connection to close
     }),
   ],
