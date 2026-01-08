@@ -57,9 +57,9 @@ const initRootStateSlice = (): RootStateSlice => ({
 export interface RootStoreSlice extends RootStateSlice {
 
   // lifecycle
-  open: (chatHistory: Readonly<DMessage[]>, initialChatLlmId: DLLMId | null, isEditMode: boolean, callback: AnalysisSuccessCallback) => void;
+  open: (chatHistory: Readonly<DMessage[]>, initialChatLlmId: DLLMId | null, isEditMode: boolean, callback: AnalysisSuccessCallback, councilLimit?: number) => void;
   terminateKeepingSettings: () => void;
-  loadAnalysisConfig: (preset: AnalysisConfigSnapshot | null) => void;
+  loadAnalysisConfig: (preset: AnalysisConfigSnapshot | null, maxRays?: number) => void;
 
   setIsMaximized: (maximized: boolean) => void;
   inputHistoryReplaceMessageFragment: (messageId: DMessageId, fragmentId: DMessageFragmentId, newFragment: DMessageFragment) => void;
@@ -73,8 +73,11 @@ const createRootSlice: StateCreator<AnalysisStore, [], [], RootStoreSlice> = (_s
   ...initRootStateSlice(),
 
 
-  open: (chatHistory: Readonly<DMessage[]>, initialChatLlmId: DLLMId | null, isEditMode: boolean, callback: AnalysisSuccessCallback) => {
-    const { isOpen: wasAlreadyOpen, terminateKeepingSettings, loadAnalysisConfig, hadImportedRays, setRayLlmIds, setCurrentGatherLlmId } = _get();
+  open: (chatHistory: Readonly<DMessage[]>, initialChatLlmId: DLLMId | null, isEditMode: boolean, callback: AnalysisSuccessCallback, councilLimit?: number) => {
+    const { isOpen: wasAlreadyOpen, terminateKeepingSettings, loadAnalysisConfig, hadImportedRays, setRayLlmIds, setCurrentGatherLlmId, setRayCount } = _get();
+
+    // [TradeCouncil] Default council limit if not provided
+    const maxRays = councilLimit ?? SCATTER_RAY_DEF;
 
     // reset pending operations
     terminateKeepingSettings();
@@ -102,17 +105,22 @@ const createRootSlice: StateCreator<AnalysisStore, [], [], RootStoreSlice> = (_s
       } satisfies Partial<GatherStoreSlice>),
     });
 
-    // if not empty (recycle an existing open analysis for this chat), we're done
+    // if not empty (recycle an existing open analysis for this chat), enforce limit and we're done
+    if (_get().rays.length) {
+      // [TradeCouncil] Enforce council limit on existing rays
+      if (_get().rays.length > maxRays)
+        setRayCount(maxRays);
+      return;
+    }
+
+    // if empty, initialize from the persisted config, if any (with limit)
+    loadAnalysisConfig(useModuleAnalysisStore.getState().lastConfig, maxRays);
     if (_get().rays.length)
       return;
 
-    // if empty, initialize from the persisted config, if any
-    loadAnalysisConfig(useModuleAnalysisStore.getState().lastConfig);
-    if (_get().rays.length)
-      return;
-
-    // it no config (first-time): Heuristic: auto-pick the best models for the user, based on their ELO and variety
-    const autoLlmIds = llmsHeuristicGetTopDiverseLlmIds(SCATTER_RAY_DEF, true, initialChatLlmId);
+    // if no config (first-time): Heuristic: auto-pick the best models for the user, based on their ELO and variety
+    // [TradeCouncil] Use councilLimit instead of SCATTER_RAY_DEF
+    const autoLlmIds = llmsHeuristicGetTopDiverseLlmIds(maxRays, true, initialChatLlmId);
     if (autoLlmIds.length > 0) {
       setRayLlmIds(autoLlmIds);
       setCurrentGatherLlmId(autoLlmIds[0]);
@@ -127,10 +135,14 @@ const createRootSlice: StateCreator<AnalysisStore, [], [], RootStoreSlice> = (_s
     })),
 
 
-  loadAnalysisConfig: (preset: AnalysisConfigSnapshot | null) => {
+  loadAnalysisConfig: (preset: AnalysisConfigSnapshot | null, maxRays?: number) => {
     if (preset) {
       const { setRayLlmIds, setCurrentGatherLlmId, setCurrentFactoryId } = _get();
-      preset.rayLlmIds?.length && setRayLlmIds(preset.rayLlmIds);
+      if (preset.rayLlmIds?.length) {
+        // [TradeCouncil] Enforce council limit when loading config
+        const limitedRayLlmIds = maxRays ? preset.rayLlmIds.slice(0, maxRays) : preset.rayLlmIds;
+        setRayLlmIds(limitedRayLlmIds);
+      }
       preset.gatherLlmId && setCurrentGatherLlmId(preset.gatherLlmId);
       preset.gatherFactoryId && setCurrentFactoryId(preset.gatherFactoryId);
     }

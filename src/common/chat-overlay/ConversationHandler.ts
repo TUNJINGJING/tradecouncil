@@ -14,6 +14,7 @@ import { createDMessageEmpty, createDMessageFromFragments, createDMessagePlaceho
 import { createTextContentFragment, DMessageFragment, DMessageFragmentId } from '~/common/stores/chat/chat.fragments';
 import { gcChatImageAssets } from '~/common/stores/chat/chat.gc';
 import { getChatLLMId } from '~/common/stores/llms/store-llms';
+import { getStoredUserTier, getTierPermissions } from '~/common/hooks/useTierPermissions';
 
 import { getChatAutoAI } from '../../apps/chat/store-app-chat';
 
@@ -250,6 +251,10 @@ export class ConversationHandler {
   analysisInvoke(viewHistory: Readonly<DMessage[]>, importMessages: DMessage[], destReplaceMessageId: DMessage['id'] | null): void {
     const { open: analysisOpen, importRays: analysisImportRays, terminateKeepingSettings } = this.analysisStore.getState();
 
+    // [TradeCouncil] Get council limit based on user tier
+    const tier = getStoredUserTier();
+    const { councilLimit } = getTierPermissions(tier);
+
     const onAnalysisSuccess = (messageUpdate: Pick<DMessage, 'fragments' | 'generator'>) => {
 
       // set output when going back to the chat
@@ -269,7 +274,7 @@ export class ConversationHandler {
       terminateKeepingSettings();
     };
 
-    analysisOpen(viewHistory, getChatLLMId(), !!destReplaceMessageId, onAnalysisSuccess);
+    analysisOpen(viewHistory, getChatLLMId(), !!destReplaceMessageId, onAnalysisSuccess, councilLimit);
     importMessages.length && analysisImportRays(importMessages, getChatLLMId());
   }
 

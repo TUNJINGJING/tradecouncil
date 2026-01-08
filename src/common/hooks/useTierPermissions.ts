@@ -1,9 +1,13 @@
 'use client';
 
+import * as React from 'react';
 import { useSession } from 'next-auth/react';
 
 // Tier types
 export type UserTier = 'OBSERVER' | 'TRADER' | 'ARCHITECT' | 'ARCHITECT_PRO';
+
+// localStorage key for caching tier
+const TIER_STORAGE_KEY = 'tradecouncil-user-tier';
 
 // [DEV] Override tier for testing - set this to test different tiers
 // Set to null for production behavior (use actual user tier)
@@ -143,6 +147,27 @@ export interface TierPermissions {
 }
 
 /**
+ * Get user tier from localStorage (for non-React contexts)
+ * Falls back to OBSERVER if not found
+ */
+export function getStoredUserTier(): UserTier {
+  // [DEV] Use override if set
+  if (DEV_TIER_OVERRIDE) return DEV_TIER_OVERRIDE;
+
+  if (typeof window === 'undefined') return 'OBSERVER';
+
+  try {
+    const stored = localStorage.getItem(TIER_STORAGE_KEY);
+    if (stored && ['OBSERVER', 'TRADER', 'ARCHITECT', 'ARCHITECT_PRO'].includes(stored)) {
+      return stored as UserTier;
+    }
+  } catch (e) {
+    // localStorage might not be available
+  }
+  return 'OBSERVER';
+}
+
+/**
  * Hook to get user's tier and check permissions
  */
 export function useTierPermissions(): TierPermissions {
@@ -155,6 +180,17 @@ export function useTierPermissions(): TierPermissions {
   // Default to OBSERVER for unauthenticated users
   const tier: UserTier = DEV_TIER_OVERRIDE ?? (session?.user?.tier as UserTier) ?? 'OBSERVER';
   const tierLevel = TIER_LEVELS[tier];
+
+  // [TradeCouncil] Store tier in localStorage for non-React contexts
+  React.useEffect(() => {
+    if (isAuthenticated && tier) {
+      try {
+        localStorage.setItem(TIER_STORAGE_KEY, tier);
+      } catch (e) {
+        // localStorage might not be available
+      }
+    }
+  }, [isAuthenticated, tier]);
 
   // Check if user has access to a feature
   const hasFeature = (feature: keyof typeof TIER_FEATURES): boolean => {
