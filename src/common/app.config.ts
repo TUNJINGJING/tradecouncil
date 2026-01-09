@@ -23,8 +23,8 @@ export const Brand = {
     OpenRepo: '',
     OpenProject: '',
     SupportInvite: '',
-    PrivacyPolicy: '',
-    TermsOfService: '',
+    PrivacyPolicy: 'https://tradecouncil.vercel.app/privacy',
+    TermsOfService: 'https://tradecouncil.vercel.app/terms',
   },
   Docs: {
     Public: (docPage: string) => `https://tradecouncil.vercel.app/docs/${docPage}`,

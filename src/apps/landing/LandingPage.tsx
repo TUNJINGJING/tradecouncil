@@ -1169,11 +1169,14 @@ function Footer() {
       </Typography>
 
       <Box sx={{ mt: '40px' }}>
-        {['Privacy', 'Terms', 'Twitter'].map((link) => (
+        {[
+          { label: 'Privacy', href: '/privacy' },
+          { label: 'Terms', href: '/terms' },
+        ].map((link) => (
           <Box
-            key={link}
+            key={link.label}
             component="a"
-            href="#"
+            href={link.href}
             sx={{
               color: '#666',
               mx: '15px',
@@ -1182,7 +1185,7 @@ function Footer() {
               '&:hover': { color: '#fff' },
             }}
           >
-            {link}
+            {link.label}
           </Box>
         ))}
       </Box>
