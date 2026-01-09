@@ -4,7 +4,6 @@ import Head from 'next/head';
 
 import { Box, Typography, Link } from '@mui/joy';
 
-// CSS Variables matching DESIGN.md
 const cssVars = {
   bgDeep: '#0a0a0a',
   textDim: '#666',
@@ -29,9 +28,7 @@ function TermsOfService() {
         color: cssVars.primary,
         padding: { xs: '80px 20px', md: '120px 40px' },
       }}>
-        {/* Header */}
         <Box sx={{ maxWidth: '800px', mx: 'auto' }}>
-          {/* Back button */}
           <Link
             onClick={() => router.back()}
             sx={{
@@ -61,9 +58,7 @@ function TermsOfService() {
             Last updated: {new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
           </Typography>
 
-          {/* Content */}
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-            {/* Acceptance */}
             <section>
               <Typography sx={{ color: cssVars.accent, fontFamily: '"Courier New", monospace', mb: 2, letterSpacing: '2px', textTransform: 'uppercase' }}>
                 01. Acceptance of Terms
@@ -76,7 +71,6 @@ function TermsOfService() {
               </Typography>
             </section>
 
-            {/* Disclaimer */}
             <section>
               <Typography sx={{ color: cssVars.danger, fontFamily: '"Courier New", monospace', mb: 2, letterSpacing: '2px', textTransform: 'uppercase' }}>
                 02. Important Disclaimer
@@ -102,7 +96,6 @@ function TermsOfService() {
               </Typography>
             </section>
 
-            {/* Service Description */}
             <section>
               <Typography sx={{ color: cssVars.accent, fontFamily: '"Courier New", monospace', mb: 2, letterSpacing: '2px', textTransform: 'uppercase' }}>
                 03. Service Description
@@ -121,7 +114,6 @@ function TermsOfService() {
               </Typography>
             </section>
 
-            {/* User Responsibilities */}
             <section>
               <Typography sx={{ color: cssVars.accent, fontFamily: '"Courier New", monospace', mb: 2, letterSpacing: '2px', textTransform: 'uppercase' }}>
                 04. User Responsibilities
@@ -142,7 +134,6 @@ function TermsOfService() {
               </Typography>
             </section>
 
-            {/* Subscription & Payments */}
             <section>
               <Typography sx={{ color: cssVars.accent, fontFamily: '"Courier New", monospace', mb: 2, letterSpacing: '2px', textTransform: 'uppercase' }}>
                 05. Subscription &amp; Payments
@@ -174,7 +165,6 @@ function TermsOfService() {
               </Typography>
             </section>
 
-            {/* Credit System */}
             <section>
               <Typography sx={{ color: cssVars.accent, fontFamily: '"Courier New", monospace', mb: 2, letterSpacing: '2px', textTransform: 'uppercase' }}>
                 06. Credit System
@@ -191,11 +181,10 @@ function TermsOfService() {
                 Add-on credits can be purchased and never expire. Subscription credits reset each billing period.
               </Typography>
               <Typography sx={{ color: '#888', fontSize: '0.9rem', fontFamily: '"Courier New", monospace' }}>
-                // Credits are non-transferable and have no cash value.
+                Credits are non-transferable and have no cash value.
               </Typography>
             </section>
 
-            {/* Intellectual Property */}
             <section>
               <Typography sx={{ color: cssVars.accent, fontFamily: '"Courier New", monospace', mb: 2, letterSpacing: '2px', textTransform: 'uppercase' }}>
                 07. Intellectual Property
@@ -216,7 +205,6 @@ function TermsOfService() {
               </Typography>
             </section>
 
-            {/* Termination */}
             <section>
               <Typography sx={{ color: cssVars.accent, fontFamily: '"Courier New", monospace', mb: 2, letterSpacing: '2px', textTransform: 'uppercase' }}>
                 08. Termination
@@ -238,7 +226,6 @@ function TermsOfService() {
               </Typography>
             </section>
 
-            {/* Limitation of Liability */}
             <section>
               <Typography sx={{ color: cssVars.danger, fontFamily: '"Courier New", monospace', mb: 2, letterSpacing: '2px', textTransform: 'uppercase' }}>
                 09. Limitation of Liability
@@ -253,11 +240,10 @@ function TermsOfService() {
                 <li>WE ARE NOT LIABLE FOR INDIRECT, INCIDENTAL, OR CONSEQUENTIAL DAMAGES</li>
               </Box>
               <Typography sx={{ color: '#888', fontSize: '0.9rem', fontFamily: '"Courier New", monospace' }}>
-                // USE AT YOUR OWN RISK. YOU BEAR ALL RESPONSIBILITY FOR YOUR TRADING DECISIONS.
+                USE AT YOUR OWN RISK. YOU BEAR ALL RESPONSIBILITY FOR YOUR TRADING DECISIONS.
               </Typography>
             </section>
 
-            {/* Dispute Resolution */}
             <section>
               <Typography sx={{ color: cssVars.accent, fontFamily: '"Courier New", monospace', mb: 2, letterSpacing: '2px', textTransform: 'uppercase' }}>
                 10. Dispute Resolution
@@ -270,7 +256,6 @@ function TermsOfService() {
               </Typography>
             </section>
 
-            {/* Governing Law */}
             <section>
               <Typography sx={{ color: cssVars.accent, fontFamily: '"Courier New", monospace', mb: 2, letterSpacing: '2px', textTransform: 'uppercase' }}>
                 11. Governing Law
@@ -280,7 +265,6 @@ function TermsOfService() {
               </Typography>
             </section>
 
-            {/* Contact */}
             <section>
               <Typography sx={{ color: cssVars.accent, fontFamily: '"Courier New", monospace', mb: 2, letterSpacing: '2px', textTransform: 'uppercase' }}>
                 12. Contact Us
@@ -288,7 +272,7 @@ function TermsOfService() {
               <Typography sx={{ color: '#bbb', lineHeight: 1.8, mb: 2 }}>
                 For questions about these Terms, please contact us:
               </Typography>
-              <Box sx={{ fontFamily: '"Courier New", monospace", color: '#888', mt: 2 }}>
+              <Box sx={{ fontFamily: '"Courier New", monospace', color: '#888', mt: 2 }}>
                 Email: <Link href="mailto:support@tradecouncil.app" sx={{ color: cssVars.accent, '&:hover': { textDecoration: 'underline' } }}>support@tradecouncil.app</Link>
               </Box>
             </section>

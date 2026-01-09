@@ -123,7 +123,7 @@ function PrivacyPolicy() {
                 <li>You can export your chats at any time using the Export feature</li>
               </Box>
               <Typography sx={{ color: '#888', fontSize: '0.9rem', fontFamily: '"Courier New", monospace' }}>
-                // NO_LOGS: We do not log your chat content for training or any other purpose.
+                {'// NO_LOGS: We do not log your chat content for training or any other purpose.'}
               </Typography>
             </section>
 
@@ -172,7 +172,7 @@ function PrivacyPolicy() {
                 <li>Regular security audits and updates</li>
               </Box>
               <Typography sx={{ color: '#888', fontSize: '0.9rem', fontFamily: '"Courier New", monospace' }}>
-                // SECURE_ENCLAVE: Your financial analysis data remains yours.
+                {'// SECURE_ENCLAVE: Your financial analysis data remains yours.'}
               </Typography>
             </section>
 
